@@ -4,16 +4,16 @@ import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.zerock.knock.component.util.WebDriverUtil;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -28,25 +28,22 @@ public interface CrawlingInterface {
     class ElementExtractor implements Runnable {
 
         private final String urlPath;
-        private final ThreadLocal<WebDriver> driverThreadLocal;
         private final String cssQuery;
-        private final String nextBtnCss;
+        private final ThreadLocal<WebDriver> driverThreadLocal = ThreadLocal.withInitial(WebDriverUtil::getChromeDriver);
 
         @Getter
         private Elements elements;
+        @Getter
+        private WebDriver driver;
 
-        public ElementExtractor(String urlPath, ThreadLocal<WebDriver> driverThreadLocal, String cssQuery, String nextBtnCss) {
+        public ElementExtractor(String urlPath, String cssQuery) {
             this.urlPath = urlPath;
-            this.driverThreadLocal = driverThreadLocal;
             this.cssQuery = cssQuery;
-            this.nextBtnCss = nextBtnCss;
         }
 
-        @Override
-        public void run() {
-
-            WebDriver driver = driverThreadLocal.get();
-
+        public void setUpDriver()
+        {
+            driver = driverThreadLocal.get();
             if (urlPath == null) {
                 logger.error("[{}]", "urlPath is null");
                 return;
@@ -54,33 +51,32 @@ public interface CrawlingInterface {
 
             driver.navigate().to(urlPath);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+        }
 
-            if (nextBtnCss != null) {
+        public void preparePage(String className, String methodName, String target)
+        {
 
-                try {
+            try
+            {
 
-                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 최대 10초 대기
+                Class<?> classes = Class.forName(className);
+                Constructor<?> constructors = classes.getDeclaredConstructor();
 
-                    while (true)
-                    {
-                        WebElement nextBtn = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(nextBtnCss)));
+                Object object = constructors.newInstance();
 
-                        if (nextBtn.isDisplayed())
-                        {
-                            nextBtn.click();
-                            wait.until(ExpectedConditions.stalenessOf(nextBtn));
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    logger.debug("오류 발생: {}", e.getMessage());
-                }
+                Method methods = classes.getMethod(methodName, WebDriver.class, String.class);
+                methods.invoke(object, driver, target);
+
             }
+            catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
+                   InstantiationException | IllegalAccessException e)
+            {
+                logger.debug(e.getMessage());
+            }
+        }
+        @Override
+        public void run() {
+
             Document urlDoc;
 
             synchronized (this) {

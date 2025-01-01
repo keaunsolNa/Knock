@@ -1,19 +1,15 @@
-package org.zerock.knock.service.crawling;
+package org.zerock.knock.service.crawling.movie;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.WebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.component.util.WebDriverUtil;
+import org.zerock.knock.service.crawling.CrawlingInterface;
 
 import java.util.Objects;
 
 @Service
-public class MegaBox implements  CrawlingInterface {
+public class MegaBox implements CrawlingInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(MegaBox.class);
 
     @Override
     public void addNewBrands() {
@@ -22,9 +18,12 @@ public class MegaBox implements  CrawlingInterface {
 
         // Webdriver initialize
         String url = "https://www.megabox.co.kr/movie/comingsoon";
+        String cssQuery = "ol#movieList > li";
 
-        ThreadLocal<WebDriver> driverThreadLocal = ThreadLocal.withInitial(WebDriverUtil::getChromeDriver);
-        ElementExtractor extractor = new ElementExtractor(url, driverThreadLocal, "ol#movieList > li", ".btn-more");
+        ElementExtractor extractor = new ElementExtractor(url, cssQuery);
+
+        extractor.setUpDriver();
+        extractor.preparePage("org.zerock.knock.component.util.NextBtnWithCssSelector", "nextBtn", ".btn-more");
         extractor.run();
 
         Elements elements = extractor.getElements();
