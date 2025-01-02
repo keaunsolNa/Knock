@@ -25,7 +25,7 @@ public class KnockApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(KnockApplication.class, args);
-        InterPark megaBox = new InterPark();
+        MegaBox megaBox = new MegaBox();
         megaBox.addNewBrands();
     }
 

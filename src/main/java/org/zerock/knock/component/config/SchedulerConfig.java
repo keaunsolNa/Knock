@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SchedulerConfig {
 
-//    @Value("${schedule.use}")
+    @Value("${schedule.use}")
     private boolean useSchedule;
 }
