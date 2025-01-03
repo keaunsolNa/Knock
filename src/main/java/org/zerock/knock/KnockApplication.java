@@ -1,7 +1,5 @@
 package org.zerock.knock;
 
-import org.zerock.knock.service.crawling.movie.MegaBox;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -12,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zerock.knock.service.crawling.musical.InterPark;
-
 
 @EnableScheduling
 @EnableAsync
@@ -25,8 +21,6 @@ public class KnockApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(KnockApplication.class, args);
-        MegaBox megaBox = new MegaBox();
-        megaBox.addNewBrands();
     }
 
     @Bean

@@ -7,7 +7,6 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.WebDriverUtil;
 
@@ -24,7 +23,6 @@ public interface CrawlingInterface {
 
     void addNewBrands();
 
-    @Async
     class ElementExtractor implements Runnable {
 
         private final String urlPath;
