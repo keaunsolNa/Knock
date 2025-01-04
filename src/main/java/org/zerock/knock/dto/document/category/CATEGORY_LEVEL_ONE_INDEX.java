@@ -9,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.zerock.knock.dto.document.user.USER_INDEX;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,10 +22,10 @@ public class CATEGORY_LEVEL_ONE_INDEX {
 
     private String nm;
 
-    private Set<CATEGORY_LEVEL_TWO_INDEX> childCategory;
+    private Iterable<CATEGORY_LEVEL_TWO_INDEX> childCategory;
 
     @ManyToMany
-    private Set<USER_INDEX> favoriteUsers;
+    private Iterable<USER_INDEX> favoriteUsers;
 
     @Override
     public boolean equals(Object o) {

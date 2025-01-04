@@ -13,34 +13,28 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
-import org.zerock.knock.dto.document.user.USER_INDEX;
-
-import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
-@Document(indexName = "movie-index")
-public class MOVIE_INDEX {
+@Document(indexName = "kofic-index")
+public class KOFIC_INDEX {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String movieId;
 
+    private String KOFICCode;
+
     private String movieNm;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
+    private Long prdtYear;
+    @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private long openingTime;
 
-    private String KOFICCode;
-
-    private Iterable<String> reservationLink;
-
-    private String posterBase64;
-
     private String director;
-
-    private Iterable<String> actors;
 
     private String companyNm;
 
@@ -51,20 +45,4 @@ public class MOVIE_INDEX {
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private Long runningTime;
-
-    private String plot;
-
-    private Iterable<USER_INDEX> favorites;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MOVIE_INDEX movieINDEX)) return false;
-        return Objects.equals(KOFICCode, movieINDEX.KOFICCode) || Objects.equals(movieId, movieINDEX.movieId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(movieId, movieNm, openingTime, KOFICCode, reservationLink, posterBase64, director, actors, categoryLevelOne, categoryLevelTwo, runningTime, plot, favorites);
-    }
 }

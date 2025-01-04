@@ -5,8 +5,6 @@ import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_ONE_DTO;
 import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 import org.zerock.knock.dto.dto.user.USER_DTO;
 
-import java.util.Set;
-
 @Data
 public class MOVIE_DTO {
 
@@ -14,13 +12,13 @@ public class MOVIE_DTO {
     private String movieNm;
     private long openingTime;
     private String KOFICCode;
-    private Set<String> reservationLink;
+    private Iterable<String> reservationLink;
     private String posterBase64;
     private String director;
-    private Set<String> actors;
+    private Iterable<String> actors;
     private CATEGORY_LEVEL_ONE_DTO categoryLevelOne;
-    private Set<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
+    private Iterable<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
     private long runningTime;
     private String plot;
-    private Set<USER_DTO> favorites;
+    private Iterable<USER_DTO> favorites;
 }

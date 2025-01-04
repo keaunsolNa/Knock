@@ -15,26 +15,33 @@ public class StringDateConvertLongTimeStamp {
 
     public long Converter(String dateString) {
 
-        logger.info("[{}]", dateString);
-
         if (dateString == null || dateString.isEmpty())
         {
             logger.error("[{}]", "parameter is null");
             return 0;
         }
+        SimpleDateFormat dateFormat;
+        switch (dateString.length())
+        {
+            case 4 : dateFormat = new SimpleDateFormat("yyyy"); break;
+            case 6 : dateFormat = new SimpleDateFormat("yyyyMM"); break;
+            case 7 : dateFormat = new SimpleDateFormat("yyyy.MM"); break;
+            case 8 : dateFormat = new SimpleDateFormat("yyyyMMdd"); break;
+            case 10 : dateFormat = new SimpleDateFormat("yyyy.MM.dd"); break;
 
-        SimpleDateFormat dateFormat = dateString.length() == 7 ? new SimpleDateFormat("yyyy.MM") : new SimpleDateFormat("yyyy.MM.dd");
+            default:
+                logger.error("[{}]", "parameter is Illegal : " + dateString + "\t " + dateString.length());
+
+                return 0;
+        }
+
         dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("KST"));
         long result = 0;
 
         try
         {
             Date date = dateFormat.parse(dateString);
-
-            logger.info("[{}]", date);
             result = date.getTime();
-            logger.info("[{}]", result);
-
         }
         catch (ParseException e)
         {
