@@ -21,6 +21,7 @@ public class KnockApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(KnockApplication.class, args);
+
     }
 
     @Bean

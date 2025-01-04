@@ -1,7 +1,6 @@
 package org.zerock.knock.dto.document.category;
 
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.annotation.Id;
 import org.zerock.knock.dto.document.user.USER_INDEX;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -19,14 +18,25 @@ import java.util.Set;
 public class CATEGORY_LEVEL_ONE_INDEX {
 
     @Id
-    private String categoryLevelOneId;
-    private String categoryLevelOneNm;
-    @OneToMany
-    @Nullable
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
+
+    private String nm;
+
     private Set<CATEGORY_LEVEL_TWO_INDEX> childCategory;
+
     @ManyToMany
     private Set<USER_INDEX> favoriteUsers;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CATEGORY_LEVEL_ONE_INDEX that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(nm, that.nm);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nm);
+    }
 }

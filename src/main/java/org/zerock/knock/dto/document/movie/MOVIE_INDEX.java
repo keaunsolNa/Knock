@@ -43,7 +43,7 @@ public class MOVIE_INDEX {
     private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
 
     @OneToMany
-    private CATEGORY_LEVEL_TWO_INDEX categoryLevelTwo;
+    private Set<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private long runningTime;

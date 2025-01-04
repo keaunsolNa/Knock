@@ -19,7 +19,7 @@ public class MOVIE_DTO {
     private String director;
     private Set<String> actors;
     private CATEGORY_LEVEL_ONE_DTO categoryLevelOne;
-    private CATEGORY_LEVEL_TWO_DTO categoryLevelTwo;
+    private Set<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
     private long runningTime;
     private String plot;
     private Set<USER_DTO> favorites;

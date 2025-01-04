@@ -8,8 +8,8 @@ import java.util.Set;
 @Data
 public class CATEGORY_LEVEL_ONE_DTO {
 
-    private String categoryLevelOneId;
-    private String categoryLevelOneNm;
+    private String id;
+    private String nm;
     private Set<CATEGORY_LEVEL_TWO_DTO> childCategory;
     private Set<USER_DTO> favoriteUsers;
 }

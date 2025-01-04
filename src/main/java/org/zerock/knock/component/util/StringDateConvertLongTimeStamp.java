@@ -16,7 +16,14 @@ public class StringDateConvertLongTimeStamp {
     public long Converter(String dateString) {
 
         logger.info("[{}]", dateString);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM");
+
+        if (dateString == null || dateString.isEmpty())
+        {
+            logger.error("[{}]", "parameter is null");
+            return 0;
+        }
+
+        SimpleDateFormat dateFormat = dateString.length() == 7 ? new SimpleDateFormat("yyyy.MM") : new SimpleDateFormat("yyyy.MM.dd");
         dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("KST"));
         long result = 0;
 

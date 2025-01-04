@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'org.seleniumhq.selenium:selenium-java:4.27.0'
     implementation 'com.google.code.gson:gson:2.11.0'
-
+    implementation 'org.json:json:20241224'
 
     // reflections
     implementation 'org.reflections:reflections:0.9.12'
