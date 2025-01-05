@@ -62,6 +62,7 @@ public class KOFIC {
 
     public void requestAPI() {
 
+        logger.info("KOFIC CRAWLING START");
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
@@ -109,6 +110,8 @@ public class KOFIC {
         {
             logger.error("[{}]", e.getMessage());
         }
+
+        logger.info("KOFIC CRAWLING END");
     }
 
     private static JSONObject getJsonObject(URL requestURL) throws IOException {
@@ -152,12 +155,12 @@ public class KOFIC {
 
             JSONObject movieJson = movieJsonArray.getJSONObject(i);
 
-            if (koficRepository.findByKOFICCode(movieJson.optString("movieCd")) != null)
+            if (koficRepository.findByKOFICCode(movieJson.optString("movieCd")) == null)
             {
                 logger.info("[{}] NEW_INDEX : ", koficRepository.findByKOFICCode(movieJson.optString("movieCd")));
-                continue;
+                flag = true;
             }
-            else flag = true;
+            else continue;
 
             KOFIC_INDEX movie = new KOFIC_INDEX();
             movie.setMovieNm(movieJson.optString("movieNm"));
