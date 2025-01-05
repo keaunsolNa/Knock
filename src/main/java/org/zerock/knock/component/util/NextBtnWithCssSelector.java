@@ -7,13 +7,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zerock.knock.service.crawling.CrawlingInterface;
 
 import java.time.Duration;
 
 public class NextBtnWithCssSelector {
 
-    private static final Logger logger = LoggerFactory.getLogger(CrawlingInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(NextBtnWithCssSelector.class);
 
     public static void nextBtn(WebDriver driver, String cssSelector)
     {

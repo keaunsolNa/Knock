@@ -7,7 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -36,7 +35,6 @@ public class KOFIC {
 
     private static final Logger logger = LoggerFactory.getLogger(KOFIC.class);
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
-    private final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyyMMdd");
 
     public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository) {
         REQUEST_URL = requestUrl;

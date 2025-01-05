@@ -10,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.WebDriverUtil;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -51,27 +48,6 @@ public interface CrawlingInterface {
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
         }
 
-        public void preparePage(String className, String methodName, String target)
-        {
-
-            try
-            {
-
-                Class<?> classes = Class.forName(className);
-                Constructor<?> constructors = classes.getDeclaredConstructor();
-
-                Object object = constructors.newInstance();
-
-                Method methods = classes.getMethod(methodName, WebDriver.class, String.class);
-                methods.invoke(object, driver, target);
-
-            }
-            catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
-                   InstantiationException | IllegalAccessException e)
-            {
-                logger.debug(e.getMessage());
-            }
-        }
         @Override
         public void run() {
 

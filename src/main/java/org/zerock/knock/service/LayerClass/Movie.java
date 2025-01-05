@@ -29,6 +29,10 @@ public class Movie implements MovieInterface {
     public Iterable<MOVIE_INDEX> createMovie(Set<MOVIE_DTO> movies) {
 
         logger.info("[{}]", "CREATE_MOVIE START");
+
+        // DELETE ALL DATA BEFORE CREATE
+        movieMaker.deleteMovie();
+
         return movieMaker.CreateMovie(translation.dtoToIndex(movies));
     }
 
