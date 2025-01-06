@@ -23,6 +23,7 @@ public interface MovieInterface {
         private final MovieRepository movieRepository;
         private final ElasticsearchOperations elasticsearchOperations;
 
+        // Constructor
         public MovieMaker(MovieRepository movieRepository, ElasticsearchOperations elasticsearchOperations) {
             this.movieRepository = movieRepository;
             this.elasticsearchOperations = elasticsearchOperations;
@@ -35,6 +36,8 @@ public interface MovieInterface {
         public Iterable<MOVIE_INDEX> readAllMovie() {
             return movieRepository.findAll();
         }
+
+        public MOVIE_INDEX readMovieById(String id) { return movieRepository.findById(id).orElseThrow(); }
 
         public Iterable<MOVIE_INDEX> readMovie(String openingTime, String categoryId) {
 

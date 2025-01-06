@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.zerock.knock.dto.document.user.USER_INDEX;
 
 import java.util.Objects;
@@ -20,8 +22,10 @@ public class CATEGORY_LEVEL_TWO_INDEX {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
+    @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
     private String nm;
 
+    @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
     private String parentNm;
 
     @ManyToMany

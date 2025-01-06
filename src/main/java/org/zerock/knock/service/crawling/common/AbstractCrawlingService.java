@@ -1,12 +1,12 @@
 package org.zerock.knock.service.crawling.common;
 
-import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
+import org.zerock.knock.service.LayerClass.Movie;
 import org.zerock.knock.service.crawling.CrawlingInterface;
 
 import java.util.HashSet;
@@ -15,12 +15,16 @@ import java.util.Set;
 public abstract class AbstractCrawlingService implements CrawlingInterface {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Movie movieService;
+
+    protected AbstractCrawlingService(Movie movieService) {
+        this.movieService = movieService;
+    }
 
     protected abstract String getUrlPath();
     protected abstract String getCssQuery();
+    protected abstract String[] prepareCss();
     protected abstract void processElement(Element element, Set<MOVIE_DTO> dtos);
-    protected abstract void preparePage(WebDriver driver);
-
 
     @Override
     public void addNewBrands() {
@@ -28,10 +32,7 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
 
         ElementExtractor extractor = new ElementExtractor(getUrlPath(), getCssQuery());
         extractor.setUpDriver();
-
-        // 하위 클래스에서 preparePage 정의
-        preparePage(extractor.getDriver());
-
+        extractor.preparePage(extractor.getDriver(), prepareCss());
         extractor.run();
 
         Elements elements = extractor.getElements();
@@ -45,6 +46,7 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
     }
 
     protected void saveData(Set<MOVIE_DTO> dtos) {
-        // 데이터를 저장하는 로직. 필요시 확장 가능
+
+        movieService.createMovie(dtos);
     }
 }

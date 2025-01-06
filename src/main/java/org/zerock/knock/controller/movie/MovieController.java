@@ -1,28 +1,28 @@
 package org.zerock.knock.controller.movie;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.service.LayerClass.Movie;
 
 @RestController
 @RequestMapping("/api/movie")
 public class MovieController {
 
-    private final Movie movie;
+    private final Movie movieService;
 
-    public MovieController(Movie movie) {
-        this.movie = movie;
+    public MovieController(Movie movieService) {
+        this.movieService = movieService;
     }
 
     @GetMapping("/")
-    public Iterable<Movie> getMovies() {
-
-        return null;
+    public ResponseEntity<Iterable<MOVIE_INDEX>> getMovies() {
+        return ResponseEntity.ok(movieService.readMovies());
     }
 
     @GetMapping("/getDetail")
-    public Movie getDetail(@RequestParam String movieId) {
-
-        return null;
+    public ResponseEntity<MOVIE_INDEX> getDetail(@RequestParam String movieId) {
+        return ResponseEntity.ok(movieService.readMoviesDetail(movieId));
     }
 
     @GetMapping("/recommend")

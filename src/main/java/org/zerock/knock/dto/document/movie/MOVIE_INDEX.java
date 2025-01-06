@@ -15,6 +15,7 @@ import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.zerock.knock.dto.document.user.USER_INDEX;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @Getter
@@ -27,6 +28,7 @@ public class MOVIE_INDEX {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String movieId;
 
+    @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
     private String movieNm;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
@@ -34,7 +36,7 @@ public class MOVIE_INDEX {
 
     private String KOFICCode;
 
-    private Iterable<String> reservationLink;
+    private String[] reservationLink;
 
     private String posterBase64;
 
@@ -65,6 +67,6 @@ public class MOVIE_INDEX {
 
     @Override
     public int hashCode() {
-        return Objects.hash(movieId, movieNm, openingTime, KOFICCode, reservationLink, posterBase64, director, actors, categoryLevelOne, categoryLevelTwo, runningTime, plot, favorites);
+        return Objects.hash(movieId, movieNm, openingTime, KOFICCode, Arrays.hashCode(reservationLink), posterBase64, director, actors, categoryLevelOne, categoryLevelTwo, runningTime, plot, favorites);
     }
 }

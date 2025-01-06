@@ -2,8 +2,6 @@ package org.zerock.knock.service.crawling.movie;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.WebDriver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertImage;
@@ -12,15 +10,12 @@ import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
 import org.zerock.knock.service.crawling.common.AbstractCrawlingService;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
 
 @Service
 public class MegaBox extends AbstractCrawlingService {
 
-    private final Movie movieService;
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
     private final ConvertImage convertImage = new ConvertImage();
 
@@ -30,9 +25,8 @@ public class MegaBox extends AbstractCrawlingService {
     @Value("${api.megabox.cssquery}")
     private String cssQuery;
 
-    @Autowired
-    public MegaBox(Movie movieService) {
-        this.movieService = movieService;
+    protected MegaBox(Movie movieService) {
+        super(movieService);
     }
 
     @Override
@@ -46,21 +40,13 @@ public class MegaBox extends AbstractCrawlingService {
     }
 
     @Override
-    protected void preparePage(WebDriver driver) {
-
-        try {
-
-            Class<?> clazz = Class.forName("org.zerock.knock.component.util.NextBtnWithCssSelector");
-            Constructor<?> constructor = clazz.getDeclaredConstructor();
-            Object instance = constructor.newInstance();
-
-            Method method = clazz.getMethod("nextBtn", WebDriver.class, String.class);
-            method.invoke(instance, driver, ".btn-more");
-
-        } catch (Exception e) {
-            logger.error("Error in preparePage: {}", e.getMessage(), e);
-        }
+    protected String[] prepareCss() {
+        String[] cssQuery = new String[2];
+        cssQuery[0] = "nextBtn";
+        cssQuery[1] = ".btn-more";
+        return cssQuery;
     }
+
 
     @Override
     protected void processElement(Element element, Set<MOVIE_DTO> dtos) {
@@ -94,6 +80,22 @@ public class MegaBox extends AbstractCrawlingService {
         Elements codeElement = element.select("div.case a.bokdBtn[data-no]");
         if(!codeElement.isEmpty()) {
             String code = Objects.requireNonNull(codeElement.first()).text();
+
+            logger.info(code);
+            if (dto.getReservationLink() == null)
+            {
+                String[] reservationLink = new String[3];
+                reservationLink[0] = "https://www.megabox.co.kr/movie-detail?rpstMovieNo=" + code;
+                dto.setReservationLink(reservationLink);
+            }
+            else
+            {
+                String[] reservationLink = dto.getReservationLink();
+                reservationLink[0] =  "https://www.megabox.co.kr/movie-detail?rpstMovieNo=" + code;
+                dto.setReservationLink(reservationLink);
+            }
+
+
         }
         dtos.add(dto);
 
@@ -103,6 +105,5 @@ public class MegaBox extends AbstractCrawlingService {
     @Override
     protected void saveData(Set<MOVIE_DTO> dtos) {
 
-        movieService.createMovie(dtos);
     }
 }

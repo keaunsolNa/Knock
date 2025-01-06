@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.WebDriverUtil;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -46,6 +48,23 @@ public interface CrawlingInterface {
 
             driver.navigate().to(urlPath);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+        }
+
+        public void preparePage(WebDriver driver, String[] names)
+        {
+            try {
+
+                Class<?> clazz = Class.forName("org.zerock.knock.component.util.NextBtnWithCssSelector");
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                Object instance = constructor.newInstance();
+
+                Method method = clazz.getMethod(names[0], WebDriver.class, String.class);
+
+                method.invoke(instance, driver, names[1]);
+
+            } catch (Exception e) {
+                logger.error("Error in preparePage: {}", e.getMessage(), e);
+            }
         }
 
         @Override

@@ -26,15 +26,19 @@ import org.zerock.knock.repository.movie.KOFICRepository;
 @Service
 public class KOFIC {
 
+    // Constructor Field
     private final String REQUEST_URL;
     private final String AUTH_KEY;
-    private static boolean flag = false;
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final CategoryLevelTwoRepository categoryLevelTwoRepository;
     private final KOFICRepository koficRepository;
 
+    // Global Field
+    private static boolean flag = false;
     private static final Logger logger = LoggerFactory.getLogger(KOFIC.class);
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
+    private CATEGORY_LEVEL_ONE_INDEX movieCategoryIndex;
+    private Map<String, CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwoList;
 
     public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository) {
         REQUEST_URL = requestUrl;
@@ -60,9 +64,18 @@ public class KOFIC {
 
     public void requestAPI() {
 
-        logger.info("KOFIC CRAWLING START");
+        logger.info("{} START", getClass().getSimpleName());
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
+
+        movieCategoryIndex = categoryLevelOneRepository.findByNm("Movie");
+        Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = categoryLevelTwoRepository.findAllByParentNm("Movie");
+        categoryLevelTwoList = new HashMap<>();
+
+        for (CATEGORY_LEVEL_TWO_INDEX category : movieSubCategoryIndex)
+        {
+            categoryLevelTwoList.put(category.getNm(), category);
+        }
 
         // 변수 설정
         //   - 요청(Request) 인터페이스 Map
@@ -106,10 +119,10 @@ public class KOFIC {
         }
         catch (IOException e)
         {
-            logger.error("[{}]", e.getMessage());
+            logger.info("{} ERROR", e.getMessage());
         }
 
-        logger.info("KOFIC CRAWLING END");
+        logger.info("{} END", getClass().getSimpleName());
     }
 
     private static JSONObject getJsonObject(URL requestURL) throws IOException {
@@ -145,8 +158,6 @@ public class KOFIC {
     private List<KOFIC_INDEX> parseMovieList(JSONArray movieJsonArray) {
 
         List<KOFIC_INDEX> movieList = new ArrayList<>();
-        CATEGORY_LEVEL_ONE_INDEX movieCategoryIndex = categoryLevelOneRepository.findByNm("Movie");
-        Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = categoryLevelTwoRepository.findAllByParentNm("Movie");
 
         for (int i = 0; i < movieJsonArray.length(); i++)
         {
@@ -155,7 +166,7 @@ public class KOFIC {
 
             if (koficRepository.findByKOFICCode(movieJson.optString("movieCd")) == null)
             {
-                logger.info("[{}] NEW_INDEX : ", koficRepository.findByKOFICCode(movieJson.optString("movieCd")));
+//                logger.info("{} NEW_INDEX", movieJson.optString("movieCd"));
                 flag = true;
             }
             else continue;
@@ -168,24 +179,62 @@ public class KOFIC {
             {
                 movie.setOpeningTime(SDCLTS.Converter(movieJson.optString("openDt")));
             }
-            movie.setDirector(movieJson.optString("directors"));
-            movie.setCompanyNm(movieJson.optString("companyNm"));
-            movie.setCategoryLevelOne(movieCategoryIndex);
 
-            Set<CATEGORY_LEVEL_TWO_INDEX> set = new HashSet<>();
-            for (CATEGORY_LEVEL_TWO_INDEX category : movieSubCategoryIndex)
+            if (!movieJson.getJSONArray("directors").isEmpty())
             {
-                if (null != movieJson.optString("repGenreNm") && movieJson.optString("repGenreNm").equals(category.getNm()))
+                JSONArray array = movieJson.getJSONArray("directors");
+                String[] directors = new String[array.length()];
+
+                for (int index = 0; index < array.length(); index++)
                 {
-                    set.add(category);
-                    movie.setCategoryLevelTwo(set);
-                    break;
+                    JSONObject object = array.getJSONObject(index);
+                    directors[index] = object.optString("peopleNm");
                 }
+
+                movie.setDirector(directors);
             }
 
-            if (set.isEmpty())
+            if (!movieJson.getJSONArray("companys").isEmpty())
             {
-                set.add(categoryLevelTwoRepository.findByNm("기타"));
+                JSONArray array = movieJson.getJSONArray("companys");
+                String[] directors = new String[array.length()];
+
+                for (int index = 0; index < array.length(); index++)
+                {
+                    JSONObject object = array.getJSONObject(index);
+                    directors[index] = object.optString("companyNm");
+                }
+
+                movie.setDirector(directors);
+            }
+
+            movie.setCategoryLevelOne(movieCategoryIndex);
+
+            if (!movieJson.optString("genreAlt").isEmpty())
+            {
+                Set<CATEGORY_LEVEL_TWO_INDEX> set = new HashSet<>();
+                String[] genres = movieJson.optString("genreAlt").split(",");
+
+                for (String genre : genres)
+                {
+                    if (categoryLevelTwoList.containsKey(genre))
+                    {
+                        set.add(categoryLevelTwoList.get(genre));
+                    }
+                    else
+                    {
+                        CATEGORY_LEVEL_TWO_INDEX categoryLevelTwoIndex = new CATEGORY_LEVEL_TWO_INDEX();
+                        categoryLevelTwoIndex.setNm(genre);
+                        categoryLevelTwoIndex.setParentNm("Movie");
+                        categoryLevelTwoRepository.save(categoryLevelTwoIndex);
+                        categoryLevelTwoList.put(genre, categoryLevelTwoIndex);
+
+                        logger.info("CATEGORY");
+                        logger.info("{} CATEGORY INSERT", genre);
+                        set.add(categoryLevelTwoIndex);
+                    }
+                }
+
                 movie.setCategoryLevelTwo(set);
             }
 

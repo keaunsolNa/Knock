@@ -27,16 +27,18 @@ public class KOFIC_INDEX {
 
     private String KOFICCode;
 
+    @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
     private String movieNm;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private Long prdtYear;
+
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private long openingTime;
 
-    private String director;
+    private String[] director;
 
-    private String companyNm;
+    private String[] companyNm;
 
     private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
 

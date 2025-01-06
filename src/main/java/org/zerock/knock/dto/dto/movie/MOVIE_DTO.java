@@ -12,7 +12,7 @@ public class MOVIE_DTO {
     private String movieNm;
     private long openingTime;
     private String KOFICCode;
-    private Iterable<String> reservationLink;
+    private String[] reservationLink;
     private String posterBase64;
     private String director;
     private Iterable<String> actors;

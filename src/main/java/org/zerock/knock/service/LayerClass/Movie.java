@@ -28,12 +28,38 @@ public class Movie implements MovieInterface {
 
     public Iterable<MOVIE_INDEX> createMovie(Set<MOVIE_DTO> movies) {
 
-        logger.info("[{}]", "CREATE_MOVIE START");
+        logger.info("{} START", getClass().getSimpleName());
 
         // DELETE ALL DATA BEFORE CREATE
         movieMaker.deleteMovie();
 
-        return movieMaker.CreateMovie(translation.dtoToIndex(movies));
+        Iterable<MOVIE_INDEX> movie = movieMaker.CreateMovie(translation.dtoToIndex(movies));
+
+        logger.info("{} END", getClass().getSimpleName());
+
+        return movie;
+    }
+
+    public Iterable<MOVIE_INDEX> readMovies() {
+
+        logger.info("{} START", getClass().getSimpleName());
+
+        Iterable<MOVIE_INDEX> movies = movieMaker.readAllMovie();
+
+        logger.info("{} END", getClass().getSimpleName());
+
+        return movies;
+    }
+
+    public MOVIE_INDEX readMoviesDetail(String id) {
+
+        logger.info("{} START", getClass().getSimpleName());
+
+        MOVIE_INDEX movies = movieMaker.readMovieById(id);
+
+        logger.info("{} END", getClass().getSimpleName());
+
+        return movies;
     }
 
 }
