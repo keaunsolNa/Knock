@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.zerock.knock.service.LayerClass.CategoryInitializer;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
@@ -32,6 +33,7 @@ public class KOFIC {
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final CategoryLevelTwoRepository categoryLevelTwoRepository;
     private final KOFICRepository koficRepository;
+    private final CategoryInitializer categoryInitializer;
 
     // Global Field
     private static boolean flag = false;
@@ -40,12 +42,13 @@ public class KOFIC {
     private CATEGORY_LEVEL_ONE_INDEX movieCategoryIndex;
     private Map<String, CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwoList;
 
-    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository) {
+    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository, CategoryInitializer categoryInitializer) {
         REQUEST_URL = requestUrl;
         AUTH_KEY = authKey;
         this.categoryLevelOneRepository = categoryLevelOneRepository;
         this.categoryLevelTwoRepository = categoryLevelTwoRepository;
         this.koficRepository = koficRepository;
+        this.categoryInitializer = categoryInitializer;
     }
 
     public String makeQueryString(Map<String, String> paramMap) {
@@ -68,7 +71,7 @@ public class KOFIC {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
-        movieCategoryIndex = categoryLevelOneRepository.findByNm("Movie");
+        movieCategoryIndex = categoryLevelOneRepository.findByNm("Movie").orElse(new CATEGORY_LEVEL_ONE_INDEX());
         Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = categoryLevelTwoRepository.findAllByParentNm("Movie");
         categoryLevelTwoList = new HashMap<>();
 
@@ -229,8 +232,7 @@ public class KOFIC {
                         categoryLevelTwoRepository.save(categoryLevelTwoIndex);
                         categoryLevelTwoList.put(genre, categoryLevelTwoIndex);
 
-                        logger.info("CATEGORY");
-                        logger.info("{} CATEGORY INSERT", genre);
+                        categoryInitializer.insertCategoryLevelOne(new String[] {"Movie"} );
                         set.add(categoryLevelTwoIndex);
                     }
                 }
