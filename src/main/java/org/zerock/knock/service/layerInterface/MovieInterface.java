@@ -2,12 +2,13 @@ package org.zerock.knock.service.layerInterface;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.repository.movie.MovieRepository;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -22,7 +23,6 @@ public interface MovieInterface {
 
         private final MovieRepository movieRepository;
         private final ElasticsearchOperations elasticsearchOperations;
-
         // Constructor
         public MovieMaker(MovieRepository movieRepository, ElasticsearchOperations elasticsearchOperations) {
             this.movieRepository = movieRepository;
@@ -39,13 +39,28 @@ public interface MovieInterface {
 
         public MOVIE_INDEX readMovieById(String id) { return movieRepository.findById(id).orElseThrow(); }
 
+        public SearchHits<KOFIC_INDEX> searchKOFICByMovieNm(String movieNm)
+        {
+
+            NativeQuery query = NativeQuery.builder()
+                    .withQuery(q -> q.match(m -> m
+                            .field("movieNm")
+                            .query(movieNm)
+                            .fuzziness("AUTO")
+                    ))
+                    .withSort(Sort.by(Sort.Order.desc("_score")))
+                    .withMaxResults(100)
+                    .build();
+
+            return elasticsearchOperations.search(query, KOFIC_INDEX.class);
+        }
         public Iterable<MOVIE_INDEX> readMovie(String openingTime, String categoryId) {
 
             int year = Integer.parseInt(openingTime.substring(0, 4));
             int month = Integer.parseInt(openingTime.substring(4));
             DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
 
-            org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder builder = NativeQuery.builder();
+            NativeQueryBuilder builder = NativeQuery.builder();
             builder.withQuery(q -> q.bool(bool ->
                     bool.must(term -> term.match(wild -> wild.field("categoryLevelTwoId").query(categoryId)))));
             builder.withQuery(q -> q.bool(bool ->

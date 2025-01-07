@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @EnableScheduling
-@EnableAsync
+@EnableAsync(proxyTargetClass = true)
 @SpringBootApplication
 public class KnockApplication {
 

@@ -20,7 +20,6 @@ import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 @Document(indexName = "kofic-index")
 public class KOFIC_INDEX {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String movieId;
@@ -36,7 +35,9 @@ public class KOFIC_INDEX {
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private long openingTime;
 
-    private String[] director;
+    private String[] directors;
+
+    private String[] actors;
 
     private String[] companyNm;
 

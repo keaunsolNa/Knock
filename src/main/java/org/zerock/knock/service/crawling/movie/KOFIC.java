@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.service.LayerClass.CategoryInitializer;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
@@ -29,6 +30,7 @@ public class KOFIC {
 
     // Constructor Field
     private final String REQUEST_URL;
+    private final String REQUEST_URL_SUB;
     private final String AUTH_KEY;
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final CategoryLevelTwoRepository categoryLevelTwoRepository;
@@ -42,8 +44,9 @@ public class KOFIC {
     private CATEGORY_LEVEL_ONE_INDEX movieCategoryIndex;
     private Map<String, CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwoList;
 
-    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository, CategoryInitializer categoryInitializer) {
+    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.urlsub}") String requestUrlSub, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository, CategoryInitializer categoryInitializer) {
         REQUEST_URL = requestUrl;
+        REQUEST_URL_SUB = requestUrlSub;
         AUTH_KEY = authKey;
         this.categoryLevelOneRepository = categoryLevelOneRepository;
         this.categoryLevelTwoRepository = categoryLevelTwoRepository;
@@ -65,9 +68,11 @@ public class KOFIC {
         return sb.toString();
     }
 
+    @Async
     public void requestAPI() {
 
         logger.info("{} START", getClass().getSimpleName());
+        logger.info("Running in thread: {}", Thread.currentThread().getName());
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
@@ -96,7 +101,7 @@ public class KOFIC {
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
                 logger.info("[{}]", requestURL);
-                JSONObject boxOfficeResult = getJsonObject(requestURL);
+                JSONObject boxOfficeResult = getJsonObject(requestURL, "movieListResult");
 
                 if (null == boxOfficeResult)
                 {
@@ -110,9 +115,7 @@ public class KOFIC {
                 JSONArray dailyBoxOfficeList = boxOfficeResult.getJSONArray("movieList");
 
                 flag = false;
-                List<KOFIC_INDEX> movieList = parseMovieList(dailyBoxOfficeList);
-
-                koficRepository.saveAll(movieList);
+                parseMovieList(dailyBoxOfficeList);
 
                 if (!flag) break;
 
@@ -128,7 +131,7 @@ public class KOFIC {
         logger.info("{} END", getClass().getSimpleName());
     }
 
-    private static JSONObject getJsonObject(URL requestURL) throws IOException {
+    private static JSONObject getJsonObject(URL requestURL, String resultTarget) throws IOException {
 
         HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
 
@@ -146,7 +149,7 @@ public class KOFIC {
         JSONObject responseBody = null;
         try
         {
-            responseBody = new JSONObject(response.toString()).getJSONObject("movieListResult");
+            responseBody = new JSONObject(response.toString()).getJSONObject(resultTarget);
         }
         catch (Exception e)
         {
@@ -157,8 +160,11 @@ public class KOFIC {
         return responseBody;
     }
 
+    @Async
     // Parse the list of movies from the JSON response
-    private List<KOFIC_INDEX> parseMovieList(JSONArray movieJsonArray) {
+    protected void parseMovieList(JSONArray movieJsonArray) {
+
+        logger.info("Running in thread: {}", Thread.currentThread().getName());
 
         List<KOFIC_INDEX> movieList = new ArrayList<>();
 
@@ -194,7 +200,7 @@ public class KOFIC {
                     directors[index] = object.optString("peopleNm");
                 }
 
-                movie.setDirector(directors);
+                movie.setDirectors(directors);
             }
 
             if (!movieJson.getJSONArray("companys").isEmpty())
@@ -208,7 +214,7 @@ public class KOFIC {
                     directors[index] = object.optString("companyNm");
                 }
 
-                movie.setDirector(directors);
+                movie.setDirectors(directors);
             }
 
             movie.setCategoryLevelOne(movieCategoryIndex);
@@ -245,10 +251,38 @@ public class KOFIC {
                 movie.setPrdtYear(SDCLTS.Converter(movieJson.optString("prdtYear")));
             }
 
+            getActors(movie, movieJson.optString("movieCd"));
+
             movieList.add(movie);
         }
 
-        return movieList;
+        koficRepository.saveAll(movieList);
+    }
+
+    @Async
+    protected void getActors (KOFIC_INDEX movieIndex,  String movieCd) {
+
+        logger.info("Running in thread: {}", Thread.currentThread().getName());
+
+        String[] returnValue;
+        try {
+
+            URL requestURL = URI.create(REQUEST_URL_SUB + "?key=" + AUTH_KEY + "&movieCd=" + movieCd).toURL();
+            JSONObject boxOfficeResult = getJsonObject(requestURL, "movieInfoResult").getJSONObject("movieInfo");
+            JSONArray array = boxOfficeResult.getJSONArray("actors");
+
+            returnValue = new String[array.length()];
+
+            for (int i = 0; i < array.length(); i++)
+            {
+                JSONObject actor = array.getJSONObject(i);
+                returnValue[i] = actor.optString("peopleNm") + "(" + actor.optString("cast") + ")";
+            }
+
+            movieIndex.setActors(returnValue);
+        }
+        catch (IOException e) { logger.debug(e.getMessage()); }
+
     }
 }
  

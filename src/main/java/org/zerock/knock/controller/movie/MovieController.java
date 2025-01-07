@@ -2,6 +2,7 @@ package org.zerock.knock.controller.movie;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.service.LayerClass.Movie;
 
@@ -26,9 +27,9 @@ public class MovieController {
     }
 
     @GetMapping("/recommend")
-    public Movie getRecommend(@RequestParam String movieId) {
+    public ResponseEntity<Iterable<KOFIC_INDEX>> getRecommend(@RequestParam String movieNm) {
 
-        return null;
+        return ResponseEntity.ok(movieService.test(movieNm));
     }
 
     @PostMapping("/sub")

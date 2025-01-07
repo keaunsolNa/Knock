@@ -15,7 +15,7 @@ import java.util.Set;
 public abstract class AbstractCrawlingService implements CrawlingInterface {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private final Movie movieService;
+    protected final Movie movieService;
 
     protected AbstractCrawlingService(Movie movieService) {
         this.movieService = movieService;
@@ -47,6 +47,7 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
 
     protected void saveData(Set<MOVIE_DTO> dtos) {
 
+        logger.info("SAVE DATA--------");
         movieService.createMovie(dtos);
     }
 }

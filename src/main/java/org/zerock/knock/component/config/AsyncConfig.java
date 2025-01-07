@@ -16,8 +16,8 @@ public class AsyncConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
         int cpuCore = Runtime.getRuntime().availableProcessors();
-        executor.setCorePoolSize(cpuCore / 2); // 코어 스레드 풀 크기 설정
-        executor.setMaxPoolSize(cpuCore); // 최대 스레드 풀 크기 설정
+        executor.setCorePoolSize(cpuCore * 2); // 코어 스레드 풀 크기 설정
+        executor.setMaxPoolSize(cpuCore * 2); // 최대 스레드 풀 크기 설정
         executor.setQueueCapacity(500); // 작업 큐 용량 설정
         executor.setThreadNamePrefix("AsyncThread-"); // 스레드 이름 접두사 설정
 

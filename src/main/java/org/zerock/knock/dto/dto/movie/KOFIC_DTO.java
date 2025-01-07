@@ -17,9 +17,11 @@ public class KOFIC_DTO {
 
     private long openingTime;
 
-    private String director;
+    private String[] directors;
 
-    private String companyNm;
+    private String[] actors;
+
+    private String[] companyNm;
 
     private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
 

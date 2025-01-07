@@ -3,6 +3,7 @@ package org.zerock.knock.service.crawling.movie;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertImage;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
@@ -52,6 +53,7 @@ public class MegaBox extends AbstractCrawlingService {
 
 
     @Override
+    @Async
     protected void processElement(Element element, Set<MOVIE_DTO> dtos) {
         MOVIE_DTO dto = new MOVIE_DTO();
 
@@ -84,7 +86,6 @@ public class MegaBox extends AbstractCrawlingService {
         if(!codeElement.isEmpty()) {
             String code = Objects.requireNonNull(codeElement.first()).text();
 
-            logger.info(code);
             if (dto.getReservationLink() == null)
             {
                 String[] reservationLink = new String[3];
@@ -101,12 +102,6 @@ public class MegaBox extends AbstractCrawlingService {
 
         }
         dtos.add(dto);
-
         logger.info("{} END", getClass().getSimpleName());
-    }
-
-    @Override
-    protected void saveData(Set<MOVIE_DTO> dtos) {
-
     }
 }
