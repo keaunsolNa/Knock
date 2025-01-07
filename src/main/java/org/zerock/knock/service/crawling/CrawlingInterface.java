@@ -8,7 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.component.util.WebDriverUtil;
+import org.zerock.knock.component.config.WebDriverUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

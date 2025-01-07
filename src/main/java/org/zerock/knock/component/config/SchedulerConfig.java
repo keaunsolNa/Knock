@@ -10,6 +10,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.zerock.knock.service.crawling.movie.KOFIC;
 
+/**
+ * @author nks
+ * @apiNote Scheduler 로 제어되는 설정들
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -21,6 +25,10 @@ public class SchedulerConfig {
     @Value("${schedule.kofic.use}")
     private boolean useScheduleKOFIC;
 
+    /**
+     * 주기적으로 KOFIC 에서 영화 정보를 받아온다.
+     * @apiNote cronTab = 1시간에 1번, 정시
+     */
     @Async
     @Scheduled(cron = "${schedule.kofic.cron}")
     public void koficJob() {

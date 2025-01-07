@@ -1,4 +1,4 @@
-package org.zerock.knock.component.util;
+package org.zerock.knock.component.config;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -8,15 +8,23 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
+/**
+ * @author nks
+ * @apiNote WebDriver 설정을 제어하고 생성된 객체를 반환한다.
+ */
 @Configuration
 public class WebDriverUtil {
 
+    /**
+     * 이미지를 Base64로 변환하는 유틸리티 메서드.
+     * @return 생성된 WebDriver 객체
+     */
     @Bean
     public static WebDriver getChromeDriver() {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
-/*        options.addArguments("--disable-gpu");*/
+        options.addArguments("--disable-gpu");
         options.addArguments("--log-level=3");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--blink-settings=imagesEnabled=false");

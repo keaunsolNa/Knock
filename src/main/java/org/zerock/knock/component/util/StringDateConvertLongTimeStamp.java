@@ -8,11 +8,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * @author nks
+ * @apiNote 여러 종류의 String Type 문자열을 받아 Date Parsing 한 후, epochTime 반환
+ */
 @Component
 public class StringDateConvertLongTimeStamp {
 
     private static final Logger logger = LoggerFactory.getLogger(StringDateConvertLongTimeStamp.class);
 
+    /**
+     * @param dateString 변환할 String
+     * @return epochTime
+     */
     public long Converter(String dateString) {
 
         if (dateString == null || dateString.isEmpty())

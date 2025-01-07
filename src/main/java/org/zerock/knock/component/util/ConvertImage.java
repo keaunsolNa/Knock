@@ -9,6 +9,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Base64;
 
+/**
+ * @author nks
+ * @apiNote Image src 주소를 받아 Base64로 인코딩 하거나, Base64 문자열을 받아 image 반환.
+ */
 public class ConvertImage {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

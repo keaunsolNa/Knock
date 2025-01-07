@@ -4,6 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+/**
+ * @author nks
+ * @apiNote Async 설정
+ */
 @Configuration
 public class AsyncConfig {
 

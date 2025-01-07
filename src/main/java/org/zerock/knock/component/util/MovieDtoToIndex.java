@@ -7,9 +7,18 @@ import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author nks
+ * @apiNote MOVIE DTO <-> INDEX
+ */
 @Component
 public class MovieDtoToIndex {
 
+    /**
+     * MOVIE DTO -> INDEX
+     * @param dtos  변환할 MOVIE_DTO 객체
+     * @return SET<MOVIE_INDEX> 반환할 MOVIE_INDEX 객체
+     */
     public Set<MOVIE_INDEX> dtoToIndex(Set<MOVIE_DTO> dtos)
     {
 
