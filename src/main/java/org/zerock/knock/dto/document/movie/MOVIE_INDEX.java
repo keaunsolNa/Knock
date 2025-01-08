@@ -40,11 +40,11 @@ public class MOVIE_INDEX {
 
     private String posterBase64;
 
-    private String director;
+    private String[] directors;
 
-    private Iterable<String> actors;
+    private String[] actors;
 
-    private String companyNm;
+    private String[] companyNm;
 
     private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
 
@@ -67,6 +67,6 @@ public class MOVIE_INDEX {
 
     @Override
     public int hashCode() {
-        return Objects.hash(movieId, movieNm, openingTime, KOFICCode, Arrays.hashCode(reservationLink), posterBase64, director, actors, categoryLevelOne, categoryLevelTwo, runningTime, plot, favorites);
+        return Objects.hash(movieId, movieNm, openingTime, KOFICCode, Arrays.hashCode(reservationLink), posterBase64, Arrays.hashCode(directors), Arrays.hashCode(actors), Arrays.hashCode(companyNm), categoryLevelOne, categoryLevelTwo, runningTime, plot, favorites);
     }
 }

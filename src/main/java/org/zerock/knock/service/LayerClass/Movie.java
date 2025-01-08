@@ -3,7 +3,6 @@ package org.zerock.knock.service.LayerClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.MovieDtoToIndex;
@@ -13,9 +12,8 @@ import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.repository.movie.MovieRepository;
 import org.zerock.knock.service.layerInterface.MovieInterface;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class Movie implements MovieInterface {
@@ -38,7 +36,7 @@ public class Movie implements MovieInterface {
         // DELETE ALL DATA BEFORE CREATE
         movieMaker.deleteMovie();
 
-        Iterable<MOVIE_INDEX> movie = movieMaker.CreateMovie(translation.dtoToIndex(movies));
+        Iterable<MOVIE_INDEX> movie = movieMaker.CreateMovie(translation.MovieDtoToIndex(movies));
 
         logger.info("{} END", getClass().getSimpleName());
 
@@ -67,14 +65,14 @@ public class Movie implements MovieInterface {
         return movies;
     }
 
-    public Iterable<KOFIC_INDEX> test (String nm)
+    public KOFIC_INDEX similaritySearch (String nm)
     {
-        logger.info("[{}]", nm);
+        logger.info("{} START", getClass().getSimpleName());
+
         SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNm(nm);
 
-        logger.info("TEST");
-        List<KOFIC_INDEX> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
-        logger.info("[{}]", list);
-        return list;
+        logger.info("{} END", getClass().getSimpleName());
+
+        return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();
     }
 }

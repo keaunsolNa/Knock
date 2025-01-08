@@ -29,7 +29,7 @@ public class MovieController {
     @GetMapping("/recommend")
     public ResponseEntity<Iterable<KOFIC_INDEX>> getRecommend(@RequestParam String movieNm) {
 
-        return ResponseEntity.ok(movieService.test(movieNm));
+        return null;
     }
 
     @PostMapping("/sub")

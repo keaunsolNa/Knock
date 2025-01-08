@@ -14,8 +14,9 @@ public class MOVIE_DTO {
     private String KOFICCode;
     private String[] reservationLink;
     private String posterBase64;
-    private String director;
-    private Iterable<String> actors;
+    private String[] directors;
+    private String[] actors;
+    private String[] companyNm;
     private CATEGORY_LEVEL_ONE_DTO categoryLevelOne;
     private Iterable<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
     private long runningTime;

@@ -8,7 +8,7 @@ public class CATEGORY_LEVEL_TWO_DTO {
 
     private String id;
     private String nm;
-    private CATEGORY_LEVEL_ONE_DTO parentCategory;
+    private String parentNm;
     private Iterable<USER_DTO> favoriteUsers;
 
 }

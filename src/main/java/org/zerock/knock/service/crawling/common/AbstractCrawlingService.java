@@ -50,4 +50,5 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
         logger.info("SAVE DATA--------");
         movieService.createMovie(dtos);
     }
+
 }

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertImage;
+import org.zerock.knock.component.util.MovieDtoToIndex;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
+import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
 import org.zerock.knock.service.crawling.common.AbstractCrawlingService;
@@ -22,15 +24,16 @@ public class MegaBox extends AbstractCrawlingService {
 
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
     private final ConvertImage convertImage = new ConvertImage();
-
+    private final MovieDtoToIndex movieDtoToIndex;
     @Value("${api.megabox.url}")
     private String urlPath;
 
     @Value("${api.megabox.cssquery}")
     private String cssQuery;
 
-    protected MegaBox(Movie movieService) {
+    protected MegaBox(Movie movieService, MovieDtoToIndex movieDtoToIndex) {
         super(movieService);
+        this.movieDtoToIndex = movieDtoToIndex;
     }
 
     @Override
@@ -60,28 +63,37 @@ public class MegaBox extends AbstractCrawlingService {
         logger.info("{} START", getClass().getSimpleName());
 
         Elements titleElements = element.select("div.tit-area > p.tit");
-        if (!titleElements.isEmpty()) {
-            dto.setMovieNm(Objects.requireNonNull(titleElements.first()).text());
+
+        String tile = Objects.requireNonNull(titleElements.first()).text();
+        KOFIC_INDEX kofic = movieService.similaritySearch(tile);
+
+        if (kofic != null)
+        {
+            dto = movieDtoToIndex.koficIndexToMovieIndex(kofic);
+
+            encodingBase64(element, dto);
+            setReservationLink(element, dto);
         }
 
-        Elements dateElements = element.select("div.rate-date > span.date");
-        if (!dateElements.isEmpty()) {
-            String date = Objects.requireNonNull(dateElements.first()).text().replace("개봉일 ", "");
-            dto.setOpeningTime(SDCLTS.Converter(date));
-        }
-
-        Elements imgElement = element.select("div.movie-list-info img");
-        if(!imgElement.isEmpty()) {
-
-            String srcPath = Objects.requireNonNull(imgElement.first()).attr("src");
-            try {
-                dto.setPosterBase64(convertImage.convertImageToBase64(srcPath));
-            } catch (Exception e) {
-                logger.info("[{}]", "Exception in ConvertImageTo Base64");
+        else
+        {
+            Elements dateElements = element.select("div.rate-date > span.date");
+            if (!dateElements.isEmpty()) {
+                String date = Objects.requireNonNull(dateElements.first()).text().replace("개봉일 ", "");
+                dto.setOpeningTime(SDCLTS.Converter(date));
             }
 
+            encodingBase64(element, dto);
+
+            setReservationLink(element, dto);
         }
 
+
+        dtos.add(dto);
+        logger.info("{} END", getClass().getSimpleName());
+    }
+
+    private void setReservationLink(Element element, MOVIE_DTO dto) {
         Elements codeElement = element.select("div.case a.bokdBtn[data-no]");
         if(!codeElement.isEmpty()) {
             String code = Objects.requireNonNull(codeElement.first()).text();
@@ -101,7 +113,19 @@ public class MegaBox extends AbstractCrawlingService {
 
 
         }
-        dtos.add(dto);
-        logger.info("{} END", getClass().getSimpleName());
+    }
+
+    private void encodingBase64(Element element, MOVIE_DTO dto) {
+        Elements imgElement = element.select("div.movie-list-info img");
+        if(!imgElement.isEmpty()) {
+
+            String srcPath = Objects.requireNonNull(imgElement.first()).attr("src");
+            try {
+                dto.setPosterBase64(convertImage.convertImageToBase64(srcPath));
+            } catch (Exception e) {
+                logger.info("[{}]", "Exception in ConvertImageTo Base64");
+            }
+
+        }
     }
 }
