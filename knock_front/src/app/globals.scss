@@ -1,0 +1,34 @@
+@forward '@/styles/base/font';
+@use '@/styles/mixin' as *;
+@use '@/styles/variables' as *;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  @include mobile {
+    font-size: 14px;
+  }
+  @include tablet {
+    font-size: 16px;
+  }
+  @include tablet2 {
+    font-size: 16px;
+  }
+  @include desktop {
+    font-size: 16px;
+  }
+}
+
+body {
+  font-family: 'Nanum Gothic', serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
