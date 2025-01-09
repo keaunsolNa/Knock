@@ -100,6 +100,7 @@ public class KOFIC {
                 // Request URL 연결 객체 생성
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
+                if (Integer.parseInt(paramMap.get("curPage")) > 3000) break;
                 logger.info("[{}]", requestURL);
                 JSONObject boxOfficeResult = getJsonObject(requestURL, "movieListResult");
 
@@ -163,8 +164,6 @@ public class KOFIC {
     @Async
     // Parse the list of movies from the JSON response
     protected void parseMovieList(JSONArray movieJsonArray) {
-
-        logger.info("Running in thread: {}", Thread.currentThread().getName());
 
         List<KOFIC_INDEX> movieList = new ArrayList<>();
 
@@ -261,8 +260,6 @@ public class KOFIC {
 
     @Async
     protected void getActors (KOFIC_INDEX movieIndex,  String movieCd) {
-
-        logger.info("Running in thread: {}", Thread.currentThread().getName());
 
         String[] returnValue;
         try {

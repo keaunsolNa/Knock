@@ -18,7 +18,7 @@ import java.util.Set;
  * @apiNote MOVIE DTO <-> INDEX
  */
 @Component
-public class MovieDtoToIndex {
+public class ConvertDTOAndIndex {
 
     /**
      * MOVIE DTO -> INDEX
@@ -26,7 +26,7 @@ public class MovieDtoToIndex {
      * @param dtos 변환할 MOVIE_DTO 객체
      * @return SET<MOVIE_INDEX> 반환할 MOVIE_INDEX 객체
      */
-    public Set<MOVIE_INDEX> MovieDtoToIndex(Set<MOVIE_DTO> dtos) {
+    public Set<MOVIE_INDEX> MovieDtoToIndex(Iterable<MOVIE_DTO> dtos) {
 
         Set<MOVIE_INDEX> result = new HashSet<>();
         for (MOVIE_DTO dto : dtos) {
@@ -40,13 +40,45 @@ public class MovieDtoToIndex {
             index.setPosterBase64(dto.getPosterBase64());
             index.setDirectors(dto.getDirectors());
             index.setActors(dto.getActors());
-            //        index.setCategoryLevelOne(dto.getCategoryLevelOne());
-            //        index.setCategoryLevelTwo(dto.getCategoryLevelTwo());
+            index.setCategoryLevelOne(CLTODTOToCLTOIndex(dto.getCategoryLevelOne()));
+            index.setCategoryLevelTwo(CLTDtoToCLTIndex(dto.getCategoryLevelTwo()));
             index.setRunningTime(dto.getRunningTime());
             index.setPlot(dto.getPlot());
-            //        index.setFavorites(dto.getFavorites());
+            index.setFavorites(userDtoToUserIndex(dto.getFavorites()));
 
             result.add(index);
+        }
+
+        return result;
+    }
+
+    /**
+     * MOVIE INDEX -> DTO
+     *
+     * @param indexs 변환할 MOVIE_DTO 객체
+     * @return SET<MOVIE_DTO> 반환할 MOVIE_INDEX 객체
+     */
+    public Set<MOVIE_DTO> MovieIndexToDTO(Iterable<MOVIE_INDEX> indexs) {
+
+        Set<MOVIE_DTO> result = new HashSet<>();
+        for (MOVIE_INDEX index : indexs) {
+
+            MOVIE_DTO dto = new MOVIE_DTO();
+            dto.setMovieId(index.getMovieId());
+            dto.setMovieNm(index.getMovieNm());
+            dto.setOpeningTime(index.getOpeningTime());
+            dto.setKOFICCode(index.getKOFICCode());
+            dto.setReservationLink(index.getReservationLink());
+            dto.setPosterBase64(index.getPosterBase64());
+            dto.setDirectors(index.getDirectors());
+            dto.setActors(index.getActors());
+            dto.setCategoryLevelOne(CLTOIndexToCLTODTO(index.getCategoryLevelOne()));
+            dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
+            dto.setRunningTime(index.getRunningTime());
+            dto.setPlot(index.getPlot());
+            dto.setFavorites(userIndexToUserDto(index.getFavorites()));
+
+            result.add(dto);
         }
 
         return result;
@@ -95,6 +127,24 @@ public class MovieDtoToIndex {
     }
 
     /**
+     * CATEGORY_LEVEL_ONE DTO -> CATEGORY_LEVEL_ONE INDEX
+     *
+     * @param dto 변환할 CATEGORY_LEVEL_ONE 객체
+     * @return CATEGORY_LEVEL_ONE 반환할 CATEGORY_LEVEL_ONE_DTO 객체
+     */
+    public CATEGORY_LEVEL_ONE_INDEX CLTODTOToCLTOIndex(CATEGORY_LEVEL_ONE_DTO dto) {
+
+        CATEGORY_LEVEL_ONE_INDEX index = new CATEGORY_LEVEL_ONE_INDEX();
+
+        index.setId(dto.getId());
+        index.setNm(dto.getNm());
+        index.setChildCategory(CLTDtoToCLTIndex(dto.getChildCategory()));
+        index.setFavoriteUsers(userDtoToUserIndex(dto.getFavoriteUsers()));
+
+        return index;
+    }
+
+    /**
      * CATEGORY_LEVEL_TWO INDEX -> CATEGORY_LEVEL_TWO DTO
      *
      * @param index 변환할 CATEGORY_LEVEL_TWO 객체
@@ -119,9 +169,33 @@ public class MovieDtoToIndex {
         return result;
     }
 
+    /**
+     * CATEGORY_LEVEL_TWO DTO -> CATEGORY_LEVEL_TWO INDEX
+     *
+     * @param dto 변환할 CATEGORY_LEVEL_TWO 객체
+     * @return CATEGORY_LEVEL_TWO 반환할 CATEGORY_LEVEL_TWO INDEX 객체
+     */
+    public Set<CATEGORY_LEVEL_TWO_INDEX> CLTDtoToCLTIndex(Iterable<CATEGORY_LEVEL_TWO_DTO> dto) {
+
+        Set<CATEGORY_LEVEL_TWO_INDEX> result = new HashSet<>();
+
+        for (CATEGORY_LEVEL_TWO_DTO innerDto : dto) {
+
+            CATEGORY_LEVEL_TWO_INDEX index = new CATEGORY_LEVEL_TWO_INDEX();
+            index.setId(innerDto.getId());
+            index.setNm(innerDto.getNm());
+            index.setFavoriteUsers(userDtoToUserIndex(innerDto.getFavoriteUsers()));
+            index.setParentNm(innerDto.getParentNm());
+
+            result.add(index);
+        }
+
+
+        return result;
+    }
 
     /**
-     * USER INDEX -> USER_DTO
+     * USER INDEX -> USER DTO
      *
      * @param index 변환할 USER_INDEX 객체
      * @return USER_DTO 반환할 USER_DTO 객체
@@ -133,6 +207,22 @@ public class MovieDtoToIndex {
         USER_DTO userDto = new USER_DTO();
 
         set.add(userDto);
+        return set;
+    }
+
+    /**
+     * USER DTO -> USER INDEX
+     *
+     * @param dto 변환할 USER_DTO 객체
+     * @return Set<USER_DTO> 반환할 USER_DTO 객체
+     */
+    public Set<USER_INDEX> userDtoToUserIndex (Iterable<USER_DTO> dto) {
+
+        Set<USER_INDEX> set = new HashSet<>();
+
+        USER_INDEX userIndex = new USER_INDEX();
+
+        set.add(userIndex);
         return set;
     }
 }

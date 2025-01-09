@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
+import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
 
 @RestController
@@ -17,7 +18,7 @@ public class MovieController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Iterable<MOVIE_INDEX>> getMovies() {
+    public ResponseEntity<Iterable<MOVIE_DTO>> getMovies() {
         return ResponseEntity.ok(movieService.readMovies());
     }
 

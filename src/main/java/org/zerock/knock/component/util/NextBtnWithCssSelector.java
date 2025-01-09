@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
@@ -14,6 +15,7 @@ import java.time.Duration;
  * @author nks
  * @apiNote Crawling 중 다음 페이지가 있을 경우 Selenium 이 제어하는 웹페이지를 조작한다.
  */
+@Component
 public class NextBtnWithCssSelector {
 
     private static final Logger logger = LoggerFactory.getLogger(NextBtnWithCssSelector.class);

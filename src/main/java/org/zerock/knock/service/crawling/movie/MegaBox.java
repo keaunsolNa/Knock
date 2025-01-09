@@ -5,8 +5,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.zerock.knock.component.util.ConvertDTOAndIndex;
 import org.zerock.knock.component.util.ConvertImage;
-import org.zerock.knock.component.util.MovieDtoToIndex;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
@@ -24,14 +24,14 @@ public class MegaBox extends AbstractCrawlingService {
 
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
     private final ConvertImage convertImage = new ConvertImage();
-    private final MovieDtoToIndex movieDtoToIndex;
+    private final ConvertDTOAndIndex movieDtoToIndex;
     @Value("${api.megabox.url}")
     private String urlPath;
 
     @Value("${api.megabox.cssquery}")
     private String cssQuery;
 
-    protected MegaBox(Movie movieService, MovieDtoToIndex movieDtoToIndex) {
+    protected MegaBox(Movie movieService, ConvertDTOAndIndex movieDtoToIndex) {
         super(movieService);
         this.movieDtoToIndex = movieDtoToIndex;
     }
@@ -70,9 +70,6 @@ public class MegaBox extends AbstractCrawlingService {
         if (kofic != null)
         {
             dto = movieDtoToIndex.koficIndexToMovieIndex(kofic);
-
-            encodingBase64(element, dto);
-            setReservationLink(element, dto);
         }
 
         else
@@ -83,39 +80,51 @@ public class MegaBox extends AbstractCrawlingService {
                 dto.setOpeningTime(SDCLTS.Converter(date));
             }
 
-            encodingBase64(element, dto);
-
-            setReservationLink(element, dto);
         }
-
+        encodingBase64(element, dto);
+        setReservationLink(element, dto);
+        setPlot(element, dto);
 
         dtos.add(dto);
         logger.info("{} END", getClass().getSimpleName());
     }
 
     private void setReservationLink(Element element, MOVIE_DTO dto) {
-        Elements codeElement = element.select("div.case a.bokdBtn[data-no]");
-        if(!codeElement.isEmpty()) {
-            String code = Objects.requireNonNull(codeElement.first()).text();
+        Elements codeElement = element.select("div.movie-score");
 
+        if(!codeElement.isEmpty()) {
+
+            String dataNo = Objects.requireNonNull(element.select("a.movieBtn").first()).attr("data-no");
+            String reservationLink = "https://www.megabox.co.kr/movie-detail?rpstMovieNo=" + dataNo;
+
+            String[] reservationLinks;
             if (dto.getReservationLink() == null)
             {
-                String[] reservationLink = new String[3];
-                reservationLink[0] = "https://www.megabox.co.kr/movie-detail?rpstMovieNo=" + code;
-                dto.setReservationLink(reservationLink);
+                reservationLinks = new String[3];
             }
             else
             {
-                String[] reservationLink = dto.getReservationLink();
-                reservationLink[0] =  "https://www.megabox.co.kr/movie-detail?rpstMovieNo=" + code;
-                dto.setReservationLink(reservationLink);
+                reservationLinks = dto.getReservationLink();
             }
 
+            reservationLinks[0] = reservationLink;
+            dto.setReservationLink(reservationLinks);
+        }
+    }
+
+    private void setPlot (Element element, MOVIE_DTO dto) {
+        Elements codeElement = element.select("div.summary");
+
+        if(!codeElement.isEmpty()) {
+
+            String summeryText = codeElement.text();
+            dto.setPlot(summeryText);
 
         }
     }
 
     private void encodingBase64(Element element, MOVIE_DTO dto) {
+
         Elements imgElement = element.select("div.movie-list-info img");
         if(!imgElement.isEmpty()) {
 
@@ -128,4 +137,5 @@ public class MegaBox extends AbstractCrawlingService {
 
         }
     }
+
 }

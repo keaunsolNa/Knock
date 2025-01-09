@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.component.util.MovieDtoToIndex;
+import org.zerock.knock.component.util.ConvertDTOAndIndex;
+import org.zerock.knock.component.util.ConvertImage;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
@@ -20,38 +21,46 @@ public class Movie implements MovieInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(MovieInterface.class);
     private final MovieMaker movieMaker;
-    private final MovieDtoToIndex translation;
+    private final ConvertDTOAndIndex translation;
+    private final ConvertImage convertImage;
 
     public Movie(MovieRepository movieRepository,
                  ElasticsearchOperations elasticsearchOperations,
-                 MovieDtoToIndex translation) {
+                 ConvertDTOAndIndex translation, ConvertImage convertImage) {
+        this.convertImage = convertImage;
         this.movieMaker = new MovieMaker(movieRepository, elasticsearchOperations);
         this.translation = translation;
     }
 
-    public Iterable<MOVIE_INDEX> createMovie(Set<MOVIE_DTO> movies) {
+    public void createMovie(Set<MOVIE_DTO> movies) {
 
         logger.info("{} START", getClass().getSimpleName());
 
         // DELETE ALL DATA BEFORE CREATE
         movieMaker.deleteMovie();
 
-        Iterable<MOVIE_INDEX> movie = movieMaker.CreateMovie(translation.MovieDtoToIndex(movies));
+        movieMaker.CreateMovie(translation.MovieDtoToIndex(movies));
 
         logger.info("{} END", getClass().getSimpleName());
 
-        return movie;
     }
 
-    public Iterable<MOVIE_INDEX> readMovies() {
+    public Iterable<MOVIE_DTO> readMovies() {
 
         logger.info("{} START", getClass().getSimpleName());
 
         Iterable<MOVIE_INDEX> movies = movieMaker.readAllMovie();
+        Set<MOVIE_DTO> returnValue = translation.MovieIndexToDTO(movies);
+
+        for (MOVIE_DTO dto : returnValue)
+        {
+            dto.setPosterBase64(convertImage.convertBase64ToUrl(dto.getPosterBase64()));
+            dto.setCategoryLevelOne(null);
+        }
 
         logger.info("{} END", getClass().getSimpleName());
 
-        return movies;
+        return returnValue;
     }
 
     public MOVIE_INDEX readMoviesDetail(String id) {
