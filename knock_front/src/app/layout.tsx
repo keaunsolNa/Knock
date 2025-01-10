@@ -1,5 +1,5 @@
 import './globals.scss';
-import './layout.module.scss';
+import { Nanum_Gothic } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
@@ -12,6 +12,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const nanumGothic = Nanum_Gothic({
+  weight: ['400', '700'],
+  style: ['normal'],
+  subsets: ['latin'],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,13 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-        />
-      </head>
-      <body>{children}</body>
+      <body className={nanumGothic.className}>
+        <div>{children}</div>
+      </body>
     </html>
   );
 }

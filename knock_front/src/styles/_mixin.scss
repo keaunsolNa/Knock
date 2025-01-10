@@ -3,11 +3,10 @@
 /**
 mobile
 tablet
-tablet - 가로
 desktop
 */
 @mixin mobile {
-  @media all and (max-width: ($breakpoint-mobile - 1px)) {
+  @media all and (min-width: 320px) and (max-width: ($breakpoint-mobile - 1px)) {
     @content;
   }
 }
@@ -18,14 +17,21 @@ desktop
   }
 }
 
-@mixin tablet2 {
-  @media all and (min-width: $breakpoint-tablet) and (max-width: ($breakpoint-desktop - 1px)) {
+@mixin desktop {
+  @media all and (min-width: $breakpoint-tablet) {
     @content;
   }
 }
 
-@mixin desktop {
-  @media all and (min-width: $breakpoint-desktop) {
-    @content;
-  }
+@mixin flexbox-center($width: auto, $height: auto) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: $width;
+  height: $height;
+}
+
+@mixin svg-square($width: auto, $height: auto) {
+  width: $width;
+  height: $height;
 }

@@ -1,6 +1,4 @@
-@forward '@/styles/base/font';
-@use '@/styles/mixin' as *;
-@use '@/styles/variables' as *;
+// @forward '@/styles/base/font';
 
 * {
   box-sizing: border-box;
@@ -11,20 +9,37 @@
 html {
   @include mobile {
     font-size: 14px;
+    font-weight: $font-default;
   }
   @include tablet {
     font-size: 16px;
-  }
-  @include tablet2 {
-    font-size: 16px;
+    font-weight: $font-default;
   }
   @include desktop {
     font-size: 16px;
+    font-weight: $font-default;
   }
 }
 
 body {
   font-family: 'Nanum Gothic', serif;
+  -webkit-font-smoothing: antialiased; /* Safari, Chrome */
+  -moz-osx-font-smoothing: grayscale; /* macOS */
+}
+
+body > div {
+  max-width: 100%;
+  margin: 0 auto;
+
+  @include mobile {
+    width: 100%;
+  }
+  @include tablet {
+    width: 90%;
+  }
+  @include desktop {
+    width: 70%;
+  }
 }
 
 a {
