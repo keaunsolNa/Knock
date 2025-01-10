@@ -1,0 +1,125 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: $padding-page;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: $beige;
+}
+
+.div__title {
+  display: flex;
+  gap: 10px;
+
+  div {
+    flex-grow: 1;
+    position: relative;
+    color: $gray-dark;
+
+    input {
+      width: 100%;
+      height: 40px;
+      padding: 10px 20px;
+      padding-right: 55px;
+
+      font-weight: $font-default;
+      background-color: $white;
+
+      border-radius: $border-radius--circle;
+      border: none;
+      outline: none;
+    }
+
+    svg {
+      @include svg-square(24px, 24px);
+      position: absolute;
+      top: 8px;
+      right: 20px;
+    }
+  }
+
+  button {
+    @include flexbox-center(40px, 40px);
+    background-color: $gray-light;
+    border-radius: 50%;
+    border: none;
+
+    svg {
+      @include svg-square(20px, 20px);
+    }
+  }
+}
+
+.div__category {
+  width: 100%;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+.item {
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 8px 10px;
+  background-color: $gray-light;
+  border-radius: $border-radius--circle;
+  color: $black-light;
+}
+
+.item_select {
+  background-color: $orange;
+  color: $white;
+}
+
+@mixin category-grid-size($colCnt) {
+  .div__category {
+    overflow-x: auto;
+
+    .list {
+      display: grid;
+      grid-template-columns: repeat($colCnt, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .item {
+      width: 110px;
+    }
+  }
+}
+
+@include mobile {
+  .div__category {
+    overflow-x: auto;
+  }
+
+  .list {
+    display: flex;
+    gap: 10px;
+    will-change: transform;
+  }
+
+  .item {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+  }
+}
+
+@include tablet {
+  @include category-grid-size(3);
+}
+
+@media all and (min-width: 570px) {
+  @include category-grid-size(4);
+}
+@media all and (min-width: 900px) {
+  @include category-grid-size(5);
+}
+@media all and (min-width: 1200px) {
+  @include category-grid-size(6);
+}
+@media all and (min-width: 1500px) {
+  @include category-grid-size(7);
+}
