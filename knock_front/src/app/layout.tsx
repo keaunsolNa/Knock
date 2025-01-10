@@ -1,6 +1,6 @@
 import './globals.scss';
-import { Nanum_Gothic } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
+import { Noto_Sans_KR } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'Knock',
@@ -12,10 +12,10 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-const nanumGothic = Nanum_Gothic({
-  weight: ['400', '700'],
-  style: ['normal'],
+const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-noto-sans-kr',
 });
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={nanumGothic.className}>
+      <body className={notoSansKR.variable}>
         <div>{children}</div>
       </body>
     </html>

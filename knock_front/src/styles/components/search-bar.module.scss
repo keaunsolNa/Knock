@@ -1,4 +1,8 @@
 .container {
+  width: 100%;
+  position: sticky;
+  z-index: 1;
+  top: 55px;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -23,6 +27,7 @@
       padding: 10px 20px;
       padding-right: 55px;
 
+      font-family: $font-family;
       font-weight: $font-default;
       background-color: $white;
 
