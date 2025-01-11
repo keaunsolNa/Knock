@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.zerock.knock.service.crawling.movie.KOFIC;
+import org.zerock.knock.service.crawling.movie.MegaBox;
 
 /**
  * @author nks
@@ -21,10 +22,13 @@ public class SchedulerConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(KOFIC.class);
     private final KOFIC kofic;
+    private final MegaBox megaBox;
 
     @Value("${schedule.kofic.use}")
     private boolean useScheduleKOFIC;
 
+    @Value("${schedule.megabox.use}")
+    private boolean useScheduleMegaBox;
     /**
      * 주기적으로 KOFIC 에서 영화 정보를 받아온다.
      * @apiNote cronTab = 1시간에 1번, 정시
@@ -38,6 +42,32 @@ public class SchedulerConfig {
             if (useScheduleKOFIC)
             {
                 kofic.requestAPI();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+        }
+    }
+
+    /**
+     * 주기적으로 MegaBox 에서 상영 예정작 정보를 받아온다.
+     * @apiNote cronTab = 매일 오전 3시
+     */
+    @Async
+    @Scheduled(cron = "${schedule.megabox.cron}")
+    public void megaBoxJob() {
+
+        try
+        {
+            if (useScheduleKOFIC)
+            {
+                kofic.requestAPI();
+            }
+
+            if (useScheduleMegaBox)
+            {
+                megaBox.addNewBrands();
             }
         }
         catch (Exception e)
