@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
+import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
 
@@ -26,6 +27,13 @@ public class MovieController {
     public ResponseEntity<MOVIE_INDEX> getDetail(@RequestParam String movieId) {
         return ResponseEntity.ok(movieService.readMoviesDetail(movieId));
     }
+
+    @GetMapping("/getCategory")
+    public ResponseEntity<Iterable<CATEGORY_LEVEL_TWO_DTO>> getCategory() {
+
+        return null;
+    }
+
 
     @GetMapping("/recommend")
     public ResponseEntity<Iterable<KOFIC_INDEX>> getRecommend(@RequestParam String movieNm) {

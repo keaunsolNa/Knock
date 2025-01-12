@@ -10,6 +10,8 @@ import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_ONE_DTO;
 import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.dto.dto.user.USER_DTO;
+import org.zerock.knock.repository.Category.CategoryLevelOneRepository;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,9 +22,16 @@ import java.util.Set;
 @Component
 public class ConvertDTOAndIndex {
 
+    private final CategoryLevelOneRepository categoryLevelOneRepository;
+    private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
+
+    public ConvertDTOAndIndex(CategoryLevelOneRepository categoryLevelOneRepository, StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp) {
+        this.categoryLevelOneRepository = categoryLevelOneRepository;
+        this.stringDateConvertLongTimeStamp = stringDateConvertLongTimeStamp;
+    }
+
     /**
      * MOVIE DTO -> INDEX
-     *
      * @param dtos 변환할 MOVIE_DTO 객체
      * @return SET<MOVIE_INDEX> 반환할 MOVIE_INDEX 객체
      */
@@ -34,13 +43,13 @@ public class ConvertDTOAndIndex {
             MOVIE_INDEX index = new MOVIE_INDEX();
             index.setMovieId(dto.getMovieId());
             index.setMovieNm(dto.getMovieNm());
-            index.setOpeningTime(dto.getOpeningTime());
+            index.setOpeningTime(stringDateConvertLongTimeStamp.Converter(dto.getOpeningTime()));
             index.setKOFICCode(dto.getKOFICCode());
             index.setReservationLink(dto.getReservationLink());
             index.setPosterBase64(dto.getPosterBase64());
             index.setDirectors(dto.getDirectors());
             index.setActors(dto.getActors());
-            index.setCategoryLevelOne(CLTODTOToCLTOIndex(dto.getCategoryLevelOne()));
+            index.setCategoryLevelOne(categoryLevelOneRepository.findByNm("Movie").orElse(new CATEGORY_LEVEL_ONE_INDEX()));
             index.setCategoryLevelTwo(CLTDtoToCLTIndex(dto.getCategoryLevelTwo()));
             index.setRunningTime(dto.getRunningTime());
             index.setPlot(dto.getPlot());
@@ -66,13 +75,12 @@ public class ConvertDTOAndIndex {
             MOVIE_DTO dto = new MOVIE_DTO();
             dto.setMovieId(index.getMovieId());
             dto.setMovieNm(index.getMovieNm());
-            dto.setOpeningTime(index.getOpeningTime());
+            dto.setOpeningTime(stringDateConvertLongTimeStamp.Converter(index.getOpeningTime()));
             dto.setKOFICCode(index.getKOFICCode());
             dto.setReservationLink(index.getReservationLink());
             dto.setPosterBase64(index.getPosterBase64());
             dto.setDirectors(index.getDirectors());
             dto.setActors(index.getActors());
-            dto.setCategoryLevelOne(CLTOIndexToCLTODTO(index.getCategoryLevelOne()));
             dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
             dto.setRunningTime(index.getRunningTime());
             dto.setPlot(index.getPlot());
@@ -90,18 +98,17 @@ public class ConvertDTOAndIndex {
      * @param index 변환할 KOFIC 객체
      * @return SET<MOVIE_INDEX> 반환할 MOVIE_INDEX 객체
      */
-    public MOVIE_DTO koficIndexToMovieIndex(KOFIC_INDEX index) {
+    public MOVIE_DTO koficIndexToMovieDTO(KOFIC_INDEX index) {
 
         MOVIE_DTO dto = new MOVIE_DTO();
 
         dto.setMovieId(index.getMovieId());
         dto.setMovieNm(index.getMovieNm());
-        dto.setOpeningTime(index.getOpeningTime());
+        dto.setOpeningTime(stringDateConvertLongTimeStamp.Converter(index.getOpeningTime()));
         dto.setKOFICCode(index.getKOFICCode());
         dto.setDirectors(index.getDirectors());
         dto.setActors(index.getActors());
         dto.setCompanyNm(index.getCompanyNm());
-        dto.setCategoryLevelOne(CLTOIndexToCLTODTO(index.getCategoryLevelOne()));
         dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
         dto.setRunningTime(null == index.getRunningTime() ? 0 : index.getRunningTime());
 

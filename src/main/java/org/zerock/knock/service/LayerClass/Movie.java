@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertDTOAndIndex;
 import org.zerock.knock.component.util.ConvertImage;
+import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
@@ -55,7 +56,6 @@ public class Movie implements MovieInterface {
         for (MOVIE_DTO dto : returnValue)
         {
             dto.setPosterBase64(convertImage.convertBase64ToUrl(dto.getPosterBase64()));
-            dto.setCategoryLevelOne(null);
         }
 
         logger.info("{} END", getClass().getSimpleName());

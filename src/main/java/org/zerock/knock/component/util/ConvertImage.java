@@ -25,9 +25,9 @@ public class ConvertImage {
     }
 
     /**
-     * 이미지를 Base64로 변환하는 유틸리티 메서드.
-     * @param base64String 이미지의 URL
-     * @return Base64로 인코딩된 문자열
+     * Base64 문자열을 img 링크로 변환하는 유틸리티 메서드.
+     * @param base64String 이미지의 Base64 문자열
+     * @return imageSrc 주소
      */
     public String convertBase64ToUrl(String base64String) {
 

@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertDTOAndIndex;
 import org.zerock.knock.component.util.ConvertImage;
-import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
@@ -22,7 +21,6 @@ import java.util.Set;
 @Service
 public class MegaBox extends AbstractCrawlingService {
 
-    private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
     private final ConvertImage convertImage = new ConvertImage();
     private final ConvertDTOAndIndex movieDtoToIndex;
     @Value("${api.megabox.url}")
@@ -69,7 +67,7 @@ public class MegaBox extends AbstractCrawlingService {
 
         if (kofic != null)
         {
-            dto = movieDtoToIndex.koficIndexToMovieIndex(kofic);
+            dto = movieDtoToIndex.koficIndexToMovieDTO(kofic);
         }
 
         else
@@ -77,7 +75,7 @@ public class MegaBox extends AbstractCrawlingService {
             Elements dateElements = element.select("div.rate-date > span.date");
             if (!dateElements.isEmpty()) {
                 String date = Objects.requireNonNull(dateElements.first()).text().replace("개봉일 ", "");
-                dto.setOpeningTime(SDCLTS.Converter(date));
+                dto.setOpeningTime(date);
             }
 
         }

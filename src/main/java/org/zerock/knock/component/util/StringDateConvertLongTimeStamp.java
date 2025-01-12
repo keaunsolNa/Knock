@@ -6,6 +6,10 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -18,6 +22,7 @@ public class StringDateConvertLongTimeStamp {
     private static final Logger logger = LoggerFactory.getLogger(StringDateConvertLongTimeStamp.class);
 
     /**
+     * String 형태의 문자열을 epochTime 반환
      * @param dateString 변환할 String
      * @return epochTime
      */
@@ -59,5 +64,28 @@ public class StringDateConvertLongTimeStamp {
         return result;
     }
 
+    /**
+     * epochTime 받아 yyyy.MM.dd 형태 문자열로 반환
+     * @param time 변환할 epochTime
+     * @return yyyy.MM.dd 문자열
+     */
+    public String Converter(long time)
+    {
+
+        if (time == 0)
+        {
+            logger.error("[{}]", "parameter is null");
+            return "개봉 예정";
+        }
+
+        Instant instant = Instant.ofEpochMilli(time);
+
+        LocalDate date = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        return date.format(formatter);
+
+    }
 
 }
