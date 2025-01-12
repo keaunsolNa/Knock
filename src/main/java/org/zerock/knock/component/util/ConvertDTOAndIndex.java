@@ -29,10 +29,12 @@ public class ConvertDTOAndIndex {
 
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
+    private final ConvertImage convertImage;
 
-    public ConvertDTOAndIndex(CategoryLevelOneRepository categoryLevelOneRepository, StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp) {
+    public ConvertDTOAndIndex(CategoryLevelOneRepository categoryLevelOneRepository, StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp, ConvertImage convertImage) {
         this.categoryLevelOneRepository = categoryLevelOneRepository;
         this.stringDateConvertLongTimeStamp = stringDateConvertLongTimeStamp;
+        this.convertImage = convertImage;
     }
 
     /**
@@ -69,34 +71,46 @@ public class ConvertDTOAndIndex {
     /**
      * MOVIE INDEX -> DTO
      *
-     * @param indexs 변환할 MOVIE_DTO 객체
-     * @return SET<MOVIE_DTO> 반환할 MOVIE_INDEX 객체
+     * @param indexs 변환할 MOVIE_INDEX 객체
+     * @return SET<MOVIE_DTO> 반환할 MOVIE_DTO 객체
      */
     public Set<MOVIE_DTO> MovieIndexToDTO(Iterable<MOVIE_INDEX> indexs) {
 
         logger.info("[{}] ", indexs);
         Set<MOVIE_DTO> result = new LinkedHashSet<>();
         for (MOVIE_INDEX index : indexs) {
-
-            MOVIE_DTO dto = new MOVIE_DTO();
-            dto.setMovieId(index.getMovieId());
-            dto.setMovieNm(index.getMovieNm());
-            dto.setOpeningTime(stringDateConvertLongTimeStamp.Converter(index.getOpeningTime()));
-            dto.setKOFICCode(index.getKOFICCode());
-            dto.setReservationLink(index.getReservationLink());
-            dto.setPosterBase64(index.getPosterBase64());
-            dto.setDirectors(index.getDirectors());
-            dto.setActors(index.getActors());
-            dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
-            dto.setRunningTime(index.getRunningTime());
-            dto.setPlot(index.getPlot());
-            dto.setFavorites(userIndexToUserDto(index.getFavorites()));
-
-            result.add(dto);
+            result.add(MovieIndexToDTO(index));
         }
 
         return result;
     }
+
+    /**
+     * MOVIE INDEX -> DTO
+     *
+     * @param index 변환할 MOVIE_INDEX 객체
+     * @return MOVIE_DTO 반환할 MOVIE_DTO 객체
+     */
+    public MOVIE_DTO MovieIndexToDTO(MOVIE_INDEX index)
+    {
+
+        MOVIE_DTO dto = new MOVIE_DTO();
+        dto.setMovieId(index.getMovieId());
+        dto.setMovieNm(index.getMovieNm());
+        dto.setOpeningTime(stringDateConvertLongTimeStamp.Converter(index.getOpeningTime()));
+        dto.setKOFICCode(index.getKOFICCode());
+        dto.setReservationLink(index.getReservationLink());
+        dto.setPosterBase64(convertImage.convertBase64ToUrl(index.getPosterBase64()));
+        dto.setDirectors(index.getDirectors());
+        dto.setActors(index.getActors());
+        dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
+        dto.setRunningTime(index.getRunningTime());
+        dto.setPlot(index.getPlot());
+        dto.setFavorites(userIndexToUserDto(index.getFavorites()));
+
+        return dto;
+    }
+
 
     /**
      * KOFIC INDEX -> MOVIE DTO

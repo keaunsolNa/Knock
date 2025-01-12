@@ -49,7 +49,7 @@ public class CrawlingController {
     }
 
     /**
-     * Category Level One, Two Index Initialize
+     * Category Level One, Two Index 초기화
      */
     @PostMapping("/categoryInitialize")
     public ResponseEntity<Iterable<CATEGORY_LEVEL_ONE_INDEX>> categoryInitialize() {
