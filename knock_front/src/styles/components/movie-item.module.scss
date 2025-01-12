@@ -1,0 +1,77 @@
+.container {
+  width: 100%;
+  height: 135px;
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  border-radius: $border-radius--default;
+  border: $border--default;
+}
+
+.img__container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-top-left-radius: $border-radius--default;
+  border-bottom-left-radius: $border-radius--default;
+  img {
+    object-fit: fill;
+  }
+}
+
+.div__detail {
+  display: grid;
+  grid-template-columns: auto 70px;
+}
+
+.div__info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 10px;
+
+  .p__date {
+    font-size: 1rem;
+    font-weight: $font-thin;
+    color: $orange;
+  }
+
+  .p__title {
+    display: -webkit-box;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-size: 1.2rem;
+    font-weight: $font-default;
+    color: $black;
+  }
+}
+
+.div__btn {
+  @include flexbox-center;
+}
+
+.btn__alarm {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: $border-radius--circle;
+  background-color: $orange;
+
+  svg {
+    @include svg-square(30px, 30px);
+    fill: $white;
+    color: $white;
+  }
+}
+
+.btn__alarm_set {
+  background-color: $gray-dark;
+  svg {
+    fill: $white;
+    color: $white;
+  }
+}
