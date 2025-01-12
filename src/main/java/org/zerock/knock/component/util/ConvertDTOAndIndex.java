@@ -1,5 +1,7 @@
 package org.zerock.knock.component.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
@@ -13,6 +15,7 @@ import org.zerock.knock.dto.dto.user.USER_DTO;
 import org.zerock.knock.repository.Category.CategoryLevelOneRepository;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -21,6 +24,8 @@ import java.util.Set;
  */
 @Component
 public class ConvertDTOAndIndex {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
@@ -69,7 +74,8 @@ public class ConvertDTOAndIndex {
      */
     public Set<MOVIE_DTO> MovieIndexToDTO(Iterable<MOVIE_INDEX> indexs) {
 
-        Set<MOVIE_DTO> result = new HashSet<>();
+        logger.info("[{}] ", indexs);
+        Set<MOVIE_DTO> result = new LinkedHashSet<>();
         for (MOVIE_INDEX index : indexs) {
 
             MOVIE_DTO dto = new MOVIE_DTO();
