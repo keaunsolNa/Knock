@@ -54,6 +54,8 @@ public class Movie implements MovieInterface {
         return returnValue;
     }
 
+    public Optional<MOVIE_INDEX> checkMovie(String movieNm) { return movieMaker.readMovieByNm(movieNm); }
+
     public MOVIE_DTO readMoviesDetail(String id) {
 
         logger.info("{} START", getClass().getSimpleName());
@@ -122,11 +124,7 @@ public class Movie implements MovieInterface {
                     map.put(category.getNm(), innerMap);
                 }
             }
-
         }
-
-
-
         logger.info("{} END", getClass().getSimpleName());
 
         return map;

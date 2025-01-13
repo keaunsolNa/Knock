@@ -3,7 +3,6 @@ package org.zerock.knock.component.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import java.util.Base64;
 
 /**
  * @author nks
@@ -19,19 +18,17 @@ public class ConvertImage {
      * @param imageUrl 이미지의 URL
      * @return Base64로 인코딩된 문자열
      */
-    public String convertImageToBase64(String imageUrl) {
+  /*  public String convertImageToBase64(String imageUrl) {
 
         return Base64.getEncoder().encodeToString(imageUrl.getBytes());
-    }
+    }*/
 
     /**
      * Base64 문자열을 img 링크로 변환하는 유틸리티 메서드.
      * @param base64String 이미지의 Base64 문자열
      * @return imageSrc 주소
      */
-    public String convertBase64ToUrl(String base64String) {
-
+  /*  public String convertBase64ToUrl(String base64String) {
         return new String(Base64.getDecoder().decode(base64String));
-
-    }
+    }*/
 }

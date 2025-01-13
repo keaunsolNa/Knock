@@ -29,12 +29,10 @@ public class ConvertDTOAndIndex {
 
     private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
-    private final ConvertImage convertImage;
 
     public ConvertDTOAndIndex(CategoryLevelOneRepository categoryLevelOneRepository, StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp, ConvertImage convertImage) {
         this.categoryLevelOneRepository = categoryLevelOneRepository;
         this.stringDateConvertLongTimeStamp = stringDateConvertLongTimeStamp;
-        this.convertImage = convertImage;
     }
 
     /**
@@ -100,7 +98,7 @@ public class ConvertDTOAndIndex {
         dto.setOpeningTime(stringDateConvertLongTimeStamp.Converter(index.getOpeningTime()));
         dto.setKOFICCode(index.getKOFICCode());
         dto.setReservationLink(index.getReservationLink());
-        dto.setPosterBase64(convertImage.convertBase64ToUrl(index.getPosterBase64()));
+        dto.setPosterBase64(index.getPosterBase64());
         dto.setDirectors(index.getDirectors());
         dto.setActors(index.getActors());
         dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));

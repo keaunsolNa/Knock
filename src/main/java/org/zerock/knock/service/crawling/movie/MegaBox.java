@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertDTOAndIndex;
 import org.zerock.knock.component.util.ConvertImage;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
+import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.LayerClass.Movie;
 import org.zerock.knock.service.crawling.common.AbstractCrawlingService;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -63,11 +65,31 @@ public class MegaBox extends AbstractCrawlingService {
         Elements titleElements = element.select("div.tit-area > p.tit");
 
         String tile = Objects.requireNonNull(titleElements.first()).text();
+
+        Optional<MOVIE_INDEX> optionalIndex = movieService.checkMovie(tile);
+
+        if (optionalIndex.isPresent())
+        {
+            logger.info("{} Already Exists Movie ", tile);
+            dtos.add(movieDtoToIndex.MovieIndexToDTO(optionalIndex.get()));
+            return;
+        }
+
         KOFIC_INDEX kofic = movieService.similaritySearch(tile);
 
         if (kofic != null)
         {
             dto = movieDtoToIndex.koficIndexToMovieDTO(kofic);
+
+            // TODO : 일 데이터 없을 경우 예외처리 추가
+            if (dto.getOpeningTime().equals("개봉 예정"))
+            {
+                Elements dateElements = element.select("div.rate-date > span.date");
+                if (!dateElements.isEmpty()) {
+                    String date = Objects.requireNonNull(dateElements.first()).text().replace("개봉일 ", "");
+                    dto.setOpeningTime(date);
+                }
+            }
         }
 
         else
@@ -125,14 +147,8 @@ public class MegaBox extends AbstractCrawlingService {
 
         Elements imgElement = element.select("div.movie-list-info img");
         if(!imgElement.isEmpty()) {
-
             String srcPath = Objects.requireNonNull(imgElement.first()).attr("src");
-            try {
-                dto.setPosterBase64(convertImage.convertImageToBase64(srcPath));
-            } catch (Exception e) {
-                logger.info("[{}]", "Exception in ConvertImageTo Base64");
-            }
-
+            dto.setPosterBase64(srcPath);
         }
     }
 

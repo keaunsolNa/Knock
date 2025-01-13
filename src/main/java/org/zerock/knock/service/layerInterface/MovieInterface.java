@@ -9,6 +9,7 @@ import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.repository.movie.MovieRepository;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,11 +46,12 @@ public interface MovieInterface {
                     .collect(Collectors.toList());
         }
 
+        public Optional<MOVIE_INDEX> readMovieByNm(String nm) { return movieRepository.findByMovieNm(nm); }
+
         public MOVIE_INDEX readMovieById(String id) { return movieRepository.findById(id).orElseThrow(); }
 
         public SearchHits<KOFIC_INDEX> searchKOFICByMovieNm(String movieNm)
         {
-
             NativeQuery query = NativeQuery.builder()
                     .withQuery(q -> q.match(m -> m
                             .field("movieNm")
