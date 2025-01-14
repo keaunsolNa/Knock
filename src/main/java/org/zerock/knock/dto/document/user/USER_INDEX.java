@@ -18,5 +18,6 @@ public class USER_INDEX {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
 
+
     private String userNm;
 }
