@@ -4,9 +4,10 @@ import styles from '@/styles/components/movie-item.module.scss';
 import Image from 'next/image';
 import { useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
+import { motion } from 'framer-motion';
 
 export default function MovieItem() {
-  const [alarm, setAlarm] = useState(true);
+  const [alarm, setAlarm] = useState(false);
 
   return (
     <div className={styles.container}>
@@ -27,7 +28,22 @@ export default function MovieItem() {
                 : styles.btn__alarm
             }
           >
-            {alarm ? <BsBellFill /> : <BsBell />}
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
+              transition={{ duration: 0.3 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {alarm ? (
+                <BsBellFill color={alarm ? '#ff6347' : '#ccc'} />
+              ) : (
+                <BsBell />
+              )}
+            </motion.div>
           </button>
         </div>
       </div>
