@@ -79,54 +79,50 @@ public class Movie implements MovieInterface {
         return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();
     }
 
-    public Map<String, Map<String, Object>> getCategory()
+    public Map<String, Object> getCategory()
     {
         logger.info("{} START", getClass().getSimpleName());
 
-        Map<String, Map<String, Object>> map = new HashMap<>();
+        Map<String, Map<String, Object>> categoryMap = new HashMap<>();
 
         Iterable<MOVIE_INDEX> iter = movieMaker.readAllMovie();
 
         for (MOVIE_INDEX movie : iter)
         {
-
             for (CATEGORY_LEVEL_TWO_INDEX category : movie.getCategoryLevelTwo())
             {
 
-                if (map.containsKey(category.getNm()))
+                if (categoryMap.containsKey(category.getNm()))
                 {
-                    Map<String, Object> innerMap = map.get(category.getNm());
+                    Map<String, Object> innerMap = categoryMap.get(category.getNm());
 
-                    Object movieObj = innerMap.get("movies");
-                    if (movieObj instanceof List)
-                    {
-                        @SuppressWarnings("unchecked")
-                        List<String> list = (List<String>) movieObj;
-                        list.add(movie.getMovieNm());
-                    }
+                    @SuppressWarnings("unchecked")
+                    List<String> movies = (List<String>) innerMap.get("movies");
+                    movies.add(movie.getMovieId());
 
-                    else
-                    {
-                        logger.info("{} Exception ", "Expected a List<String> but found \" + movieObj.getClass()");
-                    }
                 }
                 else
                 {
+                    List<String> movies = new ArrayList<>();
+                    movies.add(movie.getMovieId());
 
-                    List<String> list = new ArrayList<>();
                     Map<String, Object> innerMap = new HashMap<>();
-
-                    list.add(movie.getMovieNm());
                     innerMap.put("categoryId", category.getId());
                     innerMap.put("categoryNm", category.getNm());
-                    innerMap.put("movies", list);
+                    innerMap.put("movies", movies);
 
-                    map.put(category.getNm(), innerMap);
+                    categoryMap.put(category.getNm(), innerMap);
                 }
             }
         }
+
+        List<Map<String, Object>> dataList = new ArrayList<>(categoryMap.values());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", dataList);
+
         logger.info("{} END", getClass().getSimpleName());
 
-        return map;
+        return result;
     }
 }

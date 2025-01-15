@@ -26,7 +26,7 @@ public class MovieController {
      * 반환 시 openingTime, poster 정보는 변환하여 반환
      * @return ResponseEntity<Iterable<MOVIE_DTO>> : Movie 저장된 모든 영화 정보
      */
-    @GetMapping("/")
+    @GetMapping()
     public ResponseEntity<Iterable<MOVIE_DTO>> getMovies() {
         return ResponseEntity.ok(movieService.readMovies());
     }
@@ -47,7 +47,7 @@ public class MovieController {
      * @return ResponseEntity<Iterable<CATEGORY_LEVEL_TWO_DTO>> : 현재 상영 예정 리스트에 있는 영화들
      */
     @GetMapping("/getCategory")
-    public ResponseEntity<Map<String, Map<String, Object>>> getCategory() {
+    public ResponseEntity<Map<String, Object>> getCategory() {
 
         return ResponseEntity.ok(movieService.getCategory());
     }

@@ -34,7 +34,7 @@ public interface MovieInterface {
             NativeQuery query = NativeQuery.builder()
                     .withQuery(q -> q.matchAll(m -> m
                     ))
-                    .withSort(Sort.by(Sort.Order.desc("openingTime")))
+                    .withSort(Sort.by(Sort.Order.asc("openingTime")))
                     .withMaxResults(100)
                     .build();
 
