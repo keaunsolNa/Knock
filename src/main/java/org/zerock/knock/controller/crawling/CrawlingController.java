@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zerock.knock.service.LayerClass.CategoryInitializer;
+import org.zerock.knock.service.layerClass.CategoryInitializer;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
-import org.zerock.knock.service.LayerClass.KOFICService;
+import org.zerock.knock.service.layerClass.KOFICService;
 import org.zerock.knock.service.crawling.movie.MegaBox;
 
 /**

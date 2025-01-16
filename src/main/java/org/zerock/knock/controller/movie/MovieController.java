@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
-import org.zerock.knock.service.LayerClass.Movie;
+import org.zerock.knock.service.layerClass.Movie;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.zerock.knock.service.Oauth;
+package org.zerock.knock.service.oAuth;
 
 import org.zerock.knock.dto.Enum.SocialLoginType;
 

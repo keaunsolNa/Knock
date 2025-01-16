@@ -1,4 +1,4 @@
-package org.zerock.knock.repository.Category;
+package org.zerock.knock.repository.category;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;

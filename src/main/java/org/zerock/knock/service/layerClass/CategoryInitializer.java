@@ -1,12 +1,12 @@
-package org.zerock.knock.service.LayerClass;
+package org.zerock.knock.service.layerClass;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
-import org.zerock.knock.repository.Category.CategoryLevelOneRepository;
-import org.zerock.knock.repository.Category.CategoryLevelTwoRepository;
+import org.zerock.knock.repository.category.CategoryLevelOneRepository;
+import org.zerock.knock.repository.category.CategoryLevelTwoRepository;
 
 @Service
 public class CategoryInitializer {

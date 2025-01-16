@@ -1,4 +1,4 @@
-package org.zerock.knock.service.LayerClass;
+package org.zerock.knock.service.layerClass;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.zerock.knock.dto.Enum.Role;
 import org.zerock.knock.dto.Enum.SocialLoginType;
 import org.zerock.knock.dto.document.user.SSO_USER_INDEX;
-import org.zerock.knock.repository.User.SSOUserRepository;
-import org.zerock.knock.service.Oauth.SocialOauth;
+import org.zerock.knock.repository.user.SSOUserRepository;
+import org.zerock.knock.service.oAuth.SocialOauth;
 
 import java.io.IOException;
 import java.util.List;

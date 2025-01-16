@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.service.LayerClass.CategoryInitializer;
+import org.zerock.knock.service.layerClass.CategoryInitializer;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
-import org.zerock.knock.repository.Category.CategoryLevelOneRepository;
-import org.zerock.knock.repository.Category.CategoryLevelTwoRepository;
+import org.zerock.knock.repository.category.CategoryLevelOneRepository;
+import org.zerock.knock.repository.category.CategoryLevelTwoRepository;
 import org.zerock.knock.repository.movie.KOFICRepository;
 
 @Service

@@ -10,7 +10,7 @@ import org.zerock.knock.component.util.ConvertImage;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
-import org.zerock.knock.service.LayerClass.Movie;
+import org.zerock.knock.service.layerClass.Movie;
 import org.zerock.knock.service.crawling.common.AbstractCrawlingService;
 
 import java.util.Objects;

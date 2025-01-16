@@ -1,4 +1,4 @@
-package org.zerock.knock.service.LayerClass;
+package org.zerock.knock.service.layerClass;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

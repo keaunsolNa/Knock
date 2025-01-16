@@ -12,7 +12,7 @@ import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_ONE_DTO;
 import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.dto.dto.user.USER_DTO;
-import org.zerock.knock.repository.Category.CategoryLevelOneRepository;
+import org.zerock.knock.repository.category.CategoryLevelOneRepository;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;

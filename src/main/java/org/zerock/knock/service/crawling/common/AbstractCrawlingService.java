@@ -6,7 +6,7 @@ import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
-import org.zerock.knock.service.LayerClass.Movie;
+import org.zerock.knock.service.layerClass.Movie;
 import org.zerock.knock.service.crawling.CrawlingInterface;
 
 import java.util.HashSet;
