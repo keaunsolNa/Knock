@@ -41,7 +41,7 @@ export default function CategoryList({
           <Link
             key={category.categoryId}
             category-id={category.categoryId}
-            href={`/movie/search?title=${title}&category=${category.categoryId}`}
+            href={`/movie/search?title=${title}&category=${searchCategory === category.categoryId ? '' : category.categoryId}`}
             className={
               searchCategory === category.categoryId
                 ? categorySelected
