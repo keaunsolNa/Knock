@@ -13,14 +13,14 @@ const resetBtnFiltered = `${styles.btn__reset} ${styles.btn__reset_filtered}`;
 export default function SearchBar() {
   const searchParams = useSearchParams();
   const searchTitle = searchParams.get('title') || '';
-  const searchCategory = searchParams.get('categories') || '';
+  const searchCategory = searchParams.get('category') || '';
 
   const [title, setTitle] = useState<string>(searchTitle);
   const router = useRouter();
 
   const inputEnterHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      router.push(`/movie/search?title=${title}&categories=${searchCategory}`);
+      router.push(`/movie/search?title=${title}&category=${searchCategory}`);
     }
   };
 
@@ -40,7 +40,10 @@ export default function SearchBar() {
           className={
             searchTitle || searchCategory ? resetBtnFiltered : resetBtnDefault
           }
-          onClick={() => router.push('/movie')}
+          onClick={() => {
+            setTitle('');
+            router.push('/movie');
+          }}
         >
           <GrPowerReset />
         </button>

@@ -5,19 +5,24 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
+import { IMovie } from '@/types';
 
-export default function MovieItem() {
+interface IProps extends IMovie {
+  display: boolean;
+}
+
+export default function MovieItem(props: IProps) {
   const [alarm, setAlarm] = useState(false);
 
   return (
-    <div className={styles.container}>
+    <div className={props.display ? styles.container : styles.container_none}>
       <div className={styles.img__container}>
-        <Image src={`/images/89398_1000.jpg`} fill alt="영화포스터" />
+        <Image src={props.posterBase64} fill alt="영화포스터" sizes="100%" />
       </div>
       <div className={styles.div__detail}>
         <div className={styles.div__info}>
-          <p className={styles.p__date}>2025.01.24 개봉</p>
-          <p className={styles.p__title}>검은 수녀들</p>
+          <p className={styles.p__date}>{props.openingTime} 개봉</p>
+          <p className={styles.p__title}>{props.movieNm}</p>
         </div>
         <div className={styles.div__btn}>
           <button
