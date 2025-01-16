@@ -1,17 +1,23 @@
 import MovieItem from '@/components/MovieItem';
-import styles from './page.module.scss';
+import { IMovie } from '@/types';
 
 export default async function Page() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`,
+    { next: { revalidate: 86400 } }
+  );
+
+  if (!response.ok) {
+    return <div>에러발생</div>;
+  }
+
+  const allMovies: IMovie[] = await response.json();
 
   return (
-      <div>
-        <div className={styles.div__movie_list}>
-          <MovieItem />
-          <MovieItem />
-          <MovieItem />
-          <MovieItem />
-          <MovieItem />
-        </div>
-      </div>
+    <>
+      {allMovies.map((movie) => (
+        <MovieItem key={movie.movieId} {...movie} display={true} />
+      ))}
+    </>
   );
 }

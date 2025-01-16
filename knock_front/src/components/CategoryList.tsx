@@ -2,7 +2,7 @@
 
 import styles from '@/styles/components/category-list.module.scss';
 import { ICategory } from '@/types';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const categoryDefault = `${styles.item}`;
@@ -15,12 +15,11 @@ export default function CategoryList({
   searchCategory: string;
   title: string;
 }) {
-  const router = useRouter();
   const [categories, setCategories] = useState<ICategory[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`api/movie/getCategory`);
+      const response = await fetch(`/api/movie/getCategory`);
 
       if (!response.ok) {
         return <div>오류가 발생했습니다...</div>;
@@ -35,55 +34,22 @@ export default function CategoryList({
     fetchData();
   }, []);
 
-  const categoryClickHandler = (e: React.MouseEvent<HTMLSpanElement>) => {
-    const clickedCategoryId = e.currentTarget.getAttribute(
-      'category-id'
-    ) as string;
-
-    if (searchCategory === '') {
-      router.push(
-        `/movie/search?title=${title}&categories=${clickedCategoryId}`
-      );
-    } else {
-      const categoryList = searchCategory.split(',');
-      const idx = categoryList.indexOf(clickedCategoryId);
-      const isIncludesCategory = idx !== -1;
-
-      if (isIncludesCategory) {
-        categoryList.splice(idx, 1);
-
-        if (categoryList.length === 0) {
-          router.push('/movie');
-          return;
-        }
-      } else {
-        categoryList.push(clickedCategoryId);
-      }
-
-      router.push(
-        `/movie/search?title=${title}&categories=${categoryList.join(',')}`
-      );
-    }
-  };
-
-  const isCategoryInSearchList = (id: string) =>
-    searchCategory.split(',').includes(id);
   return (
     <div className={styles.div__category}>
       <div className={styles.list}>
         {categories.map((category) => (
-          <span
+          <Link
             key={category.categoryId}
             category-id={category.categoryId}
-            onClick={categoryClickHandler}
+            href={`/movie/search?title=${title}&category=${category.categoryId}`}
             className={
-              isCategoryInSearchList(category.categoryId)
+              searchCategory === category.categoryId
                 ? categorySelected
                 : categoryDefault
             }
           >
             {category.categoryNm}
-          </span>
+          </Link>
         ))}
       </div>
     </div>
