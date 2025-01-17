@@ -6,40 +6,10 @@
     height: 0;
   }
 }
-.item {
-  font-size: 0.8rem;
-  text-align: center;
-  padding: 8px 10px;
-  background-color: $gray-light;
-  border-radius: $border-radius--circle;
-  color: $black-light;
-  cursor: pointer;
-}
-
-.item_select {
-  background-color: $orange;
-  color: $white;
-}
 
 /*
     반응형 리사이징
   */
-@mixin category-grid-size($colCnt) {
-  .div__category {
-    overflow-x: auto;
-
-    .list {
-      display: grid;
-      grid-template-columns: repeat($colCnt, 1fr);
-      gap: 10px;
-      justify-items: center;
-    }
-
-    .item {
-      width: 110px;
-    }
-  }
-}
 
 @include mobile {
   .div__category {
@@ -51,10 +21,18 @@
     gap: 10px;
     will-change: transform;
   }
+}
 
-  .item {
-    flex-shrink: 0;
-    font-size: 0.8rem;
+@mixin category-grid-size($colCnt) {
+  .div__category {
+    overflow-x: auto;
+
+    .list {
+      display: grid;
+      grid-template-columns: repeat($colCnt, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
   }
 }
 

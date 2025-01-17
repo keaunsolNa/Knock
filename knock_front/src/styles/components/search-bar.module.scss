@@ -1,22 +1,8 @@
 .container {
-  width: 100%;
-  position: sticky;
-  z-index: 1;
-  top: 55px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: $padding-page;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: $beige;
-}
-
-.div__title {
   display: flex;
   gap: 10px;
 
-  div {
+  form {
     flex-grow: 1;
     position: relative;
     color: $gray-dark;
@@ -36,14 +22,23 @@
       outline: none;
     }
 
-    svg {
-      @include svg-square(24px, 24px);
+    button {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background-color: inherit;
       position: absolute;
       top: 8px;
       right: 20px;
+      cursor: pointer;
+
+      svg {
+        @include svg-square(24px, 24px);
+      }
     }
   }
 }
+
 .btn__reset {
   @include flexbox-center(40px, 40px);
   background-color: $gray-light;

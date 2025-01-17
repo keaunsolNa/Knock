@@ -1,55 +1,37 @@
-'use client';
-
 import styles from '@/styles/components/category-list.module.scss';
+import CategoryItem from './CategoryItem';
 import { ICategory } from '@/types';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
-const categoryDefault = `${styles.item}`;
-const categorySelected = `${styles.item} ${styles.item_select}`;
-
-export default function CategoryList({
+export default async function CategoryList({
+  searchTitle,
   searchCategory,
-  title,
 }: {
+  searchTitle: string;
   searchCategory: string;
-  title: string;
 }) {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`
+  );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(`/api/movie/getCategory`);
+  if (!response.ok) {
+    return <div>오류가 발생했습니다...</div>;
+  }
+  const categoryList: ICategory[] = await (await response.json()).data;
 
-      if (!response.ok) {
-        return <div>오류가 발생했습니다...</div>;
-      }
-      const categoryList: ICategory[] = await (await response.json()).data;
-      categoryList.sort((a, b) =>
-        a.movies.length >= b.movies.length ? -1 : 1
-      );
-      setCategories(categoryList);
-    };
-
-    fetchData();
-  }, []);
+  categoryList.sort((a, b) => (a.movies.length >= b.movies.length ? -1 : 1));
 
   return (
     <div className={styles.div__category}>
       <div className={styles.list}>
-        {categories.map((category) => (
-          <Link
+        {categoryList.map((category) => (
+          <CategoryItem
             key={category.categoryId}
-            category-id={category.categoryId}
-            href={`/movie/search?title=${title}&category=${searchCategory === category.categoryId ? '' : category.categoryId}`}
-            className={
-              searchCategory === category.categoryId
-                ? categorySelected
-                : categoryDefault
-            }
-          >
-            {category.categoryNm}
-          </Link>
+            type="searchbar"
+            searchTitle={searchTitle}
+            searchCategory={searchCategory}
+            categoryNm={category.categoryNm}
+            categoryId={category.categoryId}
+          />
         ))}
       </div>
     </div>

@@ -3,52 +3,72 @@
 import styles from '@/styles/components/search-bar.module.scss';
 import { IoSearchSharp } from 'react-icons/io5';
 import { GrPowerReset } from 'react-icons/gr';
-import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import CategoryList from './CategoryList';
+import React, { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const resetBtnDefault = `${styles.btn__reset}`;
 const resetBtnFiltered = `${styles.btn__reset} ${styles.btn__reset_filtered}`;
 
-export default function SearchBar() {
-  const searchParams = useSearchParams();
-  const searchTitle = searchParams.get('title') || '';
-  const searchCategory = searchParams.get('category') || '';
-
+export default function SearchBar({
+  searchTitle,
+  searchCategory,
+}: {
+  searchTitle: string;
+  searchCategory: string;
+}) {
   const [title, setTitle] = useState<string>(searchTitle);
   const router = useRouter();
+  const routerOption = { scroll: false };
 
-  const inputEnterHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      router.push(`/movie/search?title=${title}&category=${searchCategory}`);
+  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (title === '' && searchCategory === '') {
+      router.push('/movie', routerOption);
     }
+    router.push(
+      `/movie/search?title=${title}&category=${searchCategory}`,
+      routerOption
+    );
+  };
+
+  const searchBtnOnClick = () => {
+    if (title === '' && searchCategory === '') {
+      router.push('/movie', routerOption);
+    }
+
+    router.push(
+      `/movie/search?title=${title}&category=${searchCategory}`,
+      routerOption
+    );
+  };
+
+  const resetBtnOnClick = () => {
+    setTitle('');
+    router.push('/movie', routerOption);
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.div__title}>
-        <div>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.currentTarget.value)}
-            onKeyUp={inputEnterHandler}
-            placeholder="영화명으로 검색해보세요"
-          />
+      <form onSubmit={submitHandler}>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.currentTarget.value)}
+          placeholder="영화명으로 검색해보세요"
+        />
+        <button onClick={searchBtnOnClick}>
           <IoSearchSharp />
-        </div>
-        <button
-          className={
-            searchTitle || searchCategory ? resetBtnFiltered : resetBtnDefault
-          }
-          onClick={() => {
-            setTitle('');
-            router.push('/movie');
-          }}
-        >
-          <GrPowerReset />
         </button>
-      </div>
-      <CategoryList title={title} searchCategory={searchCategory} />
+      </form>
+
+      <button
+        className={
+          searchTitle || searchCategory ? resetBtnFiltered : resetBtnDefault
+        }
+        onClick={resetBtnOnClick}
+      >
+        <GrPowerReset />
+      </button>
     </div>
   );
 }
