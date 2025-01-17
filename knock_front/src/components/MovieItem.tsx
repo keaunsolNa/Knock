@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { IMovie } from '@/types';
+import Link from 'next/link';
 
 interface IProps extends IMovie {
   display: boolean;
@@ -14,8 +15,17 @@ interface IProps extends IMovie {
 export default function MovieItem(props: IProps) {
   const [alarm, setAlarm] = useState(false);
 
+  const handleAlarmClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setAlarm((prev) => !prev);
+  };
+
   return (
-    <div className={props.display ? styles.container : styles.container_none}>
+    <Link
+      href={`/movie/${props.movieId}`}
+      className={props.display ? styles.container : styles.container_none}
+    >
       <div className={styles.img__container}>
         <Image src={props.posterBase64} fill alt="영화포스터" sizes="100%" />
       </div>
@@ -26,7 +36,7 @@ export default function MovieItem(props: IProps) {
         </div>
         <div className={styles.div__btn}>
           <button
-            onClick={() => setAlarm((prev) => !prev)}
+            onClick={handleAlarmClick}
             className={
               alarm
                 ? `${styles.btn__alarm} ${styles.btn__alarm_set}`
@@ -52,6 +62,6 @@ export default function MovieItem(props: IProps) {
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

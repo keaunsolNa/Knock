@@ -1,0 +1,22 @@
+.search_bar__container {
+  width: 100%;
+  position: sticky;
+  z-index: $search-bar;
+  top: 55px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: $padding-page;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: $beige;
+}
+
+.div__movie_list {
+  padding: $padding-page;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

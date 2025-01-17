@@ -1,6 +1,9 @@
 import MovieItem from '@/components/MovieItem';
 import { ICategoryLevelTwo, IMovie } from '@/types';
 import Fuse from 'fuse.js';
+import styles from './page.module.scss';
+import SearchBar from '@/components/SearchBar';
+import CategoryList from '@/components/CategoryList';
 
 export default async function Page({
   searchParams,
@@ -52,18 +55,26 @@ export default async function Page({
     }
     return categoryList.some((categoryItem) => categoryItem.id === category);
   };
+
   return (
     <>
-      {allMovies.map((movie) => (
-        <MovieItem
-          key={movie.movieId}
-          {...movie}
-          display={
-            isMovieInTitleSearchResult(movie.movieId) &&
-            isMovieInCategory(movie.categoryLevelTwo)
-          }
-        />
-      ))}
+      <div className={styles.search_bar__container}>
+        <SearchBar searchTitle={title} searchCategory={category} />
+        <CategoryList searchTitle={title} searchCategory={category} />
+      </div>
+
+      <div className={styles.div__movie_list}>
+        {allMovies.map((movie) => (
+          <MovieItem
+            key={movie.movieId}
+            {...movie}
+            display={
+              isMovieInTitleSearchResult(movie.movieId) &&
+              isMovieInCategory(movie.categoryLevelTwo)
+            }
+          />
+        ))}
+      </div>
     </>
   );
 }

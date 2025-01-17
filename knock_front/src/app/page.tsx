@@ -12,7 +12,7 @@ export default function Home() {
         height={250}
       />
 
-      <Link href={'/movie'} className={styles.link}>
+      <Link href={'/movie'} className={styles.link} scroll={false}>
         영화
       </Link>
     </div>
