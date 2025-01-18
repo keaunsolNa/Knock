@@ -256,7 +256,7 @@ public class KOFIC {
 
             if (!boxOfficeResult.optString("movieCd").isEmpty())
             {
-                movieIndex.setRunningTime(SDCLTS.Converter(boxOfficeResult.optString("showTm")));
+                movieIndex.setRunningTime(Long.parseLong(boxOfficeResult.optString("showTm").isEmpty() ? "0" : boxOfficeResult.optString("showTm")));
             }
             returnValue = new String[array.length()];
 
