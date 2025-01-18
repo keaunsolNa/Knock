@@ -1,13 +1,9 @@
 package org.zerock.knock.controller.crawling;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zerock.knock.service.layerClass.CategoryInitializer;
-import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.service.layerClass.KOFICService;
 import org.zerock.knock.service.crawling.movie.MegaBox;
 
@@ -19,14 +15,12 @@ import org.zerock.knock.service.crawling.movie.MegaBox;
 @RequestMapping("/api/crawling")
 public class CrawlingController {
 
-    private final CategoryInitializer categoryInitializer;
     private final MegaBox megaBox;
     private final KOFICService koficService;
 
     @Autowired
-    public CrawlingController(MegaBox megaBox, CategoryInitializer categoryInitializer, KOFICService koficService) {
+    public CrawlingController(MegaBox megaBox, KOFICService koficService) {
         this.megaBox = megaBox;
-        this.categoryInitializer = categoryInitializer;
         this.koficService = koficService;
     }
 
@@ -35,7 +29,7 @@ public class CrawlingController {
      */
     @GetMapping("/megaBox")
     public String crawlingMegaBox() {
-        megaBox.addNewBrands();
+        megaBox.addNewIndex();
         return "Crawling Completed!";
     }
 
@@ -48,12 +42,4 @@ public class CrawlingController {
         return "Crawling Completed!";
     }
 
-    /**
-     * Category Level One, Two Index 초기화
-     */
-    @PostMapping("/categoryInitialize")
-    public ResponseEntity<Iterable<CATEGORY_LEVEL_ONE_INDEX>> categoryInitialize() {
-
-        return ResponseEntity.ok(categoryInitializer.initializeCategoryLevelOne());
-    }
 }

@@ -26,12 +26,12 @@ public class StringDateConvertLongTimeStamp {
      * @param dateString 변환할 String
      * @return epochTime
      */
-    public long Converter(String dateString) {
+    public Long Converter(String dateString) {
 
         if (dateString == null || dateString.isEmpty())
         {
             logger.error("[{}]", "parameter is null");
-            return 0;
+            return 0L;
         }
         SimpleDateFormat dateFormat;
         switch (dateString.length())
@@ -45,7 +45,7 @@ public class StringDateConvertLongTimeStamp {
             default:
                 logger.error("[{}]", "parameter is Illegal : " + dateString + "\t " + dateString.length());
 
-                return 0;
+                return 0L;
         }
 
         dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("KST"));

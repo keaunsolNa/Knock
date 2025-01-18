@@ -27,6 +27,10 @@ public class SSO_USER_INDEX {
     @Column(nullable = false)
     private String email;
 
+    @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
+    @Column(nullable = false)
+    private String nickName;
+
     @Column
     private String picture;
 
@@ -39,17 +43,19 @@ public class SSO_USER_INDEX {
     private Role role;
 
     @Builder
-    public SSO_USER_INDEX(String id, String name, String email, String picture, SocialLoginType loginType, Role role) {
+    public SSO_USER_INDEX(String id, String name, String email, String nickName, String picture, SocialLoginType loginType, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.nickName = nickName;
         this.picture = picture;
         this.loginType = loginType;
         this.role = role;
     }
 
-    public SSO_USER_INDEX update(String name, String picture) {
+    public SSO_USER_INDEX update(String name, String email, String picture) {
         this.name = name;
+        this.email = email;
         this.picture = picture;
 
         return this;

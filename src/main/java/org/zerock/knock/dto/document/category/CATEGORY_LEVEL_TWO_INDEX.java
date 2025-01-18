@@ -1,16 +1,17 @@
 package org.zerock.knock.dto.document.category;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.zerock.knock.dto.document.user.USER_INDEX;
+import org.zerock.knock.dto.Enum.CategoryLevelOne;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,13 +24,43 @@ public class CATEGORY_LEVEL_TWO_INDEX {
     private String id;
 
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
+    @Column(nullable = false)
     private String nm;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
-    private String parentNm;
+    private CategoryLevelOne parentNm;
 
     @ManyToMany
-    private Set<USER_INDEX> favoriteUsers;
+    private Iterable<String> favoriteUsers;
+
+    @Builder
+    @PersistenceCreator
+    public CATEGORY_LEVEL_TWO_INDEX(String id, String nm, CategoryLevelOne parentNm, Iterable<String> favoriteUsers)
+    {
+        this.id = id;
+        this.nm = nm;
+        this.parentNm = parentNm;
+        this.favoriteUsers = favoriteUsers;
+    }
+
+    @Builder
+    public CATEGORY_LEVEL_TWO_INDEX(String nm, CategoryLevelOne parentNm)
+    {
+        this.nm = nm;
+        this.parentNm = parentNm;
+    }
+
+    public CATEGORY_LEVEL_TWO_INDEX update(String id, String nm, CategoryLevelOne parentNm, Iterable<String> favoriteUsers)
+    {
+        this.id = id;
+        this.nm = nm;
+        this.parentNm = parentNm;
+        this.favoriteUsers = favoriteUsers;
+
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -2,7 +2,6 @@ package org.zerock.knock.controller.movie;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.layerClass.Movie;
 
@@ -53,21 +52,36 @@ public class MovieController {
     }
 
 
+    /**
+     * 요청 시 해당 영화를 구독한 다른 사람들이 공통으로 구독하고 있는 영화를 리스트로 만들어 반환한다.
+     * @param movieId : 확인하고 싶은 영화의 id
+     * @return ResponseEntity<Iterable<MOVIE_DTO>> : 대상 영화를 구독한 사람들이 공통적으로 구독한 영화들
+     */
     @GetMapping("/recommend")
-    public ResponseEntity<Iterable<KOFIC_INDEX>> getRecommend(@RequestParam String movieNm) {
+    public ResponseEntity<Iterable<MOVIE_DTO>> getRecommend(@RequestParam String movieId) {
 
         return null;
     }
 
+    /**
+     * 영화를 구독한다
+     * @param movieId : 구독할 영화의 ID, user : 대상자 Id
+     * @return boolean : 대상 영화 구독 성공 여부
+     */
     @PostMapping("/sub")
-    public String subscribe(@RequestBody String movieId, @RequestParam String user) {
+    public boolean subscribe(@RequestBody String movieId, @RequestParam String userId) {
 
-        return null;
+        return false;
     }
 
+    /**
+     * 영화를 구독 해지한다.
+     * @param movieId : 구독 해지할 영화의 ID, user : 대상자 Id
+     * @return boolean : 대상 영화 구독 해지 성공 여부
+     */
     @PostMapping("cancelSub")
-    public String subscribeCancel (@RequestBody String movieId, @RequestParam String userId) {
+    public boolean subscribeCancel (@RequestBody String movieId, @RequestParam String userId) {
 
-        return null;
+        return false;
     }
 }

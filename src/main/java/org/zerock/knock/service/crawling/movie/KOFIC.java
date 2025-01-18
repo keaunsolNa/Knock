@@ -16,12 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.service.layerClass.CategoryInitializer;
+import org.zerock.knock.dto.Enum.CategoryLevelOne;
 import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
-import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
-import org.zerock.knock.repository.category.CategoryLevelOneRepository;
 import org.zerock.knock.repository.category.CategoryLevelTwoRepository;
 import org.zerock.knock.repository.movie.KOFICRepository;
 
@@ -32,26 +30,22 @@ public class KOFIC {
     private final String REQUEST_URL;
     private final String REQUEST_URL_SUB;
     private final String AUTH_KEY;
-    private final CategoryLevelOneRepository categoryLevelOneRepository;
     private final CategoryLevelTwoRepository categoryLevelTwoRepository;
     private final KOFICRepository koficRepository;
-    private final CategoryInitializer categoryInitializer;
 
     // Global Field
     private static boolean flag = false;
     private static final Logger logger = LoggerFactory.getLogger(KOFIC.class);
     private final StringDateConvertLongTimeStamp SDCLTS = new StringDateConvertLongTimeStamp();
-    private CATEGORY_LEVEL_ONE_INDEX movieCategoryIndex;
     private Map<String, CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwoList;
 
-    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.urlsub}") String requestUrlSub, @Value("${api.kofic.key}")String authKey, CategoryLevelOneRepository categoryLevelOneRepository, CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository, CategoryInitializer categoryInitializer) {
+    public KOFIC(@Value("${api.kofic.url}") String requestUrl, @Value("${api.kofic.urlsub}") String requestUrlSub, @Value("${api.kofic.key}")String authKey,
+                 CategoryLevelTwoRepository categoryLevelTwoRepository, KOFICRepository koficRepository) {
         REQUEST_URL = requestUrl;
         REQUEST_URL_SUB = requestUrlSub;
         AUTH_KEY = authKey;
-        this.categoryLevelOneRepository = categoryLevelOneRepository;
         this.categoryLevelTwoRepository = categoryLevelTwoRepository;
         this.koficRepository = koficRepository;
-        this.categoryInitializer = categoryInitializer;
     }
 
     public String makeQueryString(Map<String, String> paramMap) {
@@ -76,10 +70,16 @@ public class KOFIC {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
-        movieCategoryIndex = categoryLevelOneRepository.findByNm("Movie").orElse(new CATEGORY_LEVEL_ONE_INDEX());
-        Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = categoryLevelTwoRepository.findAllByParentNm("Movie");
+        Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = null;
+        if (categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.MOVIE).isPresent())
+        {
+            movieSubCategoryIndex =
+                    categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.MOVIE).orElseThrow();
+        }
+
         categoryLevelTwoList = new HashMap<>();
 
+        assert movieSubCategoryIndex != null;
         for (CATEGORY_LEVEL_TWO_INDEX category : movieSubCategoryIndex)
         {
             categoryLevelTwoList.put(category.getNm(), category);
@@ -126,10 +126,10 @@ public class KOFIC {
         }
         catch (IOException e)
         {
-            logger.info("{} ERROR", e.getMessage());
+            logger.debug("{} ERROR", e.getMessage());
         }
 
-        logger.info("{} END", getClass().getSimpleName());
+        logger.debug("{} END", getClass().getSimpleName());
     }
 
     private static JSONObject getJsonObject(URL requestURL, String resultTarget) throws IOException {
@@ -154,15 +154,14 @@ public class KOFIC {
         }
         catch (Exception e)
         {
-            logger.info(e.getMessage());
+            logger.debug(e.getMessage());
         }
-        // JSON 객체로  변환
 
+        // JSON 객체로  변환
         return responseBody;
     }
 
     @Async
-    // Parse the list of movies from the JSON response
     protected void parseMovieList(JSONArray movieJsonArray) {
 
         List<KOFIC_INDEX> movieList = new ArrayList<>();
@@ -174,54 +173,45 @@ public class KOFIC {
 
             if (koficRepository.findByKOFICCode(movieJson.optString("movieCd")) == null)
             {
-//                logger.info("{} NEW_INDEX", movieJson.optString("movieCd"));
                 flag = true;
             }
             else continue;
 
-            KOFIC_INDEX movie = new KOFIC_INDEX();
-            movie.setMovieNm(movieJson.optString("movieNm"));
-            movie.setKOFICCode(movieJson.optString("movieCd"));
 
-            if( !movieJson.optString("openDt").isEmpty())
-            {
-                movie.setOpeningTime(SDCLTS.Converter(movieJson.optString("openDt")));
-            }
+            String movieCd = movieJson.optString("movieCd").isEmpty() ? "" : movieJson.optString("movieCd");
+            String movieNm = movieJson.optString("movieNm").isEmpty() ? "" : movieJson.optString("movieNm");
+            Long prdtYear = movieJson.optString("prdtYear").isEmpty() ? 0L : SDCLTS.Converter(movieJson.optString("prdtYear"));
+            Long openingTime = movieJson.optString("openDt").isEmpty() ? 0L : SDCLTS.Converter(movieJson.optString("openDt"));
+
+            JSONArray array = movieJson.getJSONArray("directors");
+            String[] directors = new String[array.length()];
 
             if (!movieJson.getJSONArray("directors").isEmpty())
             {
-                JSONArray array = movieJson.getJSONArray("directors");
-                String[] directors = new String[array.length()];
-
                 for (int index = 0; index < array.length(); index++)
                 {
                     JSONObject object = array.getJSONObject(index);
                     directors[index] = object.optString("peopleNm");
                 }
-
-                movie.setDirectors(directors);
             }
 
+            array = movieJson.getJSONArray("companys");
+            String[] companys = new String[array.length()];
             if (!movieJson.getJSONArray("companys").isEmpty())
             {
-                JSONArray array = movieJson.getJSONArray("companys");
-                String[] directors = new String[array.length()];
+                array = movieJson.getJSONArray("companys");
 
                 for (int index = 0; index < array.length(); index++)
                 {
                     JSONObject object = array.getJSONObject(index);
-                    directors[index] = object.optString("companyNm");
+                    companys[index] = object.optString("companyNm");
                 }
-
-                movie.setDirectors(directors);
             }
 
-            movie.setCategoryLevelOne(movieCategoryIndex);
-
+            Set<CATEGORY_LEVEL_TWO_INDEX> set = new HashSet<>();
             if (!movieJson.optString("genreAlt").isEmpty())
             {
-                Set<CATEGORY_LEVEL_TWO_INDEX> set = new HashSet<>();
-                String[] genres = movieJson.optString("genreAlt").split(",");
+                String[] genres = movieJson.optString("genreAlt").toUpperCase().split(",");
 
                 for (String genre : genres)
                 {
@@ -231,26 +221,22 @@ public class KOFIC {
                     }
                     else
                     {
-                        CATEGORY_LEVEL_TWO_INDEX categoryLevelTwoIndex = new CATEGORY_LEVEL_TWO_INDEX();
-                        categoryLevelTwoIndex.setNm(genre);
-                        categoryLevelTwoIndex.setParentNm("Movie");
+                        CATEGORY_LEVEL_TWO_INDEX categoryLevelTwoIndex =
+                                new CATEGORY_LEVEL_TWO_INDEX(genre, CategoryLevelOne.MOVIE);
                         categoryLevelTwoRepository.save(categoryLevelTwoIndex);
                         categoryLevelTwoList.put(genre, categoryLevelTwoIndex);
 
-                        categoryInitializer.insertCategoryLevelOne(new String[] {"Movie"} );
                         set.add(categoryLevelTwoIndex);
                     }
                 }
-
-                movie.setCategoryLevelTwo(set);
             }
 
-            if( !movieJson.optString("prdtYear").isEmpty())
-            {
-                movie.setPrdtYear(SDCLTS.Converter(movieJson.optString("prdtYear")));
-            }
+            KOFIC_INDEX movie = new KOFIC_INDEX
+                    (movieCd, movieNm, prdtYear, openingTime, directors, companys, CategoryLevelOne.MOVIE, set);
 
-            getActors(movie, movieJson.optString("movieCd"));
+
+
+            setDetailInfo(movie, movieJson.optString("movieCd"));
 
             movieList.add(movie);
         }
@@ -259,7 +245,7 @@ public class KOFIC {
     }
 
     @Async
-    protected void getActors (KOFIC_INDEX movieIndex,  String movieCd) {
+    protected void setDetailInfo (KOFIC_INDEX movieIndex, String movieCd) {
 
         String[] returnValue;
         try {
@@ -268,6 +254,10 @@ public class KOFIC {
             JSONObject boxOfficeResult = getJsonObject(requestURL, "movieInfoResult").getJSONObject("movieInfo");
             JSONArray array = boxOfficeResult.getJSONArray("actors");
 
+            if (!boxOfficeResult.optString("movieCd").isEmpty())
+            {
+                movieIndex.setRunningTime(SDCLTS.Converter(boxOfficeResult.optString("showTm")));
+            }
             returnValue = new String[array.length()];
 
             for (int i = 0; i < array.length(); i++)

@@ -13,7 +13,7 @@ import org.zerock.knock.dto.Enum.SocialLoginType;
 public class SocialLoginTypeConverter implements Converter<String, SocialLoginType> {
 
     /**
-     * 다음 페이지가 버튼으로 제어될 경우
+     * 소문자 대문자 전환
      * @param type 매개변수로 받은 Social Login Type
      * @return 대문자로 변환된 Social Login Type
      */

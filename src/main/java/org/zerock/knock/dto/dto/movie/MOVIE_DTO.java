@@ -1,8 +1,8 @@
 package org.zerock.knock.dto.dto.movie;
 
 import lombok.Data;
+import org.zerock.knock.dto.Enum.CategoryLevelOne;
 import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
-import org.zerock.knock.dto.dto.user.USER_DTO;
 
 @Data
 public class MOVIE_DTO {
@@ -16,8 +16,9 @@ public class MOVIE_DTO {
     private String[] directors;
     private String[] actors;
     private String[] companyNm;
+    private CategoryLevelOne categoryLevelOne;
     private Iterable<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
-    private long runningTime;
+    private Long runningTime;
     private String plot;
-    private Iterable<USER_DTO> favorites;
+    private Iterable<String> favorites;
 }

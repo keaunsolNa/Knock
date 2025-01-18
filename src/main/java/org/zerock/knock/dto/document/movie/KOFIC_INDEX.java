@@ -1,8 +1,7 @@
 package org.zerock.knock.dto.document.movie;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
+import org.zerock.knock.dto.Enum.CategoryLevelOne;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 
 @Getter
@@ -33,7 +32,7 @@ public class KOFIC_INDEX {
     private Long prdtYear;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
-    private long openingTime;
+    private Long openingTime;
 
     private String[] directors;
 
@@ -41,11 +40,48 @@ public class KOFIC_INDEX {
 
     private String[] companyNm;
 
-    private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
+    @Enumerated(EnumType.STRING)
+    private CategoryLevelOne categoryLevelOne;
 
     @OneToMany
     private Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
     private Long runningTime;
+
+    @Builder
+    public KOFIC_INDEX
+            (String KOFICCode, String movieNm,
+             Long prdtYear, Long openingTime, String[] directors,
+             String[] companyNm, CategoryLevelOne categoryLevelOne,
+             Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo)
+    {
+        this.KOFICCode = KOFICCode;
+        this.movieNm = movieNm;
+        this.prdtYear = prdtYear;
+        this.openingTime = openingTime;
+        this.directors = directors;
+        this.companyNm = companyNm;
+        this.categoryLevelOne = categoryLevelOne;
+        this.categoryLevelTwo = categoryLevelTwo;
+    }
+
+    public KOFIC_INDEX update
+            (String movieNm, Long prdtYear, Long openingTime, String[] directors,
+             String[] actors, String[] companyNm, CategoryLevelOne categoryLevelOne,
+             Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime)
+    {
+        this.movieNm = movieNm;
+        this.prdtYear = prdtYear;
+        this.openingTime = openingTime;
+        this.directors = directors;
+        this.actors = actors;
+        this.companyNm = companyNm;
+        this.categoryLevelOne = categoryLevelOne;
+        this.categoryLevelTwo = categoryLevelTwo;
+        this.runningTime = runningTime;
+
+        return this;
+    }
+
 }

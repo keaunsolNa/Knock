@@ -11,7 +11,7 @@ import java.util.Objects;
 public class InterPark implements CrawlingInterface {
 
     @Override
-    public void addNewBrands() {
+    public void addNewIndex() {
 
         logger.info("InterPark START");
 

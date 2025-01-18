@@ -1,8 +1,7 @@
 package org.zerock.knock.dto.document.movie;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,9 +10,8 @@ import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_ONE_INDEX;
+import org.zerock.knock.dto.Enum.CategoryLevelOne;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
-import org.zerock.knock.dto.document.user.USER_INDEX;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,7 +30,7 @@ public class MOVIE_INDEX {
     private String movieNm;
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
-    private long openingTime;
+    private Long openingTime;
 
     private String KOFICCode;
 
@@ -46,7 +44,8 @@ public class MOVIE_INDEX {
 
     private String[] companyNm;
 
-    private CATEGORY_LEVEL_ONE_INDEX categoryLevelOne;
+    @Enumerated(EnumType.STRING)
+    private CategoryLevelOne categoryLevelOne;
 
     @OneToMany
     private Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo;
@@ -56,7 +55,53 @@ public class MOVIE_INDEX {
 
     private String plot;
 
-    private Iterable<USER_INDEX> favorites;
+    private Iterable<String> favorites;
+
+    @Builder
+    public MOVIE_INDEX
+            (String movieId, String movieNm, Long openingTime, String KOFICCode,
+             String[] reservationLink, String posterBase64, String[] directors,
+             String[] actors, String[] companyNm,  CategoryLevelOne categoryLevelOne,
+             Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime,
+             String plot, Iterable<String> favorites )
+    {
+        this.movieId = movieId;
+        this.movieNm = movieNm;
+        this.openingTime = openingTime;
+        this.KOFICCode = KOFICCode;
+        this.reservationLink = reservationLink;
+        this.posterBase64 = posterBase64;
+        this.directors = directors;
+        this.actors = actors;
+        this.companyNm = companyNm;
+        this.categoryLevelOne = categoryLevelOne;
+        this.categoryLevelTwo = categoryLevelTwo;
+        this.runningTime = runningTime;
+        this.plot = plot;
+        this.favorites = favorites;
+    }
+
+    public MOVIE_INDEX update
+            (String movieNm, Long openingTime, String[] reservationLink, String posterBase64,
+             String[] directors, String[] actors, String[] companyNm,  CategoryLevelOne categoryLevelOne,
+             Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime,
+             String plot, Iterable<String> favorites )
+    {
+        this.movieNm = movieNm;
+        this.openingTime = openingTime;
+        this.reservationLink = reservationLink;
+        this.posterBase64 = posterBase64;
+        this.directors = directors;
+        this.actors = actors;
+        this.companyNm = companyNm;
+        this.categoryLevelOne = categoryLevelOne;
+        this.categoryLevelTwo = categoryLevelTwo;
+        this.runningTime = runningTime;
+        this.plot = plot;
+        this.favorites = favorites;
+
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.component.util.ConvertDTOAndIndex;
-import org.zerock.knock.component.util.ConvertImage;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
@@ -23,7 +22,6 @@ import java.util.Set;
 @Service
 public class MegaBox extends AbstractCrawlingService {
 
-    private final ConvertImage convertImage = new ConvertImage();
     private final ConvertDTOAndIndex movieDtoToIndex;
     @Value("${api.megabox.url}")
     private String urlPath;

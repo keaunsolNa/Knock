@@ -20,7 +20,7 @@ public interface CrawlingInterface {
 
     Logger logger = LoggerFactory.getLogger(CrawlingInterface.class);
 
-    void addNewBrands();
+    void addNewIndex();
 
     class ElementExtractor implements Runnable {
 

@@ -67,7 +67,7 @@ public class SchedulerConfig {
 
             if (useScheduleMegaBox)
             {
-                megaBox.addNewBrands();
+                megaBox.addNewIndex();
             }
         }
         catch (Exception e)

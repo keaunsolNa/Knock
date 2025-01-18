@@ -9,9 +9,10 @@ public class SSO_USER_DTO {
     private String id;
     private String name;
     private String email;
+    private String nickName;
     private String picture;
     @Enumerated(EnumType.STRING)
-    private String ssoType;
+    private String loginType;
     @Enumerated(EnumType.STRING)
     private Role role;
 }

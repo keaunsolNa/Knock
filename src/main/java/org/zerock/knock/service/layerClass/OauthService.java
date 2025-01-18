@@ -98,6 +98,7 @@ public class OauthService {
         if (userRepository.findById(id).isEmpty())
         {
 
+            // TODO : NickName 관련 추가.
             SSO_USER_INDEX ssoUserIndex = SSO_USER_INDEX.builder()
                     .id(id)
                     .name(jsonNode.get("name").asText())
@@ -116,6 +117,7 @@ public class OauthService {
 
             SSO_USER_INDEX updatedUser = existingUser.update(
                     jsonNode.get("name").asText(),
+                    jsonNode.get("email").asText(),
                     jsonNode.get("picture").asText()
             );
 

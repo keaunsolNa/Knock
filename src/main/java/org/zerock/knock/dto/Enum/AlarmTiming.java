@@ -5,9 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum SocialLoginType {
-    GOOGLE,
-    KAKAO,
-    NAVER,
-    GUEST
+public enum AlarmTiming {
+    TIMING
 }
