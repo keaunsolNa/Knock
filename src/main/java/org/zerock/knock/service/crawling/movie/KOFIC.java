@@ -263,7 +263,7 @@ public class KOFIC {
             for (int i = 0; i < array.length(); i++)
             {
                 JSONObject actor = array.getJSONObject(i);
-                returnValue[i] = actor.optString("peopleNm") + "(" + actor.optString("cast") + ")";
+                returnValue[i] = actor.optString("peopleNm");
             }
 
             movieIndex.setActors(returnValue);
