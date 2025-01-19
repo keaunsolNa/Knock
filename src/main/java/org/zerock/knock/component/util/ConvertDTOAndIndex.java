@@ -27,7 +27,7 @@ public class ConvertDTOAndIndex {
 
     private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
 
-    public ConvertDTOAndIndex(StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp, ConvertImage convertImage) {
+    public ConvertDTOAndIndex(StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp) {
         this.stringDateConvertLongTimeStamp = stringDateConvertLongTimeStamp;
     }
 
@@ -99,6 +99,8 @@ public class ConvertDTOAndIndex {
         dto.setPosterBase64(index.getPosterBase64());
         dto.setDirectors(index.getDirectors());
         dto.setActors(index.getActors());
+        dto.setCompanyNm(index.getCompanyNm());
+        dto.setCategoryLevelOne(index.getCategoryLevelOne());
         dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
         dto.setRunningTime(index.getRunningTime());
         dto.setPlot(index.getPlot());

@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;
 import org.zerock.knock.repository.movie.MovieRepository;
-import java.util.HashSet;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,18 +65,14 @@ public interface MovieInterface {
             return elasticsearchOperations.search(query, KOFIC_INDEX.class);
         }
 
-        public Iterable<MOVIE_INDEX> updateMovie(Set<MOVIE_INDEX> movieINDEX) {
+        public void updateMovie(MOVIE_INDEX movieINDEX) {
 
-            Set<MOVIE_INDEX> updateList = new HashSet<>();
-            for (MOVIE_INDEX movie : movieINDEX)
-            {
-                MOVIE_INDEX movieIndex = movieRepository.findById(movie.getMovieId()).orElseThrow();
-                movieIndex.setFavorites(movie.getFavorites());
-                movieIndex.setReservationLink(movie.getReservationLink());
-                updateList.add(movieIndex);
-            }
+            MOVIE_INDEX movieIndex = movieRepository.findById(movieINDEX.getMovieId()).orElseThrow();
+            movieIndex.setFavorites(movieINDEX.getFavorites());
+            movieIndex.setReservationLink(movieINDEX.getReservationLink());
 
-            return movieRepository.saveAll(updateList);
+            movieRepository.save(movieIndex);
+
         }
 
         public void deleteMovie() {

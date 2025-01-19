@@ -2,6 +2,7 @@ package org.zerock.knock.controller.movie;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zerock.knock.dto.dto.controller.USER_AND_MOVIE_ID_DTO;
 import org.zerock.knock.dto.dto.movie.MOVIE_DTO;
 import org.zerock.knock.service.layerClass.Movie;
 
@@ -65,23 +66,42 @@ public class MovieController {
 
     /**
      * 영화를 구독한다
-     * @param movieId : 구독할 영화의 ID, user : 대상자 Id
+     * @param requestBody : 구독할 영화의 ID, 대상자 ID
      * @return boolean : 대상 영화 구독 성공 여부
      */
+    @CrossOrigin
     @PostMapping("/sub")
-    public boolean subscribe(@RequestBody String movieId, @RequestParam String userId) {
+    public ResponseEntity<Boolean> subscribe(@RequestBody USER_AND_MOVIE_ID_DTO requestBody)
+    {
 
-        return false;
+        String userId = requestBody.getUserId();
+        String movieId = requestBody.getMovieId();
+
+        return ResponseEntity.ok(movieService.subscribeMovie(userId, movieId));
     }
 
     /**
      * 영화를 구독 해지한다.
-     * @param movieId : 구독 해지할 영화의 ID, user : 대상자 Id
+     * @param requestBody : 구독 해지할 영화의 ID 대상자 Id
      * @return boolean : 대상 영화 구독 해지 성공 여부
      */
     @PostMapping("cancelSub")
-    public boolean subscribeCancel (@RequestBody String movieId, @RequestParam String userId) {
+    public ResponseEntity<Boolean> subscribeCancel (@RequestBody USER_AND_MOVIE_ID_DTO requestBody) {
 
-        return false;
+        String userId = requestBody.getUserId();
+        String movieId = requestBody.getMovieId();
+
+        return ResponseEntity.ok(movieService.subscribeCancelMovie(userId, movieId));
     }
+
+    @PostMapping("isSubscribe")
+    public ResponseEntity<Boolean> subscribeCheck(@RequestBody USER_AND_MOVIE_ID_DTO requestBody) {
+
+        String userId = requestBody.getUserId();
+        String movieId = requestBody.getMovieId();
+
+        return ResponseEntity.ok(movieService.subscribeCheck(userId, movieId));
+
+    }
+
 }

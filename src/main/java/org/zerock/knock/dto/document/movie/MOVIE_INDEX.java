@@ -15,6 +15,7 @@ import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -55,7 +56,7 @@ public class MOVIE_INDEX {
 
     private String plot;
 
-    private Iterable<String> favorites;
+    private Set<String> favorites;
 
     @Builder
     public MOVIE_INDEX
@@ -63,7 +64,7 @@ public class MOVIE_INDEX {
              String[] reservationLink, String posterBase64, String[] directors,
              String[] actors, String[] companyNm,  CategoryLevelOne categoryLevelOne,
              Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime,
-             String plot, Iterable<String> favorites )
+             String plot, Set<String> favorites )
     {
         this.movieId = movieId;
         this.movieNm = movieNm;
@@ -85,7 +86,7 @@ public class MOVIE_INDEX {
             (String movieNm, Long openingTime, String[] reservationLink, String posterBase64,
              String[] directors, String[] actors, String[] companyNm,  CategoryLevelOne categoryLevelOne,
              Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime,
-             String plot, Iterable<String> favorites )
+             String plot, Set<String> favorites )
     {
         this.movieNm = movieNm;
         this.openingTime = openingTime;

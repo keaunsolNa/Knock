@@ -4,6 +4,8 @@ import lombok.Data;
 import org.zerock.knock.dto.Enum.CategoryLevelOne;
 import org.zerock.knock.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 
+import java.util.Set;
+
 @Data
 public class MOVIE_DTO {
 
@@ -20,5 +22,5 @@ public class MOVIE_DTO {
     private Iterable<CATEGORY_LEVEL_TWO_DTO> categoryLevelTwo;
     private Long runningTime;
     private String plot;
-    private Iterable<String> favorites;
+    private Set<String> favorites;
 }
