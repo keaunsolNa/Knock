@@ -1,5 +1,8 @@
 package org.zerock.knock.service.oAuth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.zerock.knock.component.util.RandomNickNameMaker;
+import org.zerock.knock.dto.Enum.Role;
+import org.zerock.knock.dto.Enum.SocialLoginType;
+import org.zerock.knock.dto.document.user.SSO_USER_INDEX;
+import org.zerock.knock.repository.user.SSOUserRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +37,8 @@ public class GoogleOauth implements SocialOauth
     private String GOOGLE_TOKEN_BASE_URL;
     @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String GOOGLE_USER_INFO_URI;
+
+    private final SSOUserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(GoogleOauth.class);
     @Override
@@ -69,18 +79,65 @@ public class GoogleOauth implements SocialOauth
     }
 
     @Override
-    public String requestUserInfo(String accessToken)
+    public void requestUserInfo(String accessToken)
     {
 
+        ObjectMapper mapper = new ObjectMapper();
         RestTemplate restTemplate = new RestTemplate();
-
         final HttpHeaders headers = new HttpHeaders();
+
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         final HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(GOOGLE_USER_INFO_URI, HttpMethod.GET, httpEntity, String.class)
+        String userInfo = restTemplate.exchange(GOOGLE_USER_INFO_URI, HttpMethod.GET, httpEntity, String.class)
                 .getBody();
 
+        JsonNode jsonNode = null;
+        try
+        {
+            jsonNode = mapper.readTree(userInfo);
+        }
+        catch (JsonProcessingException e)
+        {
+            logger.debug(e.getMessage());
+        }
+
+        assert jsonNode != null;
+        String id = jsonNode.get("sub").asText();
+
+        if (userRepository.findById(id).isEmpty())
+        {
+
+            RandomNickNameMaker randomNickNameMaker = new RandomNickNameMaker();
+
+            SSO_USER_INDEX ssoUserIndex = SSO_USER_INDEX.builder()
+                    .id(id)
+                    .name(jsonNode.get("name").asText())
+                    .email(jsonNode.get("email").asText())
+                    .nickName(randomNickNameMaker.makeRandomNickName())
+                    .picture(jsonNode.get("picture").asText())
+                    .loginType(SocialLoginType.GOOGLE)
+                    .role(Role.USER)
+                    .build();
+
+            userRepository.save(ssoUserIndex);
+
+        }
+        else
+        {
+            SSO_USER_INDEX existingUser = userRepository.findById(id).get();
+
+            SSO_USER_INDEX updatedUser = existingUser.update(
+                    jsonNode.get("name").asText(),
+                    jsonNode.get("email").asText(),
+                    jsonNode.get("picture").asText()
+            );
+
+            userRepository.save(updatedUser);
+
+        }
+
+        logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
     }
 }

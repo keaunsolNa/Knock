@@ -1,4 +1,167 @@
 package org.zerock.knock.service.oAuth;
 
-public class KakaoOauth {
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.zerock.knock.dto.Enum.Role;
+import org.zerock.knock.dto.Enum.SocialLoginType;
+import org.zerock.knock.dto.document.user.SSO_USER_INDEX;
+import org.zerock.knock.repository.user.SSOUserRepository;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+public class KakaoOauth implements SocialOauth {
+
+    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
+    private String KAKAO_BASE_URL;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String KAKAO_CLIENT_ID;
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String KAKAO_CALLBACK_URL;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String KAKAO_CLIENT_SECRET;
+    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    private String KAKAO_TOKEN_URI;
+    @Value("${spring.security.oauth2.client.registration.kakao.authorization-grant-type}")
+    private String KAKAO_GRANT_TYPE;
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+    private String KAKAO_USER_INFO_URI;
+
+    private final SSOUserRepository userRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(GoogleOauth.class);
+    @Override
+    public String getOauthRedirectURL() {
+
+        String requestURL = KAKAO_BASE_URL + "?response_type=code&client_id=" + KAKAO_CLIENT_ID + "&redirect_uri=" + KAKAO_CALLBACK_URL;
+        logger.info("{} URL ", requestURL);
+        return requestURL;
+    }
+
+    @Override
+    public String requestAccessToken(String code) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("grant_type", KAKAO_GRANT_TYPE);
+        params.put("client_id", KAKAO_CLIENT_ID);
+        params.put("code", code);
+        params.put("client_secret", KAKAO_CLIENT_SECRET);
+
+        String parameterString = params.entrySet().stream()
+                .map(x -> x.getKey() + "=" + x.getValue())
+                .collect(Collectors.joining("&"));
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(parameterString, headers);
+
+        try {
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(KAKAO_TOKEN_URI, requestEntity, String.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK)
+            {
+                logger.info("Kakao Token Response: {}", responseEntity.getBody());
+                return responseEntity.getBody();
+            }
+            else
+            {
+                logger.error("Failed to retrieve Kakao token: {}", responseEntity.getStatusCode());
+                throw new RuntimeException("Failed to retrieve Kakao token");
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("Exception during Kakao token retrieval: ", e);
+            throw new RuntimeException("Exception during Kakao token retrieval", e);
+        }
+
+    }
+
+    @Override
+    public void requestUserInfo(String accessToken) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        RestTemplate restTemplate = new RestTemplate();
+        final HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);  // Access token 인가
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        JsonNode jsonNode;
+
+        try {
+
+            // GET 요청 전송
+            ResponseEntity<String> responseEntity = restTemplate.exchange(KAKAO_USER_INFO_URI,HttpMethod.GET,requestEntity,String.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK)
+            {
+                jsonNode = mapper.readTree(responseEntity.getBody());
+            }
+            else
+            {
+                logger.error("Failed to retrieve Kakao user info: {}", responseEntity.getStatusCode());
+                throw new RuntimeException("Failed to retrieve Kakao user info");
+            }
+
+        }
+        catch (Exception e)
+        {
+            logger.error("Exception during Kakao user info retrieval: ", e);
+            throw new RuntimeException("Exception during Kakao user info retrieval", e);
+        }
+
+        assert jsonNode != null;
+        String id = jsonNode.get("id").asText();
+
+        System.out.println(jsonNode);
+
+        if (userRepository.findById(id).isEmpty())
+        {
+
+            SSO_USER_INDEX ssoUserIndex = SSO_USER_INDEX.builder()
+                    .id(id)
+                    .name(jsonNode.get("properties").get("nickname").asText())
+                    .email("익명")
+                    .nickName(jsonNode.get("properties").get("nickname").asText())
+                    .picture(jsonNode.get("properties").get("profile_image").asText())
+                    .loginType(SocialLoginType.KAKAO)
+                    .role(Role.USER)
+                    .build();
+
+            userRepository.save(ssoUserIndex);
+
+        }
+        else
+        {
+            SSO_USER_INDEX existingUser = userRepository.findById(id).get();
+
+            SSO_USER_INDEX updatedUser = existingUser.update(
+                    jsonNode.get("properties").get("nickname").asText(),
+                    "익명",
+                    jsonNode.get("properties").get("profile_image").asText()
+            );
+
+            userRepository.save(updatedUser);
+
+        }
+
+        logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
+
+    }
 }

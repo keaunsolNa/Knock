@@ -24,7 +24,8 @@ public class SSO_USER_INDEX {
     private String name;
 
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
-    @Column(nullable = false)
+//    @Column(nullable = false)
+    //TODO : KAKAO 비즈 앱 동의 이후 nullable = false
     private String email;
 
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)

@@ -5,7 +5,7 @@ import org.zerock.knock.dto.Enum.SocialLoginType;
 public interface SocialOauth {
     String getOauthRedirectURL();
     String requestAccessToken(String code);
-    String requestUserInfo(String accessToken);
+    void requestUserInfo(String accessToken);
 
     default SocialLoginType type() {
         return switch (this) {
