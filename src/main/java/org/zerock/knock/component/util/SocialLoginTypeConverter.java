@@ -1,15 +1,15 @@
 package org.zerock.knock.component.util;
 
 import lombok.NonNull;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 import org.zerock.knock.dto.Enum.SocialLoginType;
 
 /**
  * @author nks
  * @apiNote Social Login Type(Google, NAVER, KAKAO)를 받아 각각의 enum 으로 전환한다.
  */
-@Configuration
+@Component
 public class SocialLoginTypeConverter implements Converter<String, SocialLoginType> {
 
     /**
