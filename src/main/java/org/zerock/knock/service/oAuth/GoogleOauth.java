@@ -1,6 +1,5 @@
 package org.zerock.knock.service.oAuth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author nks
+ * @apiNote Google SSO Login API
+ */
 @Component
 @RequiredArgsConstructor
 public class GoogleOauth implements SocialOauth
 {
 
+    // application.yml
     @Value("${spring.security.oauth2.client.provider.google.authorization-uri}")
     private String GOOGLE_BASE_URL;
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -41,8 +45,12 @@ public class GoogleOauth implements SocialOauth
     private String GOOGLE_GRANT_TYPE;
 
     private final SSOUserRepository userRepository;
-
     private static final Logger logger = LoggerFactory.getLogger(GoogleOauth.class);
+
+    /**
+     * controller 에서 요청을 받을 경우 Google SSO 요청을 하는 페이지 GET 방식 이동 한다.
+     * @return Request URI
+     */
     @Override
     public String getOauthRedirectURL() {
 
@@ -59,8 +67,14 @@ public class GoogleOauth implements SocialOauth
         return GOOGLE_BASE_URL + "?" + parameterString;
     }
 
+    /**
+     * Get 요청 이후 유저가 로그인 한 후, callback page 에서 받은 verify code 통해 accessToken 요청한다.
+     * @param code : verify code
+     * @return AccessToken / RuntimeException
+     */
     @Override
     public String requestAccessToken(String code) {
+
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, Object> params = new HashMap<>();
@@ -70,16 +84,33 @@ public class GoogleOauth implements SocialOauth
         params.put("redirect_uri", GOOGLE_CALLBACK_URL);
         params.put("grant_type", GOOGLE_GRANT_TYPE);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(GOOGLE_TOKEN_URL, params, String.class);
+        try {
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK)
-        {
-            return responseEntity.getBody();
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(GOOGLE_TOKEN_URL, params, String.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK)
+            {
+                return responseEntity.getBody();
+            }
+            else
+            {
+                logger.error("Failed to retrieve Google token: {}", responseEntity.getStatusCode());
+                throw new RuntimeException("Failed to retrieve Google token");
+            }
         }
-        return "구글 로그인 요청 처리 실패";
+        catch (Exception e)
+        {
+            logger.error("Exception during Kakao token retrieval: ", e);
+            throw new RuntimeException("Exception during Kakao token retrieval", e);
+        }
 
     }
 
+    /**
+     * AccessToken 받은 후 user 정보를 요청하는 API
+     * userInfo 를 받은 경우, 해당하는 id가 sso-user-index 에 있다면 update, 없다면 insert 수행
+     * @param accessToken : 전달받은 AccessToken
+     */
     @Override
     public void requestUserInfo(String accessToken)
     {
@@ -91,18 +122,28 @@ public class GoogleOauth implements SocialOauth
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         final HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        JsonNode jsonNode;
 
-        String userInfo = restTemplate.exchange(GOOGLE_USER_INFO_URI, HttpMethod.GET, httpEntity, String.class)
-                .getBody();
+        try {
 
-        JsonNode jsonNode = null;
-        try
-        {
-            jsonNode = mapper.readTree(userInfo);
+            // GET 요청 전송
+            ResponseEntity<String> responseEntity = restTemplate.exchange(GOOGLE_USER_INFO_URI, HttpMethod.GET, httpEntity, String.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK)
+            {
+                jsonNode = mapper.readTree(responseEntity.getBody());
+            }
+            else
+            {
+                logger.error("Failed to retrieve Google user info: {}", responseEntity.getStatusCode());
+                throw new RuntimeException("Failed to retrieve Google user info");
+            }
+
         }
-        catch (JsonProcessingException e)
+        catch (Exception e)
         {
-            logger.debug(e.getMessage());
+            logger.error("Exception during Google user info retrieval: ", e);
+            throw new RuntimeException("Exception during Google user info retrieval", e);
         }
 
         assert jsonNode != null;

@@ -18,10 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author nks
+ * @apiNote Kakao SSO Login API
+ */
 @Component
 @RequiredArgsConstructor
 public class KakaoOauth implements SocialOauth {
 
+    // application.yml
     @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String KAKAO_BASE_URL;
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
@@ -38,15 +43,23 @@ public class KakaoOauth implements SocialOauth {
     private String KAKAO_USER_INFO_URI;
 
     private final SSOUserRepository userRepository;
-    private static final Logger logger = LoggerFactory.getLogger(GoogleOauth.class);
+    private static final Logger logger = LoggerFactory.getLogger(KakaoOauth.class);
+
+    /**
+     * controller 에서 요청을 받을 경우 Kakao SSO 요청을 하는 페이지 GET 방식 이동 한다.
+     * @return Request URI
+     */
     @Override
     public String getOauthRedirectURL() {
 
-        String requestURL = KAKAO_BASE_URL + "?response_type=code&client_id=" + KAKAO_CLIENT_ID + "&redirect_uri=" + KAKAO_CALLBACK_URL;
-        logger.info("{} URL ", requestURL);
-        return requestURL;
+        return KAKAO_BASE_URL + "?response_type=code&client_id=" + KAKAO_CLIENT_ID + "&redirect_uri=" + KAKAO_CALLBACK_URL;
     }
 
+    /**
+     * Get 요청 이후 유저가 로그인 한 후, callback page 에서 받은 verify code 통해 accessToken 요청한다.
+     * @param code : verify code
+     * @return AccessToken / RuntimeException
+     */
     @Override
     public String requestAccessToken(String code) {
 
@@ -67,13 +80,12 @@ public class KakaoOauth implements SocialOauth {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(parameterString, headers);
 
-        try {
-
+        try
+        {
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(KAKAO_TOKEN_URI, requestEntity, String.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK)
             {
-                logger.info("Kakao Token Response: {}", responseEntity.getBody());
                 return responseEntity.getBody();
             }
             else
@@ -90,6 +102,11 @@ public class KakaoOauth implements SocialOauth {
 
     }
 
+    /**
+     * AccessToken 받은 후 user 정보를 요청하는 API
+     * userInfo 를 받은 경우, 해당하는 id가 sso-user-index 에 있다면 update, 없다면 insert 수행
+     * @param accessToken : 전달받은 AccessToken
+     */
     @Override
     public void requestUserInfo(String accessToken) {
 
@@ -98,7 +115,7 @@ public class KakaoOauth implements SocialOauth {
         final HttpHeaders headers = new HttpHeaders();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);  // Access token 인가
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         JsonNode jsonNode;
@@ -106,7 +123,7 @@ public class KakaoOauth implements SocialOauth {
         try {
 
             // GET 요청 전송
-            ResponseEntity<String> responseEntity = restTemplate.exchange(KAKAO_USER_INFO_URI,HttpMethod.GET,requestEntity,String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(KAKAO_USER_INFO_URI, HttpMethod.GET, requestEntity, String.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK)
             {
@@ -127,8 +144,6 @@ public class KakaoOauth implements SocialOauth {
 
         assert jsonNode != null;
         String id = jsonNode.get("id").asText();
-
-        System.out.println(jsonNode);
 
         if (userRepository.findById(id).isEmpty())
         {

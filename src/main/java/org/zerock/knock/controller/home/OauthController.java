@@ -41,7 +41,6 @@ public class OauthController {
                            @RequestParam(name = "code") String code)
     {
 
-        logger.info(" code :: {}", code);
         oauthService.requestAccessToken(socialLoginType, code);
 
         // TODO : 랜딩페이지로 redirect

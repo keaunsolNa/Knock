@@ -94,6 +94,11 @@ public class MovieController {
         return ResponseEntity.ok(movieService.subscribeCancelMovie(userId, movieId));
     }
 
+    /**
+     * 영화를 구독 해지한다.
+     * @param requestBody : 구독 정보를 확인할 영화의 ID 대상자 Id
+     * @return boolean : 대상 영화 구독 여부
+     */
     @PostMapping("isSubscribe")
     public ResponseEntity<Boolean> subscribeCheck(@RequestBody USER_AND_MOVIE_ID_DTO requestBody) {
 

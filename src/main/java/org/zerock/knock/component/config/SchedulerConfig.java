@@ -20,7 +20,7 @@ import org.zerock.knock.service.crawling.movie.MegaBox;
 @Slf4j
 public class SchedulerConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(KOFIC.class);
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final KOFIC kofic;
     private final MegaBox megaBox;
 

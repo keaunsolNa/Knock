@@ -5,9 +5,17 @@ import org.zerock.knock.dto.dictionary.Dictionary;
 
 import java.util.Random;
 
+/**
+ * @author nks
+ * @apiNote 임시 닉네임을 만들기 위한 클래스
+ */
 @Component
 public class RandomNickNameMaker {
 
+    /**
+     * 임시 닉네임을 만든다.
+     * 명명규칙 : [형용사] [동물이름][3자리숫자]
+     */
     public String makeRandomNickName()
     {
 
