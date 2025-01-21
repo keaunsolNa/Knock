@@ -38,7 +38,6 @@ public class KakaoOauth implements SocialOauth {
     private String KAKAO_USER_INFO_URI;
 
     private final SSOUserRepository userRepository;
-
     private static final Logger logger = LoggerFactory.getLogger(GoogleOauth.class);
     @Override
     public String getOauthRedirectURL() {

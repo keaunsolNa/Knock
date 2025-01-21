@@ -34,9 +34,11 @@ public class GoogleOauth implements SocialOauth
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
     @Value("${spring.security.oauth2.client.provider.google.token-uri}")
-    private String GOOGLE_TOKEN_BASE_URL;
+    private String GOOGLE_TOKEN_URL;
     @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
     private String GOOGLE_USER_INFO_URI;
+    @Value("${spring.security.oauth2.client.registration.google.authorization-grant-type}")
+    private String GOOGLE_GRANT_TYPE;
 
     private final SSOUserRepository userRepository;
 
@@ -66,9 +68,9 @@ public class GoogleOauth implements SocialOauth
         params.put("client_id", GOOGLE_CLIENT_ID);
         params.put("client_secret", GOOGLE_CLIENT_SECRET);
         params.put("redirect_uri", GOOGLE_CALLBACK_URL);
-        params.put("grant_type", "authorization_code");
+        params.put("grant_type", GOOGLE_GRANT_TYPE);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(GOOGLE_TOKEN_BASE_URL, params, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(GOOGLE_TOKEN_URL, params, String.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK)
         {

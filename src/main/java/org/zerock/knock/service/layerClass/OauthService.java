@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.dto.Enum.SocialLoginType;
-import org.zerock.knock.repository.user.SSOUserRepository;
 import org.zerock.knock.service.oAuth.SocialOauth;
 
 import java.io.IOException;
