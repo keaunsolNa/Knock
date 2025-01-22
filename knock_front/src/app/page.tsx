@@ -15,6 +15,9 @@ export default function Home() {
       <Link href={'/movie'} className={styles.link} scroll={false}>
         영화
       </Link>
+      <Link href={'/login'} className={styles.link} scroll={false}>
+        로그인
+      </Link>
     </div>
   );
 }

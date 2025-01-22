@@ -19,6 +19,7 @@ export default async function Page({
   }
 
   const movieDetail: IMovie = await response.json();
+  console.log(movieDetail);
 
   return (
     <div>
@@ -37,7 +38,9 @@ export default async function Page({
 
         <button className={styles.btn__subscribe}>
           <BsBellFill />
-          <span>{movieDetail.favorites.length}</span>
+          <span>
+            {movieDetail.favorites ? movieDetail.favorites.length : '0'}
+          </span>
         </button>
       </div>
 
@@ -72,7 +75,7 @@ export default async function Page({
           </div>
           <div className={styles.table_tr}>
             <div className={styles.table_th}>러닝타임</div>
-            <div className={styles.table_td}>{movieDetail.runningTime}</div>
+            <div className={styles.table_td}>{movieDetail.runningTime}분</div>
           </div>
         </section>
 
