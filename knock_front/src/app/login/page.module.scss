@@ -1,0 +1,105 @@
+.container {
+  padding: 30px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+.intro {
+  flex-grow: 1;
+  padding: 50px 0;
+
+  p {
+    font-family: $font-family;
+    font-size: 1.2rem;
+    font-weight: $font-default;
+    line-height: 2rem;
+  }
+
+  .span__category {
+    font-size: 2rem;
+    font-weight: $font-bold;
+  }
+
+  .span__point {
+    color: $orange;
+  }
+
+  .div__logo {
+    font-family: $font-logo;
+    font-weight: 400;
+    font-size: 70px;
+    letter-spacing: 5px;
+  }
+}
+
+.section__login {
+  position: relative;
+  height: 300px;
+  border-top: 0.7px solid $gray-dark;
+  padding: 30px 0;
+
+  .section__title {
+    position: absolute;
+    top: -20px;
+    left: calc(50% - 110px);
+    width: 220px;
+    padding: 0 20px;
+    height: 40px;
+
+    font-size: 1rem;
+    color: $gray-dark;
+    background-color: $white;
+    line-height: 40px;
+    text-align: center;
+  }
+
+  .button__list {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    div {
+      display: grid;
+      grid-template-columns: 50px auto;
+      text-align: center;
+      align-items: center;
+      width: 100%;
+      height: 50px;
+      border-radius: 12px;
+      box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.54);
+      cursor: pointer;
+
+      img {
+        width: 50px;
+        height: 50px;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+      }
+    }
+  }
+
+  .btn__kakao {
+    background-color: #fee500;
+    color: #000000 85%;
+  }
+
+  .btn__naver {
+    background-color: #03c75a;
+    color: #ffffff;
+  }
+
+  .btn__google {
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .btn__guest {
+    color: $gray-dark;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+}
