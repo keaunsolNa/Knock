@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.zerock.knock.component.config.JwtTokenProvider;
 import org.zerock.knock.dto.Enum.Role;
 import org.zerock.knock.dto.Enum.SocialLoginType;
 import org.zerock.knock.dto.document.user.SSO_USER_INDEX;
@@ -44,6 +45,7 @@ public class KakaoOauth implements SocialOauth {
 
     private final SSOUserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(KakaoOauth.class);
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * controller 에서 요청을 받을 경우 Kakao SSO 요청을 하는 페이지 GET 방식 이동 한다.
@@ -106,9 +108,10 @@ public class KakaoOauth implements SocialOauth {
      * AccessToken 받은 후 user 정보를 요청하는 API
      * userInfo 를 받은 경우, 해당하는 id가 sso-user-index 에 있다면 update, 없다면 insert 수행
      * @param accessToken : 전달받은 AccessToken
+     * @return 반환될 JWT Token
      */
     @Override
-    public void requestUserInfo(String accessToken) {
+    public String requestUserInfo(String accessToken) {
 
         ObjectMapper mapper = new ObjectMapper();
         RestTemplate restTemplate = new RestTemplate();
@@ -144,6 +147,7 @@ public class KakaoOauth implements SocialOauth {
 
         assert jsonNode != null;
         String id = jsonNode.get("id").asText();
+        String token;
 
         if (userRepository.findById(id).isEmpty())
         {
@@ -159,7 +163,7 @@ public class KakaoOauth implements SocialOauth {
                     .build();
 
             userRepository.save(ssoUserIndex);
-
+            token = jwtTokenProvider.generateAccessToken(ssoUserIndex);
         }
         else
         {
@@ -172,10 +176,11 @@ public class KakaoOauth implements SocialOauth {
             );
 
             userRepository.save(updatedUser);
-
+            token = jwtTokenProvider.generateAccessToken(updatedUser);
         }
 
         logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
 
+        return token;
     }
 }

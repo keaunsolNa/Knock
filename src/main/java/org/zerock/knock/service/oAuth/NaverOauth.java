@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.zerock.knock.component.util.RandomNickNameMaker;
+import org.zerock.knock.component.config.JwtTokenProvider;
+import org.zerock.knock.component.util.maker.RandomNickNameMaker;
 import org.zerock.knock.dto.Enum.Role;
 import org.zerock.knock.dto.Enum.SocialLoginType;
 import org.zerock.knock.dto.document.user.SSO_USER_INDEX;
@@ -47,6 +48,7 @@ public class NaverOauth implements SocialOauth {
 
     private final SSOUserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(NaverOauth.class);
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * controller 에서 요청을 받을 경우 Naver SSO 요청을 하는 페이지 GET 방식 이동 한다.
@@ -125,9 +127,10 @@ public class NaverOauth implements SocialOauth {
      * AccessToken 받은 후 user 정보를 요청하는 API
      * userInfo 를 받은 경우, 해당하는 id가 sso-user-index 에 있다면 update, 없다면 insert 수행
      * @param accessToken : 전달받은 AccessToken
+     * @return 반환될 JWT Token
      */
     @Override
-    public void requestUserInfo(String accessToken) {
+    public String requestUserInfo(String accessToken) {
 
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
@@ -168,6 +171,7 @@ public class NaverOauth implements SocialOauth {
 
         assert jsonNode != null;
         String id = jsonNode.get("id").asText();
+        String token;
 
         if (userRepository.findById(id).isEmpty())
         {
@@ -185,6 +189,7 @@ public class NaverOauth implements SocialOauth {
                     .build();
 
             userRepository.save(ssoUserIndex);
+            token = jwtTokenProvider.generateAccessToken(ssoUserIndex);
 
         }
         else
@@ -198,9 +203,11 @@ public class NaverOauth implements SocialOauth {
             );
 
             userRepository.save(updatedUser);
-
+            token = jwtTokenProvider.generateAccessToken(updatedUser);
         }
 
         logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
+
+        return token;
     }
 }

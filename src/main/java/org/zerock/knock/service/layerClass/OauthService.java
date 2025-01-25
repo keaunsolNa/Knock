@@ -37,7 +37,7 @@ public class OauthService {
         }
     }
 
-    public void requestAccessToken(SocialLoginType socialLoginType, String code) {
+    public String requestAccessToken(SocialLoginType socialLoginType, String code) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
 
         String callBackResponse = socialOauth.requestAccessToken(code);
@@ -58,8 +58,7 @@ public class OauthService {
         assert jsonNode != null;
         String accessToken = jsonNode.get("access_token").asText();
 
-        socialOauth.requestUserInfo(accessToken);
-
+        return socialOauth.requestUserInfo(accessToken);
     }
 
     private SocialOauth findSocialOauthByType(SocialLoginType socialLoginType) {
