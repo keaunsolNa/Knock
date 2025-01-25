@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
-import org.zerock.knock.component.util.ConvertDTOAndIndex;
+import org.zerock.knock.component.util.converter.ConvertDTOAndIndex;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.dto.document.movie.MOVIE_INDEX;

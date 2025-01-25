@@ -1,4 +1,4 @@
-package org.zerock.knock.component.util;
+package org.zerock.knock.component.util.converter;
 
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;

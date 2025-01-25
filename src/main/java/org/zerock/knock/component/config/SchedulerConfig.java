@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.zerock.knock.service.crawling.movie.KOFIC;
 import org.zerock.knock.service.crawling.movie.MegaBox;
 
@@ -15,7 +15,7 @@ import org.zerock.knock.service.crawling.movie.MegaBox;
  * @author nks
  * @apiNote Scheduler 로 제어되는 설정들
  */
-@Component
+@Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class SchedulerConfig {

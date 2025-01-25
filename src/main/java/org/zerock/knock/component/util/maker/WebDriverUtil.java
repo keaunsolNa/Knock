@@ -1,10 +1,10 @@
-package org.zerock.knock.component.config;
+package org.zerock.knock.component.util.maker;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
@@ -12,7 +12,7 @@ import java.time.Duration;
  * @author nks
  * @apiNote WebDriver 설정을 제어하고 생성된 객체를 반환한다.
  */
-@Configuration
+@Component
 public class WebDriverUtil {
 
     /**

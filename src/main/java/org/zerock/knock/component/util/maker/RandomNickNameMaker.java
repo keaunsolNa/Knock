@@ -1,4 +1,4 @@
-package org.zerock.knock.component.util;
+package org.zerock.knock.component.util.maker;
 
 import org.springframework.stereotype.Component;
 import org.zerock.knock.dto.dictionary.Dictionary;
