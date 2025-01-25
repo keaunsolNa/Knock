@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zerock.knock.dto.Enum.CategoryLevelOne;
-import org.zerock.knock.component.util.StringDateConvertLongTimeStamp;
+import org.zerock.knock.component.util.converter.StringDateConvertLongTimeStamp;
 import org.zerock.knock.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.zerock.knock.dto.document.movie.KOFIC_INDEX;
 import org.zerock.knock.repository.category.CategoryLevelTwoRepository;
