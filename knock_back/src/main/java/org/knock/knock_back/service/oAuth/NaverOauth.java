@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -208,6 +209,8 @@ public class NaverOauth implements SocialOauth {
 
         logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
 
-        return token;
+        Optional<SSO_USER_INDEX> user = userRepository.findById(jwtTokenProvider.getUserPk(token));
+        return user.map(ssoUserIndex -> ssoUserIndex.getFavoriteLevelOne().name()).orElse(token);
+
     }
 }

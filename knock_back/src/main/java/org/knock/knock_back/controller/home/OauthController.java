@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 import org.knock.knock_back.service.layerClass.OauthService;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * @author nks
@@ -37,13 +38,17 @@ public class OauthController {
      * @param code : SSO 요청 후 받은 반환 값인 AccessToken
      */
     @GetMapping(value = "/{socialLoginType}/callback")
-    public String callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
-                           @RequestParam(name = "code") String code)
+    @ResponseBody
+    public RedirectView callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
+                                 @RequestParam(name = "code") String code)
     {
 
-        String token = oauthService.requestAccessToken(socialLoginType, code);
+        String favoriteCategory = oauthService.requestAccessToken(socialLoginType, code);
 
-        // TODO : 랜딩페이지로 redirect
-        return null;
+        logger.info("{} Callback", favoriteCategory);
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("http://192.168.56.1:3000/movie");
+
+        return redirectView;
     }
 }

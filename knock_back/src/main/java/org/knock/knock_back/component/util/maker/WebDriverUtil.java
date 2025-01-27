@@ -1,5 +1,6 @@
 package org.knock.knock_back.component.util.maker;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -12,11 +13,12 @@ import java.time.Duration;
  * @author nks
  * @apiNote WebDriver 설정을 제어하고 생성된 객체를 반환한다.
  */
+@Slf4j
 @Component
 public class WebDriverUtil {
 
     /**
-     * 이미지를 Base64로 변환하는 유틸리티 메서드.
+     * ChromeDriver 옵션 지정 및 생성
      * @return 생성된 WebDriver 객체
      */
     @Bean
@@ -24,14 +26,26 @@ public class WebDriverUtil {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-gpu");
         options.addArguments("--log-level=3");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--blink-settings=imagesEnabled=false");
+        options.addArguments("--disable-notifications");
+
+//        options.addArguments("--disable-default-apps");
+//        options.addArguments("--disable-blink-features=AutomationControlled");
+//        options.addArguments("--remote-allow-origins=*");
+//        options.addArguments("--single-process");
+//        options.addArguments("--ignore-ssl-errors=yes");
+//        options.addArguments("--ignore-certificate-errors");
+//        options.addArguments("--remote-debugging-port=9222");
+
+
 
         WebDriver driver = new ChromeDriver(options);
-
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10000));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
 
         return driver;
 

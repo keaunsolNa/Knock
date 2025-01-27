@@ -54,9 +54,11 @@ public class JwtKeyConverter implements Converter<Jwt, AbstractAuthenticationTok
             }
             else if (key.equals(JwtRule.RESOURCE_ACCESS.getValue()))
             {
+                @SuppressWarnings("unchecked")
                 Map<String, List<String>> resourceAccess = (Map<String, List<String>>) entry.getValue();
                 if (resourceAccess.containsKey(JwtRule.ACCOUNT.getValue()))
                 {
+                    @SuppressWarnings("unchecked")
                     Map<String, List<String>> account = (Map<String, List<String>>) resourceAccess.get("account");
                     if (account.containsKey(JwtRule.ROLES.getValue()))
                     {
