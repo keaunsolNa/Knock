@@ -43,7 +43,8 @@ public class OauthController {
 
         System.out.println(favoriteCategory);
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("http://192.168.56.1:3000/movie");
+        // TODO : front domain으로 반환 및 redirectView 관련 추가
+        redirectView.setUrl("http://localhost:3000/movie");
 
         return redirectView;
     }

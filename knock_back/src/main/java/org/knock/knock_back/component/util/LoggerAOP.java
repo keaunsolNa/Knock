@@ -51,4 +51,24 @@ public class LoggerAOP {
 
         return result;
     }
+
+    @Around("execution(* org.knock.knock_back.component.filter..*(..))")
+    public Object FilterTimerLogger(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        logger.info("Entering FilterTimerLogger");
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        Object result = joinPoint.proceed();
+
+        stopWatch.stop();
+
+        logger.info("{} took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
+
+        logger.info("Exiting FilterTimerLogger");
+
+        return result;
+    }
+
 }
