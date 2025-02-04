@@ -1,7 +1,5 @@
 package org.knock.knock_back.service.crawling.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
 
@@ -18,9 +16,7 @@ import java.util.Set;
  */
 public abstract class AbstractCrawlingService implements CrawlingInterface {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Movie movieService;
-
     protected AbstractCrawlingService(Movie movieService) {
         this.movieService = movieService;
     }
@@ -38,8 +34,6 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
     @Override
     public void addNewIndex() {
 
-        logger.info("{} START", getClass().getSimpleName());
-
         ElementExtractor extractor = new ElementExtractor(getUrlPath(), getCssQuery());
         extractor.setUpDriver();
         extractor.preparePage(extractor.getDriver(), prepareCss());
@@ -52,7 +46,6 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
         }
 
         saveData(dtos);
-        logger.info("{} END", getClass().getSimpleName());
     }
 
     /**
@@ -61,7 +54,6 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
      */
     protected void saveData(Set<MOVIE_DTO> dtos) {
 
-        logger.info("SAVE DATA--------");
         movieService.createMovie(dtos);
     }
 

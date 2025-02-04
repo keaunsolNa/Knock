@@ -1,7 +1,5 @@
 package org.knock.knock_back.controller.crawling;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +14,6 @@ import org.knock.knock_back.service.crawling.movie.MegaBox;
 @RestController
 @RequestMapping("/api/crawling")
 public class CrawlingController {
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final MegaBox megaBox;
     private final KOFICService koficService;
@@ -34,7 +30,6 @@ public class CrawlingController {
     @GetMapping("/megaBox")
     public void crawlingMegaBox() {
         megaBox.addNewIndex();
-        logger.info("Crawling MegaBox End");
     }
 
     /**
@@ -43,7 +38,6 @@ public class CrawlingController {
     @GetMapping("/kofic")
     public void crawlingKOFIC() {
         koficService.startCrawling();
-        logger.info("Crawling KOFIC End");
     }
 
 }

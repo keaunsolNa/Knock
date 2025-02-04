@@ -13,8 +13,6 @@ public class InterPark implements CrawlingInterface {
     @Override
     public void addNewIndex() {
 
-        logger.info("InterPark START");
-
         // Webdriver initialize
         String url = "https://ticket.interpark.com/webzine/paper/TPNoticeList.asp?tid1=in_scroll&tid2=ticketopen&tid3=board_main&tid4=board_main";
         String cssQuery = "div.section_notice > div.board > div.list > div.table > table > tbody > tr";
@@ -30,7 +28,6 @@ public class InterPark implements CrawlingInterface {
 
         Elements elements = extractor.getElements();
 
-        logger.info("{}", elements);
         for (Element element : elements)
         {
             Elements titleElements = element.select("tr > td.subject > a");
