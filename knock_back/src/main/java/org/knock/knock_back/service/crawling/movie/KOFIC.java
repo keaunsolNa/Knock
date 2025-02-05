@@ -65,7 +65,6 @@ public class KOFIC {
     @Async
     public void requestAPI() {
 
-        logger.info("{} START", getClass().getSimpleName());
         logger.info("Running in thread: {}", Thread.currentThread().getName());
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
@@ -101,7 +100,6 @@ public class KOFIC {
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
                 if (Integer.parseInt(paramMap.get("curPage")) > 3000) break;
-                logger.info("[{}]", requestURL);
                 JSONObject boxOfficeResult = getJsonObject(requestURL, "movieListResult");
 
                 if (null == boxOfficeResult)

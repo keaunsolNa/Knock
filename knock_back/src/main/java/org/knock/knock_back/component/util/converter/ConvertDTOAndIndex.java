@@ -1,16 +1,12 @@
 package org.knock.knock_back.component.util.converter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.knock.knock_back.dto.document.movie.KOFIC_INDEX;
 import org.knock.knock_back.dto.document.movie.MOVIE_INDEX;
-import org.knock.knock_back.dto.document.user.USER_INDEX;
 import org.knock.knock_back.dto.dto.category.CATEGORY_LEVEL_TWO_DTO;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
-import org.knock.knock_back.dto.dto.user.USER_DTO;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -22,8 +18,6 @@ import java.util.Set;
  */
 @Component
 public class ConvertDTOAndIndex {
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final StringDateConvertLongTimeStamp stringDateConvertLongTimeStamp;
 
@@ -72,7 +66,6 @@ public class ConvertDTOAndIndex {
      */
     public Set<MOVIE_DTO> MovieIndexToDTO(Iterable<MOVIE_INDEX> indexs) {
 
-        logger.info("[{}] ", indexs);
         Set<MOVIE_DTO> result = new LinkedHashSet<>();
         for (MOVIE_INDEX index : indexs) {
             result.add(MovieIndexToDTO(index));
@@ -183,37 +176,5 @@ public class ConvertDTOAndIndex {
 
 
         return result;
-    }
-
-    /**
-     * USER INDEX -> USER DTO
-     *
-     * @param index 변환할 USER_INDEX 객체
-     * @return USER_DTO 반환할 USER_DTO 객체
-     */
-    public Set<USER_DTO> userIndexToUserDto (Iterable<USER_INDEX> index) {
-
-        Set<USER_DTO> set = new HashSet<>();
-
-        USER_DTO userDto = new USER_DTO();
-
-        set.add(userDto);
-        return set;
-    }
-
-    /**
-     * USER DTO -> USER INDEX
-     *
-     * @param dto 변환할 USER_DTO 객체
-     * @return Set<USER_DTO> 반환할 USER_DTO 객체
-     */
-    public Set<USER_INDEX> userDtoToUserIndex (Iterable<USER_DTO> dto) {
-
-        Set<USER_INDEX> set = new HashSet<>();
-
-        USER_INDEX userIndex = new USER_INDEX();
-
-        set.add(userIndex);
-        return set;
     }
 }

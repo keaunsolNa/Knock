@@ -58,8 +58,6 @@ public class MegaBox extends AbstractCrawlingService {
     protected void processElement(Element element, Set<MOVIE_DTO> dtos) {
         MOVIE_DTO dto = new MOVIE_DTO();
 
-        logger.info("{} START", getClass().getSimpleName());
-
         Elements titleElements = element.select("div.tit-area > p.tit");
 
         String tile = Objects.requireNonNull(titleElements.first()).text();
@@ -104,7 +102,6 @@ public class MegaBox extends AbstractCrawlingService {
         setPlot(element, dto);
 
         dtos.add(dto);
-        logger.info("{} END", getClass().getSimpleName());
     }
 
     private void setReservationLink(Element element, MOVIE_DTO dto) {
