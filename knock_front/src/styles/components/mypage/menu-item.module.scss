@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 20px;
+
+  width: 100%;
+  height: 50px;
+}
+
+.div__col_name {
+  font-size: 1.2rem;
+  flex-grow: 1;
+}
+
+.div__col_value {
+  font-size: 1rem;
+  color: $gray-dark;
+
+  margin-right: 10px;
+}
+
+.div__col_arrow {
+  height: 20px;
+  svg {
+    height: 100%;
+    fill: $gray-light;
+  }
+}

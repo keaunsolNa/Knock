@@ -1,0 +1,69 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: $padding-page;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.div__about {
+  padding: 10px;
+  border-radius: $border-radius--default;
+  background-color: $gray;
+  color: $gray-darker;
+  font-size: 0.9rem;
+  font-size: $font-thin;
+}
+
+.div__radio_box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px;
+
+  div {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    font-size: 1.3rem;
+  }
+
+  input {
+    margin-right: 10px;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    background-color: white;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  input:checked {
+    border-color: #ff6347;
+    background-color: #ff6347;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 10px;
+      height: 10px;
+      background-color: white;
+      border-radius: 50%;
+    }
+  }
+
+  label {
+    color: $gray-dark;
+    transition: all 0.3s ease-in-out;
+  }
+
+  input:checked + label {
+    color: black;
+  }
+}

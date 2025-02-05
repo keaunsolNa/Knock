@@ -1,15 +1,20 @@
 .container {
   width: 100%;
+  height: 60px;
+
   position: sticky;
   z-index: $header;
   top: 0px;
+
   display: flex;
+  align-items: center;
+
   padding: $padding-page;
   padding-top: 10px;
   padding-bottom: 10px;
-  align-items: center;
+
   gap: 20px;
-  background-color: $white;
+  background-color: inherit;
 
   svg {
     width: 30px;
@@ -17,13 +22,22 @@
   }
 }
 
+.prev {
+  cursor: pointer;
+}
+
 .cur {
   flex-grow: 1;
-  font-size: 24px;
-  font-weight: $font-default;
+
+  span {
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: $font-default;
+  }
 }
 
 .menu {
+  cursor: pointer;
   svg:last-child {
     margin-left: 10px;
   }
