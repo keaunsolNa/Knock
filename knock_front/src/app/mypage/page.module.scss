@@ -62,8 +62,13 @@
 }
 
 .div__menu_box {
+  padding: 0 20px;
   background-color: $white;
   border-radius: $border-radius--default;
+
+  > a:last-child > div {
+    border-bottom: none;
+  }
 }
 
 .section__account {

@@ -6,6 +6,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Header() {
   const pathName = usePathname().split('/').slice(1);
@@ -43,10 +44,12 @@ export default function Header() {
       <div className={styles.cur}>
         <span>{curMenu()}</span>
       </div>
-      <div className={styles.menu}>
-        {pathName[0] !== 'mypage' ? <FaUserCircle /> : null}
-        <FiMenu />
-      </div>
+      <Link href={'/menu'}>
+        <div className={styles.menu}>
+          {pathName[0] !== 'mypage' ? <FaUserCircle /> : null}
+          <FiMenu />
+        </div>
+      </Link>
     </nav>
   );
 }

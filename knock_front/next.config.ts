@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   },
   sassOptions: {
     prependData:
-      "@use '@/styles/mixin' as *; @use '@/styles/variables' as *; @use '@/styles/z-index' as *;",
+      " @use '@/styles/variables' as *; @use '@/styles/mixin' as *; @use '@/styles/z-index' as *;",
   },
   images: {
     remotePatterns: [
