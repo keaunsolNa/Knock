@@ -19,7 +19,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: flex-end;
   margin-bottom: 30px;
 
   span {
@@ -34,6 +34,7 @@
     border-radius: 20px;
     padding: 2px 3px;
     display: flex;
+    cursor: pointer;
   }
 
   .div__toggle_circle {
@@ -54,10 +55,13 @@
     display: flex;
     align-items: center;
     height: 40px;
+    cursor: pointer;
   }
 
   label {
     font-size: 20px;
+    line-height: 20px;
+    cursor: pointer;
   }
 }
 
