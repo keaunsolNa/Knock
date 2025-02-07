@@ -12,15 +12,15 @@ export default function Page() {
         <div className={styles.div__radio_box}>
           <div>
             <input type="radio" id="movie" name="category" value="movie" />
-            <label>영화</label>
+            <label htmlFor="movie">영화</label>
           </div>
           <div>
             <input type="radio" id="musical" name="category" value="musical" />
-            <label>뮤지컬</label>
+            <label htmlFor="musical">뮤지컬</label>
           </div>
           <div>
             <input type="radio" id="opera" name="category" value="opera" />
-            <label>오페라</label>
+            <label htmlFor="opera">오페라</label>
           </div>
           <div>
             <input
@@ -29,7 +29,7 @@ export default function Page() {
               name="category"
               value="exhibition"
             />
-            <label>전시회</label>
+            <label htmlFor="exhibition">전시회</label>
           </div>
         </div>
       </form>

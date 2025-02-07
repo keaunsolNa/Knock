@@ -1,0 +1,77 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: $padding-page;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.div__about {
+  @include about-box();
+}
+
+.form__setting {
+  padding: 0 20px;
+}
+
+.div__toggle_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 30px;
+
+  span {
+    font-size: 25px;
+    font-weight: $font-bold;
+  }
+
+  .div__toggle_bar {
+    width: 60px;
+    height: 32px;
+    background-color: #34c759;
+    border-radius: 20px;
+    padding: 2px 3px;
+    display: flex;
+  }
+
+  .div__toggle_circle {
+    width: 27px;
+    height: 27px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0px 0px 5px gray;
+  }
+}
+
+.div__radio_box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  div {
+    display: flex;
+    align-items: center;
+    height: 40px;
+  }
+
+  label {
+    font-size: 20px;
+  }
+}
+
+.input__radio {
+  @include radio();
+
+  &:checked {
+    @include radioCheck();
+  }
+  &:checked + .label__radio {
+    @include radioLabelCheck();
+  }
+}
+
+.label__radio {
+  @include radioLabel();
+}
