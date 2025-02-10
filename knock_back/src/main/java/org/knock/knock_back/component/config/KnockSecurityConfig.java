@@ -42,6 +42,8 @@ public class KnockSecurityConfig {
                 // CSRF 보호 비활성화
                 // TODO : 보호하고, Front 요청만 허용
                 .csrf((AbstractHttpConfigurer::disable))
+                // CORS 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // 세션을 설정하지 않도록 (매 요청마다 JWT 검증)
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -68,7 +70,7 @@ public class KnockSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 Origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 HTTP 메서드
-        configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        configuration.setAllowedHeaders(List.of("Authorization, Content-Type, Credentials")); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

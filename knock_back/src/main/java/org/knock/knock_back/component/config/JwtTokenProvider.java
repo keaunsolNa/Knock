@@ -30,7 +30,6 @@ public class JwtTokenProvider {
     private static final KeyMaker keyMaker = new KeyMaker();
     private static final SecretKey KEY = keyMaker.generateKey();
 
-    private final Long ACCESS_EXPIRATION = 4 * 60 * 60 * 1000L;
     private final SSOUserRepository ssoUserRepository;
 
     @Value("${spring.security.oauth2.authorizationserver.issuer}")
@@ -46,6 +45,8 @@ public class JwtTokenProvider {
 
         long now = System.currentTimeMillis();
 
+
+        long ACCESS_EXPIRATION = 60 * 30L;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
@@ -68,11 +69,12 @@ public class JwtTokenProvider {
 
         long now = System.currentTimeMillis();
 
+        long REFRESH_EXPIRATION = 60 * 60 * 24 * 30L;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
                 .subject(user.getRoleKey())
-                .expiration(new Date(now + ACCESS_EXPIRATION))
+                .expiration(new Date(now + REFRESH_EXPIRATION))
                 .signWith(KEY)
                 .compact();
 
@@ -132,7 +134,14 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "");
     }
 
-
+    /**
+     * refreshToken 통해 USER_SSO_INDEX 정보를 가져온다.
+     * @param token : 대상 refreshToken
+     * @retrun 유저 정보
+     */
+    public SSO_USER_INDEX getUserDetails(String token) {
+        return ssoUserRepository.findById(this.getUserPk(token)).orElseThrow();
+    }
     /**
      * Token 유효성 여부를 판별한다.
      * @param jwtToken : 매개변수로 받은 JWT 토큰 (As Expect)

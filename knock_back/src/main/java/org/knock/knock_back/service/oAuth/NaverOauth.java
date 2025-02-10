@@ -20,7 +20,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -172,7 +171,6 @@ public class NaverOauth implements SocialOauth {
 
         assert jsonNode != null;
         String id = jsonNode.get("id").asText();
-        String token;
 
         if (userRepository.findById(id).isEmpty())
         {
@@ -190,7 +188,6 @@ public class NaverOauth implements SocialOauth {
                     .build();
 
             userRepository.save(ssoUserIndex);
-            token = jwtTokenProvider.generateAccessToken(ssoUserIndex);
 
         }
         else
@@ -204,13 +201,11 @@ public class NaverOauth implements SocialOauth {
             );
 
             userRepository.save(updatedUser);
-            token = jwtTokenProvider.generateAccessToken(updatedUser);
         }
 
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userRepository.findById(id).get());
         logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
 
-        Optional<SSO_USER_INDEX> user = userRepository.findById(jwtTokenProvider.getUserPk(token));
-        return user.map(ssoUserIndex -> ssoUserIndex.getFavoriteLevelOne().name()).orElse(token);
-
+        return refreshToken;
     }
 }

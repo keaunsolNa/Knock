@@ -9,9 +9,9 @@ public interface SocialOauth {
 
     default SocialLoginType type() {
         return switch (this) {
-            case GoogleOauth googleOauth -> SocialLoginType.GOOGLE;
-            case NaverOauth naverOauth -> SocialLoginType.NAVER;
-            case KakaoOauth kakaoOauth -> SocialLoginType.KAKAO;
+            case GoogleOauth _ -> SocialLoginType.GOOGLE;
+            case NaverOauth _ -> SocialLoginType.NAVER;
+            case KakaoOauth _ -> SocialLoginType.KAKAO;
             default -> null;
         };
     }
