@@ -1,3 +1,4 @@
+import { Providers } from '@/redux/provider';
 import './globals.scss';
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_KR, Anton, Roboto } from 'next/font/google';
@@ -39,7 +40,9 @@ export default function RootLayout({
       <body
         className={`${notoSansKR.variable} ${anton.variable} ${roboto.variable}`}
       >
-        <div>{children}</div>
+        <Providers>
+          <div>{children}</div>
+        </Providers>
       </body>
     </html>
   );
