@@ -59,7 +59,14 @@ public class Movie implements MovieInterface {
     {
         SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNm(nm);
 
-        return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();
+        try
+        {
+            return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();
+        }
+        catch (NullPointerException e)
+        {
+            return null;
+        }
     }
 
     public Map<String, Object> getCategory()
