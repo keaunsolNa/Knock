@@ -46,7 +46,7 @@ export default function Page() {
             className={styles.div__toggle_bar}
             onClick={() => setAlarm((prev) => !prev)}
             style={{
-              justifyContent: 'flex-' + (alarm ? 'end' : 'start'),
+              justifyContent: alarm ? 'flex-end' : 'flex-start',
               backgroundColor: alarm ? '#34c759' : '#d9d9da',
             }}
           >
