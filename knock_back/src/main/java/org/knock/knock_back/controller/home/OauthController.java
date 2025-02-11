@@ -3,7 +3,7 @@ package org.knock.knock_back.controller.home;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,27 +45,35 @@ public class OauthController {
      */
     @GetMapping(value = "/{socialLoginType}/callback")
     @ResponseBody
-    public ResponseEntity<?> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
-                                   @RequestParam(name = "code") String code, HttpServletResponse httpServletResponse) throws IOException {
+    public ResponseEntity<Map<String, String>>  callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
+                                    @RequestParam(name = "code") String code, HttpServletResponse httpServletResponse) {
 
         // refreshToken
         String refreshToken = oauthService.requestAccessToken(socialLoginType, code);
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
-//        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setHttpOnly(true);
+
         // TODO : HTTPS 빌드 이후 true로 변경
-//        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30);
         refreshTokenCookie.setAttribute("SameSite", "None");
 
         httpServletResponse.addCookie(refreshTokenCookie);
 
+        System.out.println(refreshTokenCookie);
         System.out.println("TOKEN : " + refreshTokenCookie.getValue());
-        httpServletResponse.sendRedirect("http://localhost:3000/login/auth");
+//        httpServletResponse.sendRedirect("http://localhost:3000/login/auth");
 
-        return ResponseEntity.ok().build();
+        Map<String, String> responseBody = Map.of("redirect_url", "http://localhost:3000/login/auth");
+        return ResponseEntity.ok(responseBody);
+//        RedirectView redirectView = new RedirectView();
+//        redirectView.setUrl("http://localhost:3000/login/auth");
 
+//        return redirectView;
+//        return ResponseEntity.ok().build();
+//        return ResponseEntity.ok(Map.of("redirect_url", "http://localhost:3000/login/auth")).;
     }
 
     /**
@@ -77,10 +85,8 @@ public class OauthController {
     public ResponseEntity<String> getAccessToken( HttpServletRequest request ) {
 
         System.out.println(request);
+
         String token = request.getHeader("X-AUTH-TOKEN");
-        System.out.println(request.getHeader("X-AUTH-TOKEN"));
-        System.out.println(request.getHeader("Authorization"));
-        System.out.println("==========");
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아오기.
