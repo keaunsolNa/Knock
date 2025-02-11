@@ -338,3 +338,4 @@ frontend/package-lock.json
 /*.csv
 /build/*
 /.gradle/*
+/knock_back/src/main/resources/keystore.p12
