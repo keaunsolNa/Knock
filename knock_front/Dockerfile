@@ -5,7 +5,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 패키지 파일을 복사
-COPY ./package.json ./
+COPY ./package.json ./package-lock.json ./
 
 # NPM INSTALL
 RUN npm install
