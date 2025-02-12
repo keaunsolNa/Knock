@@ -14,12 +14,16 @@
   padding-bottom: 10px;
 
   gap: 20px;
-  background-color: inherit;
+  background-color: $white;
 
   svg {
     width: 30px;
     height: 30px;
   }
+}
+
+.bg_color {
+  background-color: inherit;
 }
 
 .prev {

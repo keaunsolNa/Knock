@@ -37,7 +37,9 @@ export default function Header() {
     }
   };
   return (
-    <nav className={styles.container}>
+    <nav
+      className={`${styles.container} ${pathName[0] === 'mypage' && styles.bg_color}`}
+    >
       <div className={styles.prev} onClick={handleGoBack}>
         <FaArrowLeft />
       </div>
