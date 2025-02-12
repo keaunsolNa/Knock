@@ -8,6 +8,7 @@ export interface IUser {
   id: string;
   nme: string;
 }
+
 export interface ICategoryLevelTwo {
   id: string;
   nm: string;
