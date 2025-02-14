@@ -28,21 +28,6 @@ body {
   -moz-osx-font-smoothing: grayscale; /* macOS */
 }
 
-body > div {
-  max-width: 100%;
-  margin: 0 auto;
-
-  @include mobile {
-    width: 100%;
-  }
-  @include tablet {
-    width: 90%;
-  }
-  @include desktop {
-    width: 70%;
-  }
-}
-
 a {
   text-decoration: none;
   color: inherit;

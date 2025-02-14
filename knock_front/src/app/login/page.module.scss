@@ -30,6 +30,10 @@
     justify-content: space-between;
     align-items: center;
 
+    a {
+      width: 100%;
+    }
+
     div {
       display: grid;
       grid-template-columns: 50px auto;
@@ -72,38 +76,38 @@
   }
 }
 
-.section__error {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 30px;
-  font-size: 1.2rem;
-  color: $gray-dark;
+// .section__error {
+//   display: flex;
+//   align-items: center;
+//   flex-direction: column;
+//   gap: 30px;
+//   font-size: 1.2rem;
+//   color: $gray-dark;
 
-  .btn__retry {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: $white;
-    border: 1px solid $gray;
-    border-radius: 50%;
-    box-shadow: 0px 0px 3px $gray;
-    cursor: pointer;
+//   .btn__retry {
+//     width: 50px;
+//     height: 50px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     background-color: $white;
+//     border: 1px solid $gray;
+//     border-radius: 50%;
+//     box-shadow: 0px 0px 3px $gray;
+//     cursor: pointer;
 
-    svg {
-      width: 30px;
-      height: 30px;
-    }
-  }
-}
+//     svg {
+//       width: 30px;
+//       height: 30px;
+//     }
+//   }
+// }
 
-.section__loading {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 30px;
-  font-size: 1.2rem;
-  color: $gray-dark;
-}
+// .section__loading {
+//   display: flex;
+//   align-items: center;
+//   flex-direction: column;
+//   gap: 30px;
+//   font-size: 1.2rem;
+//   color: $gray-dark;
+// }

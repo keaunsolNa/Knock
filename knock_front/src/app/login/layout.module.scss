@@ -1,12 +1,13 @@
 .container {
+  width: 100%;
+  height: 100vh;
   padding: 30px 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
 }
 
-.container__about {
+.section__about {
   flex-grow: 1;
   padding: 50px 0;
 
