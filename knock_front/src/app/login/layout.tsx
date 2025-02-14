@@ -3,7 +3,7 @@ import styles from './layout.module.scss';
 
 function AboutKnock() {
   return (
-    <section className={styles.container__about}>
+    <section className={styles.section__about}>
       <p className={styles.span__about}>
         <span className={styles.span__category}>
           영화, 뮤지컬,
@@ -23,11 +23,18 @@ function AboutKnock() {
   );
 }
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout({
+  children,
+  modal,
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   return (
     <div className={styles.container}>
       <AboutKnock />
       {children}
+      {modal}
     </div>
   );
 }
