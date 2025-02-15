@@ -3,7 +3,6 @@ package org.knock.knock_back.service.layerClass;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,33 +10,29 @@ import org.springframework.stereotype.Service;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 import org.knock.knock_back.service.oAuth.SocialOauth;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class OauthService {
 
     private final List<SocialOauth> socialOauthList;
-    private final HttpServletResponse response;
     private static final Logger logger = LoggerFactory.getLogger(OauthService.class);
 
-    public void request(SocialLoginType socialLoginType)
+    public Map<String, String> request(SocialLoginType socialLoginType)
     {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
         String redirectURL = socialOauth.getOauthRedirectURL();
 
-        try
-        {
-            response.sendRedirect(redirectURL);
-        }
-        catch (IOException e)
-        {
-            logger.debug(e.getMessage());
-        }
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("redirect_url", redirectURL);
+
+        return responseBody;
     }
 
-    public String requestAccessToken(SocialLoginType socialLoginType, String code) {
+    public String[] requestAccessToken(SocialLoginType socialLoginType, String code) {
         SocialOauth socialOauth = this.findSocialOauthByType(socialLoginType);
 
         String callBackResponse = socialOauth.requestAccessToken(code);

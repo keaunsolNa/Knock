@@ -3,6 +3,8 @@ package org.knock.knock_back.controller.home;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
@@ -31,49 +33,53 @@ public class OauthController {
      * @param socialLoginType : 로그인할 SSO Type (Google, NAVER, KAKAO)
      */
     @GetMapping(value = "/{socialLoginType}")
-    public void socialLoginType(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType) {
-        oauthService.request(socialLoginType);
+    public ResponseEntity<Map<String, String>> socialLoginType(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType) {
+
+        return ResponseEntity.ok()
+                .body(oauthService.request(socialLoginType));
+//        oauthService.request(socialLoginType);
     }
 
     /**
      * SSO 요청 후 Refresh 받는 callback Controller
      * 각 SocialLoginType 별 반환 값을 받은 뒤 service 계층에 전달한다.
      * @param socialLoginType : 로그인할 SSO Type (Google, NAVER, KAKAO)
-     * @param code : SSO 요청 후 받은 반환 값인 AccessToken
+     * @param authorizationCode : SSO 요청 후 받은 반환 값인 verify code
      * @param httpServletResponse : 반환 될 response 객체
      * @return token : response 객체에 refresh 토큰 담아 반환
      */
     @GetMapping(value = "/{socialLoginType}/callback")
     @ResponseBody
-    public ResponseEntity<Map<String, String>>  callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
-                                    @RequestParam(name = "code") String code, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<Map<String, String>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
+                                    @RequestParam(name = "authorizationCode") String authorizationCode, HttpServletResponse httpServletResponse) {
 
         // refreshToken
-        String refreshToken = oauthService.requestAccessToken(socialLoginType, code);
+        String[] tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode);
+        String refreshTokenValue = tokens[0];
+        String accessTokenValue = tokens[1];
 
-        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
+        Cookie accessToken = new Cookie("accessToken", accessTokenValue);
+        Cookie refreshToken = new Cookie("refreshToken", refreshTokenValue);
 
-        // TODO : HTTPS 빌드 이후 true로 변경
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30);
-        refreshTokenCookie.setAttribute("SameSite", "None");
+        refreshToken.setHttpOnly(true);
+        refreshToken.setSecure(true);
+//        accessToken.setDomain("localhost");
+        refreshToken.setPath("/");
+        refreshToken.setMaxAge(60 * 60 * 24 * 30);
+        refreshToken.setAttribute("SameSite", "None");
 
-        httpServletResponse.addCookie(refreshTokenCookie);
+        httpServletResponse.addCookie(refreshToken);
 
-        System.out.println(refreshTokenCookie);
-        System.out.println("TOKEN : " + refreshTokenCookie.getValue());
-//        httpServletResponse.sendRedirect("http://localhost:3000/login/auth");
+        System.out.println("ACCESS_TOKEN : " + accessToken.getValue());
+        System.out.println("REFRESH_TOKEN : " + refreshToken.getValue());
+        String redirectUrl = "http://localhost:3000/movie";
 
-        Map<String, String> responseBody = Map.of("redirect_url", "http://localhost:3000/login/auth");
-        return ResponseEntity.ok(responseBody);
-//        RedirectView redirectView = new RedirectView();
-//        redirectView.setUrl("http://localhost:3000/login/auth");
+        Map<String, String> response = new HashMap<>();
+        response.put("redirect_url", redirectUrl);
+        response.put("access_token", accessTokenValue);
 
-//        return redirectView;
-//        return ResponseEntity.ok().build();
-//        return ResponseEntity.ok(Map.of("redirect_url", "http://localhost:3000/login/auth")).;
+        return ResponseEntity.ok(response);
+
     }
 
     /**

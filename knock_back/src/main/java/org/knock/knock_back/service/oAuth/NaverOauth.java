@@ -130,7 +130,7 @@ public class NaverOauth implements SocialOauth {
      * @return 반환될 JWT Token
      */
     @Override
-    public String requestUserInfo(String accessToken) {
+    public String[] requestUserInfo(String accessToken) {
 
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper mapper = new ObjectMapper();
@@ -203,9 +203,11 @@ public class NaverOauth implements SocialOauth {
             userRepository.save(updatedUser);
         }
 
-        String refreshToken = jwtTokenProvider.generateRefreshToken(userRepository.findById(id).get());
+        String userRefreshToken = jwtTokenProvider.generateRefreshToken(userRepository.findById(id).get());
+        String userAccessToken = jwtTokenProvider.generateAccessToken(userRepository.findById(id).get());
+
         logger.info("LOGIN : [{}]", userRepository.findById(id).get().getName());
 
-        return refreshToken;
+        return new String[] { userRefreshToken, userAccessToken };
     }
 }

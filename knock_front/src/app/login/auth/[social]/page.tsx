@@ -18,9 +18,12 @@ export default function Page() {
   const getJwtToken = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/${social}?authorizationCode=${authorizationCode}`,
+        `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/${social}/callback?authorizationCode=${authorizationCode}`,
         {
           method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           credentials: 'include',
         }
       );
