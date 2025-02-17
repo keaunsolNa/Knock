@@ -102,6 +102,8 @@ public class JwtTokenProvider {
      */
     public String resolveToken(HttpServletRequest request) {
 
+        logger.debug("[{}] Resolving token", request.getCookies());
+        logger.debug("[{}] Resolving token", request.getParameterMap());
         return request.getHeader("X-AUTH-TOKEN");
 
     }

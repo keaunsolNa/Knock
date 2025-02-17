@@ -58,20 +58,20 @@ public class OauthController {
         String refreshTokenValue = tokens[0];
         String accessTokenValue = tokens[1];
 
-        Cookie accessToken = new Cookie("accessToken", accessTokenValue);
-        Cookie refreshToken = new Cookie("refreshToken", refreshTokenValue);
+        Cookie refreshTokenForKnock = new Cookie("refreshTokenForKnock", refreshTokenValue);
 
-        refreshToken.setHttpOnly(true);
-        refreshToken.setSecure(true);
-//        accessToken.setDomain("localhost");
-        refreshToken.setPath("/");
-        refreshToken.setMaxAge(60 * 60 * 24 * 30);
-        refreshToken.setAttribute("SameSite", "None");
+        refreshTokenForKnock.setPath("/");
+        refreshTokenForKnock.setHttpOnly(true);
+        refreshTokenForKnock.setSecure(true);
+        refreshTokenForKnock.setMaxAge(7 * 24 * 24 * 30);
+//        accessToken.setDomain("203.229.246.216");
+        refreshTokenForKnock.setDomain("203.229.246.216");
+        refreshTokenForKnock.setAttribute("SameSite", "None");
 
-        httpServletResponse.addCookie(refreshToken);
+        httpServletResponse.addCookie(refreshTokenForKnock);
 
-        System.out.println("ACCESS_TOKEN : " + accessToken.getValue());
-        System.out.println("REFRESH_TOKEN : " + refreshToken.getValue());
+        System.out.println("ACCESS_TOKEN : " + accessTokenValue);
+        System.out.println("REFRESH_TOKEN : " + refreshTokenForKnock.getValue());
         String redirectUrl = "http://localhost:3000/movie";
 
         Map<String, String> response = new HashMap<>();
