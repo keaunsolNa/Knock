@@ -48,7 +48,7 @@ public class OauthController {
      * @param httpServletResponse : 반환 될 response 객체
      * @return token : response 객체에 refresh 토큰 담아 반환
      */
-    @GetMapping(value = "/{socialLoginType}/callback")
+    @PostMapping(value = "/login/{socialLoginType}/callback")
     @ResponseBody
     public ResponseEntity<Map<String, String>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
                                     @RequestParam(name = "authorizationCode") String authorizationCode, HttpServletResponse httpServletResponse) {
