@@ -3,13 +3,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface AuthState {
   accessToken: string | null;
   isLoading: boolean;
-  error: string | null;
+  error: boolean;
 }
 
 const initialState: AuthState = {
   accessToken: null,
   isLoading: false,
-  error: null,
+  error: false,
 };
 
 export const refreshAccessToken = createAsyncThunk(
@@ -30,11 +30,9 @@ export const refreshAccessToken = createAsyncThunk(
       }
 
       const data = await response.json();
-
-      return data.accessToken;
+      return data;
     } catch (error) {
-      console.log(error);
-      rejectWithValue('토큰 갱신 실패');
+      return rejectWithValue('네트워크 오류 발생');
     }
   }
 );
@@ -54,15 +52,15 @@ const authSlice = createSlice({
     builder
       .addCase(refreshAccessToken.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        state.error = false;
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.isLoading = false;
         state.accessToken = action.payload.accessToken;
       })
-      .addCase(refreshAccessToken.rejected, (state, action) => {
+      .addCase(refreshAccessToken.rejected, (state) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = true;
       });
   },
 });
