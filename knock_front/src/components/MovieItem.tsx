@@ -7,6 +7,7 @@ import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { IMovie } from '@/types';
 import Link from 'next/link';
+import { store } from '@/redux/store';
 
 interface IProps extends IMovie {
   display: boolean;
@@ -14,6 +15,7 @@ interface IProps extends IMovie {
 
 export default function MovieItem(props: IProps) {
   const [alarm, setAlarm] = useState(false);
+  const accessToken = store.getState().auth.accessToken;
 
   const handleAlarmClick = (e: React.MouseEvent) => {
     e.stopPropagation();
