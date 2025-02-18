@@ -10,6 +10,9 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 import org.knock.knock_back.component.config.JwtTokenProvider;
+import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
@@ -27,6 +30,7 @@ public class OauthController {
 
     private final OauthService oauthService;
     private final JwtTokenProvider jwtTokenProvider;
+    private static final Logger logger = LoggerFactory.getLogger(OauthController.class);
 
     /**
      * SSO LOGIN 시도 시 인입되는 페이지. 각 요청 별 enum 타입으로 Service request 시행
@@ -48,35 +52,24 @@ public class OauthController {
      * @param httpServletResponse : 반환 될 response 객체
      * @return token : response 객체에 refresh 토큰 담아 반환
      */
+    @CrossOrigin
     @PostMapping(value = "/login/{socialLoginType}/callback")
     @ResponseBody
     public ResponseEntity<Map<String, String>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
-                                    @RequestParam(name = "authorizationCode") String authorizationCode, HttpServletResponse httpServletResponse) {
+                                                        @RequestBody Map<String, String> authorizationCode, HttpServletResponse httpServletResponse) {
 
         // refreshToken
-        String[] tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode);
+        String[] tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode.get("authorizationCode"));
         String refreshTokenValue = tokens[0];
-        String accessTokenValue = tokens[1];
 
         Cookie refreshTokenForKnock = new Cookie("refreshTokenForKnock", refreshTokenValue);
 
-        refreshTokenForKnock.setPath("/");
-        refreshTokenForKnock.setHttpOnly(true);
-        refreshTokenForKnock.setSecure(true);
-        refreshTokenForKnock.setMaxAge(7 * 24 * 24 * 30);
-//        accessToken.setDomain("203.229.246.216");
-        refreshTokenForKnock.setDomain("203.229.246.216");
-        refreshTokenForKnock.setAttribute("SameSite", "None");
+        makeToken(httpServletResponse, refreshTokenForKnock);
 
-        httpServletResponse.addCookie(refreshTokenForKnock);
-
-        System.out.println("ACCESS_TOKEN : " + accessTokenValue);
-        System.out.println("REFRESH_TOKEN : " + refreshTokenForKnock.getValue());
-        String redirectUrl = "http://localhost:3000/movie";
+        String redirectUrl = "http://localhost:3000/";
 
         Map<String, String> response = new HashMap<>();
         response.put("redirect_url", redirectUrl);
-        response.put("access_token", accessTokenValue);
 
         return ResponseEntity.ok(response);
 
@@ -88,22 +81,49 @@ public class OauthController {
      */
     @PostMapping(value = "/getAccessToken")
     @ResponseBody
-    public ResponseEntity<String> getAccessToken( HttpServletRequest request ) {
+    public ResponseEntity<Map<String, String>> getAccessToken( HttpServletRequest request, HttpServletResponse httpServletResponse ) {
 
-        System.out.println(request);
-
-        String token = request.getHeader("X-AUTH-TOKEN");
+        String token = jwtTokenProvider.resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아오기.
+            try
+            {
+                SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(token);
+                String accessToken = jwtTokenProvider.generateAccessToken(user);
 
-            String accessToken = jwtTokenProvider.generateAccessToken(jwtTokenProvider.getUserDetails(token));
+                Cookie accessTokenForKnock = new Cookie("accessToken", accessToken);
 
-            return ResponseEntity.ok(accessToken);
+                makeToken(httpServletResponse, accessTokenForKnock);
 
+                String redirectUrl = "http://localhost:3000/movie";
+
+                Map<String, String> response = new HashMap<>();
+                response.put("redirect_url", redirectUrl);
+
+                return ResponseEntity.ok(response);
+
+            }
+            catch (Exception e)
+            {
+                logger.error(e.getMessage());
+                return ResponseEntity.badRequest().build();
+            }
         }
 
         return ResponseEntity.badRequest().build();
 
+    }
+
+    private void makeToken(HttpServletResponse httpServletResponse, Cookie accessTokenForKnock) {
+
+        accessTokenForKnock.setPath("/");
+        accessTokenForKnock.setHttpOnly(true);
+        accessTokenForKnock.setSecure(true);
+        accessTokenForKnock.setMaxAge(7 * 24 * 24 * 30);
+        accessTokenForKnock.setDomain("203.229.246.216");
+        accessTokenForKnock.setAttribute("SameSite", "None");
+
+        httpServletResponse.addCookie(accessTokenForKnock);
     }
 }

@@ -1,6 +1,7 @@
 package org.knock.knock_back.component.config;
 
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -73,7 +74,8 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
-                .subject(user.getRoleKey())
+                .claims(createClaims(user))
+                .subject(String.valueOf(user.getId()))
                 .expiration(new Date(now + REFRESH_EXPIRATION))
                 .signWith(KEY)
                 .compact();
@@ -102,9 +104,17 @@ public class JwtTokenProvider {
      */
     public String resolveToken(HttpServletRequest request) {
 
-        logger.debug("[{}] Resolving token", request.getCookies());
-        logger.debug("[{}] Resolving token", request.getParameterMap());
-        return request.getHeader("X-AUTH-TOKEN");
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+
+                if (cookie.getName().equals("refreshTokenForKnock")) {
+                    logger.info("[{}]", cookie.getName() + ": " + cookie.getValue());
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
 
     }
 
@@ -115,13 +125,24 @@ public class JwtTokenProvider {
      */
     public String getUserPk(String token) {
 
-        Claims claims = Jwts.parser()
-                .verifyWith(KEY)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try
+        {
+            Claims claims = Jwts.parser()
+                    .verifyWith(KEY)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-        return claims.get("sub").toString();
+            return claims.getSubject();
+        }
+        catch (Exception e)
+        {
+            logger.error("[{}]", e.getMessage());
+            return null;
+        }
+
+
+
 
     }
 
@@ -151,7 +172,6 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String jwtToken) {
         try {
-
             Jwts.parser()
                 .verifyWith(KEY)
                 .build()
