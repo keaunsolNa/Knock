@@ -70,7 +70,7 @@ public class JwtTokenProvider {
 
         long now = System.currentTimeMillis();
 
-        long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 30L;
+        long REFRESH_EXPIRATION = 7 * 24 * 24 * 30;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)

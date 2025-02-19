@@ -91,12 +91,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아오기.
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
 
-            logger.debug("Authentication: {}", authentication);
-            logger.info(authentication.toString());
             // SecurityContext 에 Authentication 객체를 저장.
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            logger.info(SecurityContextHolder.getContext().toString());
             filterChain.doFilter(request, response);
 
             return;

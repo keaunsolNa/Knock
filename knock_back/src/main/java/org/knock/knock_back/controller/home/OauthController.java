@@ -15,6 +15,7 @@ import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 import org.knock.knock_back.service.layerClass.OauthService;
@@ -89,12 +90,14 @@ public class OauthController {
 
         try
         {
+            logger.info("getAccessToken token: {}", token);
+            logger.info(SecurityContextHolder.getContext().toString());
             SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(token);
             String accessToken = jwtTokenProvider.generateAccessToken(user);
 
             Cookie accessTokenForKnock = new Cookie("accessToken", accessToken);
 
-            tokenMaker.makeRefreshToken(httpServletResponse, accessTokenForKnock);
+            tokenMaker.makeAccessToken(httpServletResponse, accessTokenForKnock);
 
             String redirectUrl = "http://localhost:3000/movie";
 
