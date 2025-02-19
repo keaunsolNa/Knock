@@ -1,8 +1,6 @@
 package org.knock.knock_back.component.config;
 
 import lombok.RequiredArgsConstructor;
-import org.knock.knock_back.component.filter.EncodingFilter;
-import org.knock.knock_back.component.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,8 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class KnockSecurityConfig {
-
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * SecurityFilterChain 을 통해 Spring Security 인증 Filter 생성한다.
@@ -60,8 +55,6 @@ public class KnockSecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtKeyConverter()))
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)  // JWT 필터 추가
-                .addFilterAfter(new EncodingFilter(), JwtAuthenticationFilter.class)    // JWT 필터 이후 Encoding 필터
                 ;
 
         return http.build();

@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 import org.knock.knock_back.component.config.JwtTokenProvider;
+import org.knock.knock_back.component.util.maker.TokenMaker;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class OauthController {
 
     private final OauthService oauthService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenMaker tokenMaker;
     private static final Logger logger = LoggerFactory.getLogger(OauthController.class);
 
     /**
@@ -64,7 +66,7 @@ public class OauthController {
 
         Cookie refreshTokenForKnock = new Cookie("refreshTokenForKnock", refreshTokenValue);
 
-        makeToken(httpServletResponse, refreshTokenForKnock);
+        tokenMaker.makeRefreshToken(httpServletResponse, refreshTokenForKnock);
 
         String redirectUrl = "http://localhost:3000/";
 
@@ -85,45 +87,28 @@ public class OauthController {
 
         String token = jwtTokenProvider.resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아오기.
-            try
-            {
-                SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(token);
-                String accessToken = jwtTokenProvider.generateAccessToken(user);
+        try
+        {
+            SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(token);
+            String accessToken = jwtTokenProvider.generateAccessToken(user);
 
-                Cookie accessTokenForKnock = new Cookie("accessToken", accessToken);
+            Cookie accessTokenForKnock = new Cookie("accessToken", accessToken);
 
-                makeToken(httpServletResponse, accessTokenForKnock);
+            tokenMaker.makeRefreshToken(httpServletResponse, accessTokenForKnock);
 
-                String redirectUrl = "http://localhost:3000/movie";
+            String redirectUrl = "http://localhost:3000/movie";
 
-                Map<String, String> response = new HashMap<>();
-                response.put("redirect_url", redirectUrl);
+            Map<String, String> response = new HashMap<>();
+            response.put("redirect_url", redirectUrl);
 
-                return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
 
-            }
-            catch (Exception e)
-            {
-                logger.error(e.getMessage());
-                return ResponseEntity.badRequest().build();
-            }
+        }
+        catch (Exception e)
+        {
+            logger.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.badRequest().build();
-
-    }
-
-    private void makeToken(HttpServletResponse httpServletResponse, Cookie accessTokenForKnock) {
-
-        accessTokenForKnock.setPath("/");
-        accessTokenForKnock.setHttpOnly(true);
-        accessTokenForKnock.setSecure(true);
-        accessTokenForKnock.setMaxAge(7 * 24 * 24 * 30);
-        accessTokenForKnock.setDomain("203.229.246.216");
-        accessTokenForKnock.setAttribute("SameSite", "None");
-
-        httpServletResponse.addCookie(accessTokenForKnock);
     }
 }

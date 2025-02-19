@@ -47,7 +47,7 @@ public class JwtTokenProvider {
         long now = System.currentTimeMillis();
 
 
-        long ACCESS_EXPIRATION = 60 * 30L;
+        long ACCESS_EXPIRATION = 1000 * 60 * 30L;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
@@ -70,7 +70,7 @@ public class JwtTokenProvider {
 
         long now = System.currentTimeMillis();
 
-        long REFRESH_EXPIRATION = 60 * 60 * 24 * 30L;
+        long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 30L;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
@@ -99,8 +99,8 @@ public class JwtTokenProvider {
 
     /**
      * request 요청 시 헤더에서 토큰 정보를 가져온다.
-     * @param request request 요청 시 header 의 X-AUTH-TOKEN 가져오기
-     * @return 생성된 JWT 토큰
+     * @param request request 요청 시 header 의 Refresh Token 가져오기
+     * @return 생성된 Refresh JWT 토큰
      */
     public String resolveToken(HttpServletRequest request) {
 
@@ -108,6 +108,27 @@ public class JwtTokenProvider {
             for (Cookie cookie : request.getCookies()) {
 
                 if (cookie.getName().equals("refreshTokenForKnock")) {
+                    logger.info("[{}]", cookie.getName() + ": " + cookie.getValue());
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
+
+    }
+
+    /**
+     * request 요청 시 헤더에서 토큰 정보를 가져온다.
+     * @param request request 요청 시 header 의 Access Token 가져오기
+     * @return 생성된 Access JWT 토큰
+     */
+    public String resolveAccessToken(HttpServletRequest request) {
+
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+
+                if (cookie.getName().equals("accessToken")) {
                     logger.info("[{}]", cookie.getName() + ": " + cookie.getValue());
                     return cookie.getValue();
                 }
@@ -172,6 +193,8 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String jwtToken) {
         try {
+
+
             Jwts.parser()
                 .verifyWith(KEY)
                 .build()
@@ -184,19 +207,19 @@ public class JwtTokenProvider {
         catch (ExpiredJwtException exception)
         {
             logger.debug("token expired " + jwtToken);
-            logger.error("Token Expired" + exception);
+            logger.error("Token Expired " + exception);
             return false;
         }
         catch (JwtException exception)
         {
             logger.debug("token expired " + jwtToken);
-            logger.error("Token Tampered" + exception);
+            logger.error("Token Tampered " + exception);
             return false;
         }
         catch (NullPointerException exception)
         {
             logger.debug("token expired " + jwtToken);
-            logger.error("Token is null" + exception);
+            logger.error("Token is null " + exception);
             return false;
         }
     }
