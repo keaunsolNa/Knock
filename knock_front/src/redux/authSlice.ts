@@ -26,6 +26,9 @@ export const refreshAccessToken = createAsyncThunk(
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          return { accessToken: null };
+        }
         throw new Error(`${response.status} : ${response.statusText}`);
       }
 
