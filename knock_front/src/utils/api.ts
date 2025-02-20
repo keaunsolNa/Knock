@@ -1,19 +1,22 @@
 import { refreshAccessToken } from '@/redux/authSlice';
-import { store, useAppDispatch } from '@/redux/store';
+import { store, AppDispatch } from '@/redux/store';
 
 /**
  * 백엔드 api 통신 시, Access Token이 자동으로 추가.
  */
-export const apiRequest = async (url: string, options: RequestInit = {}) => {
-  const dispatch = useAppDispatch();
+export const apiRequest = async (
+  url: string,
+  dispatch: AppDispatch,
+  options: RequestInit = {}
+) => {
   let accessToken = store.getState().auth.accessToken;
-
+  console.log(accessToken);
   let response = await fetch(url, {
     ...options, // method ,body 등과 같은 정보 입력
 
     // Access 토큰 추가 , header option 추가
     headers: {
-      ...options.headers,
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
   });
@@ -28,7 +31,7 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
     response = await fetch(url, {
       ...options,
       headers: {
-        ...options.headers,
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
     });

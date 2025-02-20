@@ -34,9 +34,10 @@ export default function Page() {
         throw new Error(`${response.status} : ${response.statusText}`);
       }
 
-      const { access_token, redirect_url } = await response.json();
-      dispatch(setAccessToken(access_token));
-      router.push(redirect_url);
+      const data = await response.json();
+      console.log(data);
+      dispatch(setAccessToken(data.accessToken.value));
+      router.push(data.redirectUrl);
     } catch (error) {
       console.log(error);
       console.error('----OAuth 로그인 실패----');

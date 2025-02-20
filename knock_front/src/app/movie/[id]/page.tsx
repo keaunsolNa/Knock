@@ -2,7 +2,7 @@ import { IMovie } from '@/types';
 import styles from './page.module.scss';
 import Image from 'next/image';
 import CategoryItem from '@/components/CategoryItem';
-import { BsBell, BsBellFill } from 'react-icons/bs';
+import SubscribeBtn from '@/components/SubscribeBtn';
 
 export default async function Page({
   params,
@@ -19,7 +19,6 @@ export default async function Page({
   }
 
   const movieDetail: IMovie = await response.json();
-  console.log(movieDetail);
 
   return (
     <div>
@@ -35,13 +34,10 @@ export default async function Page({
           height={400}
           priority
         />
-
-        <button className={styles.btn__subscribe}>
-          <BsBellFill />
-          <span>
-            {movieDetail.favorites ? movieDetail.favorites.length : '0'}
-          </span>
-        </button>
+        <SubscribeBtn
+          favorites={movieDetail.favorites}
+          movieId={movieDetail.movieId}
+        />
       </div>
 
       <div className={styles.div__details}>

@@ -1,0 +1,35 @@
+.btn__subscribe {
+  position: absolute;
+  width: 150px;
+  height: 50px;
+  bottom: -25px;
+  padding: 10px 20px;
+
+  border: none;
+  border-radius: $border-radius--circle;
+
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-content: center;
+  place-items: center;
+
+  color: $white;
+  transition: all 0.3s ease-in-out;
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  span {
+    line-height: 30px;
+    font-size: 24px;
+    font-family: $font-family;
+  }
+}
+
+.alarm__on {
+  background-color: $orange;
+}
+.alarm__off {
+  background-color: $gray-dark;
+}
