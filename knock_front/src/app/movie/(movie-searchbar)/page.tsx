@@ -3,18 +3,17 @@ import MovieItem from '@/components/MovieItem';
 import { IMovie } from '@/types';
 import SearchBar from '@/components/SearchBar';
 import CategoryList from '@/components/CategoryList';
+import { notFound } from 'next/navigation';
 
 export default async function Page() {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`,
-    { next: { revalidate: 86400 } }
+  const allMovieResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`
+    // { next: { revalidate: 86400 } }
   );
-
-  if (!response.ok) {
-    return <div>에러발생</div>;
+  if (!allMovieResponse.ok) {
+    notFound();
   }
-
-  const allMovies: IMovie[] = await response.json();
+  const allMovies: IMovie[] = await allMovieResponse.json();
 
   return (
     <>
