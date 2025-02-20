@@ -10,20 +10,19 @@ export const apiRequest = async (
   options: RequestInit = {}
 ) => {
   let accessToken = store.getState().auth.accessToken;
-  console.log(accessToken);
   let response = await fetch(url, {
     ...options, // method ,body 등과 같은 정보 입력
 
     // Access 토큰 추가 , header option 추가
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `${accessToken}`,
     },
   });
 
   // Access Token 만료
   if (response.status === 401) {
-    dispatch(refreshAccessToken()); // Access token Refresh 요청
+    await dispatch(refreshAccessToken()); // Access token Refresh 요청
     accessToken = store.getState().auth.accessToken;
     if (!accessToken) return response; // Refresh Token도 만료 : 요청페이지에서 logout 진행
 
@@ -32,7 +31,7 @@ export const apiRequest = async (
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `${accessToken}`,
       },
     });
   }

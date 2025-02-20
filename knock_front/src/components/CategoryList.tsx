@@ -10,7 +10,8 @@ export default async function CategoryList({
   searchCategory: string;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`
+    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`,
+    { next: { revalidate: 86400 } }
   );
 
   if (!response.ok) {
