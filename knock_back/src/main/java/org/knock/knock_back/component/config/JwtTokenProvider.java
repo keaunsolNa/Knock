@@ -47,7 +47,7 @@ public class JwtTokenProvider {
         long now = System.currentTimeMillis();
 
 
-        long ACCESS_EXPIRATION = 1000 * 60 * 30L;
+        long ACCESS_EXPIRATION = 31 * 24 * 60 * 1000;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
@@ -70,7 +70,7 @@ public class JwtTokenProvider {
 
         long now = System.currentTimeMillis();
 
-        long REFRESH_EXPIRATION = 7 * 24 * 24 * 30;
+        long REFRESH_EXPIRATION = 7 * 24 * 60 * 1000;
         return Jwts.builder()
                 .header().add("typ", "JWT").add("alg", "HmacSHA256").and()
                 .issuer(issuer)
@@ -98,7 +98,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * request 요청 시 헤더에서 토큰 정보를 가져온다.
+     * request 요청 시 헤더에서 Refresh 토큰 정보를 가져온다.
      * @param request request 요청 시 header 의 Refresh Token 가져오기
      * @return 생성된 Refresh JWT 토큰
      */

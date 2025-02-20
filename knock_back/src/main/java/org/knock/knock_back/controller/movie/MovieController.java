@@ -2,7 +2,6 @@ package org.knock.knock_back.controller.movie;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.knock.knock_back.dto.dto.controller.USER_AND_MOVIE_ID_DTO;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
 import org.knock.knock_back.service.layerClass.Movie;
 
@@ -52,7 +51,6 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getCategory());
     }
 
-
     /**
      * 요청 시 해당 영화를 구독한 다른 사람들이 공통으로 구독하고 있는 영화를 리스트로 만들어 반환한다.
      * @param movieId : 확인하고 싶은 영화의 id
@@ -62,51 +60,6 @@ public class MovieController {
     public ResponseEntity<Iterable<MOVIE_DTO>> getRecommend(@RequestParam String movieId) {
 
         return null;
-    }
-
-    /**
-     * 영화를 구독한다
-     * @param requestBody : 구독할 영화의 ID, 대상자 ID
-     * @return boolean : 대상 영화 구독 성공 여부
-     */
-    @CrossOrigin
-    @PostMapping("/sub")
-    public ResponseEntity<Boolean> subscribe(@RequestBody USER_AND_MOVIE_ID_DTO requestBody)
-    {
-
-        String userId = requestBody.getUserId();
-        String movieId = requestBody.getMovieId();
-
-        return ResponseEntity.ok(movieService.subscribeMovie(userId, movieId));
-    }
-
-    /**
-     * 영화를 구독 해지한다.
-     * @param requestBody : 구독 해지할 영화의 ID 대상자 Id
-     * @return boolean : 대상 영화 구독 해지 성공 여부
-     */
-    @PostMapping("cancelSub")
-    public ResponseEntity<Boolean> subscribeCancel (@RequestBody USER_AND_MOVIE_ID_DTO requestBody) {
-
-        String userId = requestBody.getUserId();
-        String movieId = requestBody.getMovieId();
-
-        return ResponseEntity.ok(movieService.subscribeCancelMovie(userId, movieId));
-    }
-
-    /**
-     * 영화를 구독 해지한다.
-     * @param requestBody : 구독 정보를 확인할 영화의 ID 대상자 Id
-     * @return boolean : 대상 영화 구독 여부
-     */
-    @PostMapping("isSubscribe")
-    public ResponseEntity<Boolean> subscribeCheck(@RequestBody USER_AND_MOVIE_ID_DTO requestBody) {
-
-        String userId = requestBody.getUserId();
-        String movieId = requestBody.getMovieId();
-
-        return ResponseEntity.ok(movieService.subscribeCheck(userId, movieId));
-
     }
 
 }

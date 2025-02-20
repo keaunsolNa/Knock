@@ -1,4 +1,4 @@
-package org.knock.knock_back.controller.home;
+package org.knock.knock_back.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +15,6 @@ import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 import org.knock.knock_back.service.layerClass.OauthService;
@@ -58,21 +57,25 @@ public class OauthController {
     @CrossOrigin
     @PostMapping(value = "/login/{socialLoginType}/callback")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
+    public ResponseEntity<Map<String, Object>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
                                                         @RequestBody Map<String, String> authorizationCode, HttpServletResponse httpServletResponse) {
 
         // refreshToken
         String[] tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode.get("authorizationCode"));
         String refreshTokenValue = tokens[0];
+        String accessTokenValue = tokens[1];
 
         Cookie refreshTokenForKnock = new Cookie("refreshTokenForKnock", refreshTokenValue);
+        Cookie accessToken = new Cookie("accessToken", accessTokenValue);
 
         tokenMaker.makeRefreshToken(httpServletResponse, refreshTokenForKnock);
+        tokenMaker.makeAccessToken(accessToken);
 
-        String redirectUrl = "http://localhost:3000/";
+        String redirectUrl = "/movie";
 
-        Map<String, String> response = new HashMap<>();
-        response.put("redirect_url", redirectUrl);
+        Map<String, Object> response = new HashMap<>();
+        response.put("redirectUrl", redirectUrl);
+        response.put("accessToken", accessToken);
 
         return ResponseEntity.ok(response);
 
@@ -84,25 +87,25 @@ public class OauthController {
      */
     @PostMapping(value = "/getAccessToken")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> getAccessToken( HttpServletRequest request, HttpServletResponse httpServletResponse ) {
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Map<String, String>> getAccessToken( HttpServletRequest request ) {
 
         String token = jwtTokenProvider.resolveToken(request);
 
         try
         {
-            logger.info("getAccessToken token: {}", token);
-            logger.info(SecurityContextHolder.getContext().toString());
             SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(token);
             String accessToken = jwtTokenProvider.generateAccessToken(user);
 
             Cookie accessTokenForKnock = new Cookie("accessToken", accessToken);
 
-            tokenMaker.makeAccessToken(httpServletResponse, accessTokenForKnock);
+            tokenMaker.makeAccessToken(accessTokenForKnock);
 
-            String redirectUrl = "http://localhost:3000/movie";
+            String redirectUrl = "/movie";
 
             Map<String, String> response = new HashMap<>();
-            response.put("redirect_url", redirectUrl);
+            response.put("redirectUrl", redirectUrl);
+            response.put("accessToken", accessToken);
 
             return ResponseEntity.ok(response);
 

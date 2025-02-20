@@ -9,10 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.knock.knock_back.component.util.maker.TokenMaker;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.knock.knock_back.component.config.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,16 +26,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final TokenMaker tokenMaker = new TokenMaker();
 
     private final JwtTokenProvider jwtTokenProvider;
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Value("${server.reactive.session.redirect}")
-    private String redirectUrl;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         // 헤더에서 Refresh Token 가쟈오기
         String token = jwtTokenProvider.resolveToken(request);
+
+        logger.info(token);
 
         // Refresh Token 이 없거나 만료되었다면
         if (token == null || !jwtTokenProvider.validateToken(token)) {
@@ -48,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // AccessToken 도 없거나 만료되었다면 login 창으로 redirect
             if (token == null || !jwtTokenProvider.validateToken(token)) {
-                response.sendRedirect(redirectUrl + "/login");
-                return;
+                response.sendError(401);
+//                response.sendRedirect(redirectUrl + "/login");
             }
 
             // AccessToken 만료되지 않았다면
@@ -65,9 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // NPE 시 계정 정보가 없으므로 재 로그인 요청
                 catch (NullPointerException e)
                 {
-                    logger.debug(e.getMessage());
                     response.resetBuffer();
-                    response.sendRedirect(redirectUrl + "/login");
+                    response.sendError(401);
+//                    response.sendRedirect(redirectUrl + "/login");
 
                     return;
                 }
@@ -80,8 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 response.addCookie(refreshTokenForKnock);
 
-                return;
             }
+            return;
 
 
         }
@@ -99,6 +94,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        response.sendRedirect(redirectUrl + "/login");
+        logger.debug("send Error");
+        response.sendError(401);
+//        response.sendRedirect(redirectUrl + "/login");
     }
 }

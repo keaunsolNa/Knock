@@ -1,5 +1,10 @@
 package org.knock.knock_back.dto.Enum;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum CategoryLevelOne {
 
     MOVIE,
@@ -7,14 +12,6 @@ public enum CategoryLevelOne {
     OPERA,
     EXHIBITION,
     MY_PAGE,
-    BOARD;
+    BOARD
 
-    public static CategoryLevelOne fromValue(String value) {
-        for (CategoryLevelOne levelOne : CategoryLevelOne.values()) {
-            if (levelOne.name().equalsIgnoreCase(value)) {
-                return levelOne;
-            }
-        }
-        throw new IllegalArgumentException("No enum constant " + CategoryLevelOne.class.getCanonicalName() + "." + value);
-    }
 }

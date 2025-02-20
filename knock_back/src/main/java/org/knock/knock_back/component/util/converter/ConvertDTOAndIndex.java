@@ -1,5 +1,7 @@
 package org.knock.knock_back.component.util.converter;
 
+import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
+import org.knock.knock_back.dto.dto.user.SSO_USER_DTO;
 import org.springframework.stereotype.Component;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
@@ -176,5 +178,29 @@ public class ConvertDTOAndIndex {
 
 
         return result;
+    }
+
+    /**
+     * SSO_USER INDEX -> SSO_USER DTO
+     *
+     * @param userIndex 변환할 CATEGORY_LEVEL_TWO 객체
+     * @return Set<CATEGORY_LEVEL_TWO> 반환할 CATEGORY_LEVEL_TWO INDEX 객체
+     */
+    public SSO_USER_DTO userIndexToUserDTO(SSO_USER_INDEX userIndex) {
+
+        SSO_USER_DTO userDto = new SSO_USER_DTO();
+        userDto.setId(userIndex.getId());
+        userDto.setName(userIndex.getName());
+        userDto.setEmail(userIndex.getEmail());
+        userDto.setNickName(userIndex.getNickName());
+        userDto.setPicture(userIndex.getPicture());
+        userDto.setLoginType(userIndex.getLoginType());
+        userDto.setRole(userIndex.getRole());
+        userDto.setFavoriteLevelOne(userIndex.getFavoriteLevelOne());
+        userDto.setAlarmTimings(userIndex.getAlarmTimings());
+        userDto.setLastLoginTime(userIndex.getLastLoginTime());
+        userDto.setSubscribeList(userIndex.getSubscribeList());
+
+        return userDto;
     }
 }

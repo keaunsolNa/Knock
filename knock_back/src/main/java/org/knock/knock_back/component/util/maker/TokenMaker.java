@@ -25,7 +25,6 @@ public class TokenMaker {
         refreshTokenForKnock.setPath("/");
         refreshTokenForKnock.setHttpOnly(true);
         refreshTokenForKnock.setSecure(true);
-        refreshTokenForKnock.setMaxAge(7 * 24 * 24 * 30);
         refreshTokenForKnock.setDomain(domain);
         refreshTokenForKnock.setAttribute("SameSite", "None");
 
@@ -36,15 +35,12 @@ public class TokenMaker {
      * Cookie 를 전달 받아 설정 값 붙이기
      * Refresh Token 용
      */
-    public void makeAccessToken(HttpServletResponse httpServletResponse, Cookie accessTokenForKnock)
+    public void makeAccessToken(Cookie accessTokenForKnock)
     {
         accessTokenForKnock.setPath("/");
         accessTokenForKnock.setHttpOnly(true);
-        accessTokenForKnock.setSecure(true);
-        accessTokenForKnock.setMaxAge(31 * 24 * 24 * 30);
+        accessTokenForKnock.setSecure(false);
         accessTokenForKnock.setDomain(domain);
         accessTokenForKnock.setAttribute("SameSite", "None");
-
-        httpServletResponse.addCookie(accessTokenForKnock);
     }
 }

@@ -1,6 +1,5 @@
 package org.knock.knock_back.component.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import java.util.List;
  * @author nks
  * @apiNote Spring Security Filter Chain
  */
-@RequiredArgsConstructor
 @Configuration
 public class KnockSecurityConfig {
 
@@ -34,7 +32,6 @@ public class KnockSecurityConfig {
 
         http
                 // HTTP Basic 인증을 사용하지 않도록 비활성화
-                // TODO : HTTPS 연결
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // CSRF 보호 비활성화
                 // TODO : 보호하고, Front 요청만 허용
@@ -49,12 +46,16 @@ public class KnockSecurityConfig {
                 // TODO : 모든 요청 -> URL 명세 확립 후 결정
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .anyRequest().permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/user/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 // OAuth2 리소스 서버 설정 (JWT 인증 방식 사용)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtKeyConverter()))
                 )
+//                .addFilterBefore(jwtAuthenticationHeaderFilter, UsernamePasswordAuthenticationFilter.class); // 🔹 필터 추가
                 ;
 
         return http.build();
@@ -67,6 +68,8 @@ public class KnockSecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트에서 쿠키 헤더 접근 가능하게 함
+        configuration.setExposedHeaders(List.of("Authorization", "Bearer")); // 클라이언트에서 쿠키 헤더 접근 가능하게 함
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true); // 자격 증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

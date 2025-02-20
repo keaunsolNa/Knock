@@ -3,6 +3,7 @@ package org.knock.knock_back.component.config;
 import lombok.RequiredArgsConstructor;
 import org.knock.knock_back.component.filter.EncodingFilter;
 import org.knock.knock_back.component.filter.JwtAuthenticationFilter;
+import org.knock.knock_back.component.filter.JwtAuthenticationHeaderFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
  * @author nks
  * @apiNote Filter 설정
  */
-@RequiredArgsConstructor
 @Configuration
+@RequiredArgsConstructor
 public class FilterConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -22,7 +23,7 @@ public class FilterConfig {
         FilterRegistrationBean<EncodingFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new EncodingFilter());
         registrationBean.addUrlPatterns("/*");
-        registrationBean.setOrder(2);
+        registrationBean.setOrder(3);
         return registrationBean;
     }
 
@@ -31,6 +32,16 @@ public class FilterConfig {
         FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new JwtAuthenticationFilter(jwtTokenProvider));
         registrationBean.addUrlPatterns("/auth/getAccessToken");
+        registrationBean.setOrder(2);
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationHeaderFilter> userFilter() {
+
+        FilterRegistrationBean<JwtAuthenticationHeaderFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new JwtAuthenticationHeaderFilter(jwtTokenProvider));
+        registrationBean.addUrlPatterns("/user/*");
         registrationBean.setOrder(1);
         return registrationBean;
     }
