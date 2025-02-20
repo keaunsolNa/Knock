@@ -55,7 +55,6 @@ public class KnockSecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtKeyConverter()))
                 )
-//                .addFilterBefore(jwtAuthenticationHeaderFilter, UsernamePasswordAuthenticationFilter.class); // 🔹 필터 추가
                 ;
 
         return http.build();

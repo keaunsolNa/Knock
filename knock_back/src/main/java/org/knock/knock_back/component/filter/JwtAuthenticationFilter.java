@@ -33,8 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더에서 Refresh Token 가쟈오기
         String token = jwtTokenProvider.resolveToken(request);
 
-        logger.info(token);
-
         // Refresh Token 이 없거나 만료되었다면
         if (token == null || !jwtTokenProvider.validateToken(token)) {
 
@@ -44,14 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // AccessToken 도 없거나 만료되었다면 login 창으로 redirect
             if (token == null || !jwtTokenProvider.validateToken(token)) {
                 response.sendError(401);
-//                response.sendRedirect(redirectUrl + "/login");
             }
 
             // AccessToken 만료되지 않았다면
             else
             {
                 // AccessToken 에서 유저 정보 가져온 뒤 RefreshToken 재 발급
-
                 SSO_USER_INDEX userIndex;
                 try
                 {
@@ -62,8 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 {
                     response.resetBuffer();
                     response.sendError(401);
-//                    response.sendRedirect(redirectUrl + "/login");
-
                     return;
                 }
 
@@ -76,9 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.addCookie(refreshTokenForKnock);
 
             }
-            return;
-
-
         }
 
         // 유효한 토큰인지 확인.
@@ -96,6 +87,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         logger.debug("send Error");
         response.sendError(401);
-//        response.sendRedirect(redirectUrl + "/login");
     }
 }

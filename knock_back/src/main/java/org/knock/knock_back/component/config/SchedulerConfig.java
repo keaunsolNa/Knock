@@ -29,6 +29,7 @@ public class SchedulerConfig {
 
     @Value("${schedule.megabox.use}")
     private boolean useScheduleMegaBox;
+
     /**
      * 주기적으로 KOFIC 에서 영화 정보를 받아온다.
      * @apiNote cronTab = 1시간에 1번, 정시
