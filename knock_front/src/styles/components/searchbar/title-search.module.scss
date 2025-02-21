@@ -1,7 +1,9 @@
 .container {
+  margin-bottom: 15px;
   display: flex;
   gap: 10px;
 
+  // 타이틀 검색바
   form {
     flex-grow: 1;
     position: relative;
@@ -39,6 +41,7 @@
   }
 }
 
+// 전체 리셋버튼
 .btn__reset {
   @include flexbox-center(40px, 40px);
   background-color: $gray-light;
