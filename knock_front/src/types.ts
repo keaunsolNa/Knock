@@ -4,6 +4,11 @@ export interface ICategory {
   movies: string[];
 }
 
+export interface ISearch {
+  searchTitle: string;
+  searchCategory: string;
+}
+
 export interface IUser {
   id: string;
   nme: string;

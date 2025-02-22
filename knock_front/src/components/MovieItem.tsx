@@ -1,67 +1,96 @@
 'use client';
 
-import styles from '@/styles/components/movie-item.module.scss';
+import styles from '@/styles/components/item-box.module.scss';
 import Image from 'next/image';
 import { useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { IMovie } from '@/types';
 import Link from 'next/link';
-import { store } from '@/redux/store';
+import { BeatLoader } from 'react-spinners';
+import { apiRequest } from '@/utils/api';
+import { useAppDispatch } from '@/redux/store';
 
 interface IProps extends IMovie {
-  display: boolean;
+  setAlarm?: boolean;
 }
 
 export default function MovieItem(props: IProps) {
-  const [alarm, setAlarm] = useState(false);
-  const accessToken = store.getState().auth.accessToken;
+  const dispatch = useAppDispatch();
+  const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
 
   const handleAlarmClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setAlarm((prev) => !prev);
+
+    if (alarm) {
+      subScribeCancelFetch();
+    } else {
+      subScribeFetch();
+    }
+  };
+
+  /**
+   * Subscribe
+   */
+  const subScribeFetch = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/sub`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify({ value: props.movieId }),
+      }
+    );
+    if (response.ok) setAlarm(true);
+  };
+
+  /**
+   * Subscribe Cancel
+   */
+  const subScribeCancelFetch = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/cancelSub`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify({ value: props.movieId }),
+      }
+    );
+    if (response.ok) setAlarm(false);
   };
 
   return (
-    <Link
-      href={`/movie/${props.movieId}`}
-      className={props.display ? styles.container : styles.container_none}
-    >
-      <div className={styles.img__container}>
-        <Image src={props.posterBase64} fill alt="영화포스터" sizes="100%" />
-      </div>
-      <div className={styles.div__detail}>
+    <Link rel="prefetch" href={`/movie/${props.movieId}`}>
+      <div className={styles.container}>
+        <div className={styles.img__wrapper}>
+          <Image src={props.posterBase64} fill alt="영화포스터" sizes="100%" />
+        </div>
+
         <div className={styles.div__info}>
           <p className={styles.p__date}>{props.openingTime} 개봉</p>
           <p className={styles.p__title}>{props.movieNm}</p>
         </div>
-        <div className={styles.div__btn}>
-          <button
-            onClick={handleAlarmClick}
-            className={
-              alarm
-                ? `${styles.btn__alarm} ${styles.btn__alarm_set}`
-                : styles.btn__alarm
-            }
-          >
-            <motion.div
-              initial={{ scale: 1 }}
-              animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
-              transition={{ duration: 0.3 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+
+        <div className={styles.div__alarm}>
+          {alarm === undefined ? (
+            <div className={styles.div__alarm_loading}>
+              <BeatLoader size={10} color={'#ffffff'} />
+            </div>
+          ) : (
+            <button
+              onClick={handleAlarmClick}
+              className={alarm ? styles.btn__alarm_on : styles.btn__alarm_off}
             >
-              {alarm ? (
-                <BsBellFill color={alarm ? '#ff6347' : '#ccc'} />
-              ) : (
-                <BsBell />
-              )}
-            </motion.div>
-          </button>
+              <motion.div
+                initial={{ scale: 1 }}
+                animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                {alarm ? <BsBellFill /> : <BsBell />}
+              </motion.div>
+            </button>
+          )}
         </div>
       </div>
     </Link>
