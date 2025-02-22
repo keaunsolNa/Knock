@@ -3,6 +3,7 @@ package org.knock.knock_back.component.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knock.knock_back.service.crawling.movie.CGV;
+import org.knock.knock_back.service.crawling.movie.LOTTE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ public class SchedulerConfig {
     private final KOFIC kofic;
     private final MegaBox megaBox;
     private final CGV cgv;
+    private final LOTTE lotte;
 
     @Value("${schedule.kofic.use}")
     private boolean useScheduleKOFIC;
@@ -34,6 +36,9 @@ public class SchedulerConfig {
 
     @Value("${schedule.cgv.use}")
     private boolean useScheduleCGV;
+
+    @Value("${schedule.lotte.use}")
+    private boolean useScheduleLotte;
 
     /**
      * 주기적으로 KOFIC 에서 영화 정보를 받아온다.
@@ -90,6 +95,27 @@ public class SchedulerConfig {
             if (useScheduleCGV)
             {
                 cgv.addNewIndex();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+        }
+    }
+
+    /**
+     * 주기적으로 Lotte 에서 상영 예정작 정보를 받아온다.
+     * @apiNote cronTab = 매일 오전 4시
+     */
+    @Async
+    @Scheduled(cron = "${schedule.lotte.cron}")
+    public void LotteJob() {
+
+        try
+        {
+            if (useScheduleLotte)
+            {
+                lotte.addNewIndex();
             }
         }
         catch (Exception e)
