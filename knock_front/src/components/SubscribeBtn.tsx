@@ -1,6 +1,6 @@
 'use client';
 
-import { store, useAppDispatch } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store';
 import styles from '@/styles/components/subscribe-btn.module.scss';
 import { IUser } from '@/types';
 import { apiRequest } from '@/utils/api';
@@ -15,62 +15,103 @@ interface IProps {
 
 export default function SubscribeBtn({ favorites, movieId }: IProps) {
   const dispatch = useAppDispatch();
-  const [subCnt, setSubCnt] = useState(favorites ? favorites.length : '0');
-  const [isSub, setIsSub] = useState(false);
+  const [sub, setSub] = useState<{ subCnt: Number; isSub: boolean }>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  let accessToken = store.getState().auth.accessToken;
-  useEffect(() => {
-    // const response = apiRequest(
-    //   `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/isSubscribe`,
-    //   dispatch
-    // );
-  }, []);
-
-  const onClickBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // const response = apiRequest(
-    //   `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/sub`,
-    //   dispatch,
-    //   {
-    //     method: 'POST',
-    //     body: JSON.stringify({ movieId }),
-    //   }
-    // );
-
-    const response = fetch(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/sub`,
+  /**
+   * 유저가 이 영화를 구독했는지 확인
+   * : mount 시점에 1번
+   */
+  const checkSubscribe = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/isSubscribe`,
+      dispatch,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ movieId }),
+        body: JSON.stringify({ value: movieId }),
       }
     );
-    console.log(response);
 
-    setIsSub((prev) => !prev);
+    const isSub = await response.json();
+
+    // 2. 구독여부와 구독 수 세팅
+    setSub({ subCnt: favorites ? favorites.length : 0, isSub: isSub });
+  };
+
+  /**
+   * Subscribe
+   */
+  const subScribeFetch = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/sub`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify({ value: movieId }),
+      }
+    );
+    const data = await response.json();
+    setSub({ subCnt: data, isSub: true });
+  };
+
+  /**
+   * Subscribe Cancel
+   */
+  const subScribeCancelFetch = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/cancelSub`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify({ value: movieId }),
+      }
+    );
+    const data = await response.json();
+    setSub({ subCnt: data, isSub: false });
+  };
+
+  useEffect(() => {
+    checkSubscribe();
+  }, []);
+
+  const onClickBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      setIsLoading(true);
+
+      if (sub.isSub) {
+        await subScribeCancelFetch();
+      } else {
+        await subScribeFetch();
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
-      <button
-        onClick={onClickBtn}
-        className={
-          isSub
-            ? `${styles.btn__subscribe} ${styles.alarm__on}`
-            : `${styles.btn__subscribe} ${styles.alarm__off}`
-        }
-      >
-        <motion.div
-          initial={{ scale: 1 }}
-          animate={{ scale: isSub ? [1, 1.2, 1] : [1, 0.8, 1] }}
-          transition={{ duration: 0.3 }}
+      {sub && (
+        <button
+          onClick={onClickBtn}
+          disabled={isLoading}
+          className={
+            sub.isSub
+              ? `${styles.btn__subscribe} ${styles.alarm__on}`
+              : `${styles.btn__subscribe} ${styles.alarm__off}`
+          }
         >
-          {isSub ? <BsBellFill /> : <BsBell />}
-        </motion.div>
-        <span>{subCnt}</span>
-      </button>
+          <motion.div
+            initial={{ scale: 1 }}
+            animate={{ scale: sub.isSub ? [1, 1.2, 1] : [1, 0.8, 1] }}
+            transition={{ duration: 0.3 }}
+          >
+            {sub.isSub ? <BsBellFill /> : <BsBell />}
+          </motion.div>
+          <span>{`${sub.subCnt}`}</span>
+        </button>
+      )}
     </>
   );
 }
