@@ -67,7 +67,7 @@ public class UserService {
             for (CategoryLevelOne category : map.keySet())
             {
                 LinkedList<String> list = map.get(category);
-                Set<?> set =  makeSet(category, list);
+                Set<?> set =  new HashSet<>(list);
 
                 userSubscribeList.put(category.name(), set);
             }

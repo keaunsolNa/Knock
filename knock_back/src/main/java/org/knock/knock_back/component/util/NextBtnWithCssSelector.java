@@ -1,8 +1,6 @@
 package org.knock.knock_back.component.util;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -10,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * @author nks
@@ -52,4 +51,47 @@ public class NextBtnWithCssSelector {
         }
     }
 
+    /**
+     * 무한 스크롤 방식으로 페이지 html 요소를 로드하는 경우
+     * @param driver 제어할 WebDriver 객체
+     * @param cssSelector 작동할 버튼의 cssSelector
+     */
+
+    public static void scrollDownUntilElementLoaded(WebDriver driver, String cssSelector) {
+        try {
+
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+            int scrollCount = 0;
+            int prevHeight = ((Long) Objects.requireNonNull(js.executeScript("return document.body.scrollHeight"))).intValue();
+
+            while (scrollCount < 100) {
+
+                // 스크롤을 아래로 내리기
+                js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+
+                // 새로운 요소가 로드되었는지 확인
+                try {
+                    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(cssSelector)));
+                } catch (TimeoutException e) {
+                    break;
+                }
+
+                // 페이지 높이 변경 감지 (새로운 데이터가 로드되었는지 확인)
+                Thread.sleep(1000);
+                int newHeight = ((Long) Objects.requireNonNull(js.executeScript("return document.body.scrollHeight"))).intValue();
+
+                if (newHeight == prevHeight) {
+                    break;
+                }
+
+                prevHeight = newHeight;
+                scrollCount++;
+            }
+
+        } catch (Exception e) {
+            logger.error("스크롤링 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
 }

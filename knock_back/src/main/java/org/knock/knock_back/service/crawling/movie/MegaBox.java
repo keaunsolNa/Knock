@@ -29,11 +29,6 @@ public class MegaBox extends AbstractCrawlingService {
     @Value("${api.megabox.cssquery}")
     private String cssQuery;
 
-    protected MegaBox(Movie movieService, ConvertDTOAndIndex movieDtoToIndex) {
-        super(movieService);
-        this.movieDtoToIndex = movieDtoToIndex;
-    }
-
     @Override
     protected String getUrlPath() {
         return urlPath;
@@ -52,6 +47,10 @@ public class MegaBox extends AbstractCrawlingService {
         return cssQuery;
     }
 
+    protected MegaBox(Movie movieService, ConvertDTOAndIndex movieDtoToIndex) {
+        super(movieService);
+        this.movieDtoToIndex = movieDtoToIndex;
+    }
 
     @Override
     @Async
@@ -77,14 +76,18 @@ public class MegaBox extends AbstractCrawlingService {
         {
             dto = movieDtoToIndex.koficIndexToMovieDTO(kofic);
 
-            // TODO : 일 데이터 없을 경우 예외처리 추가
+            Elements dateElements = element.select("div.rate-date > span.date");
             if (dto.getOpeningTime().equals("개봉 예정"))
             {
-                Elements dateElements = element.select("div.rate-date > span.date");
                 if (!dateElements.isEmpty()) {
                     String date = Objects.requireNonNull(dateElements.first()).text().replace("개봉일 ", "");
                     dto.setOpeningTime(date);
                 }
+            }
+            else
+            {
+                // 상영관 기준 개봉일로 덮어씌우기
+                dto.setOpeningTime(Objects.requireNonNull(dateElements.first()).text());
             }
         }
 

@@ -76,7 +76,7 @@ public interface MovieInterface {
         }
 
         public void deleteMovie() {
-            movieRepository.deleteAll();
+            movieRepository.deleteMOVIE_INDEXByOpeningTimeBefore(System.currentTimeMillis());
         }
 
         public void deleteById(String id) {

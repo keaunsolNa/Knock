@@ -49,7 +49,7 @@ public class ConvertDTOAndIndex {
                             , dto.getActors()
                             , dto.getCompanyNm()
                             , CategoryLevelOne.MOVIE
-                            , CLTDtoToCLTIndex(dto.getCategoryLevelTwo())
+                            , dto.getCategoryLevelTwo() == null ? null : CLTDtoToCLTIndex(dto.getCategoryLevelTwo())
                             , dto.getRunningTime()
                             , dto.getPlot()
                             , dto.getFavorites()
