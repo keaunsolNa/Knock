@@ -2,8 +2,9 @@ package org.knock.knock_back.component.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.knock.knock_back.service.crawling.movie.CGV;
-import org.knock.knock_back.service.crawling.movie.LOTTE;
+//import org.knock.knock_back.service.crawling.movie.CGV;
+//import org.knock.knock_back.service.crawling.movie.LOTTE;
+import org.knock.knock_back.service.crawling.CrawlingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.knock.knock_back.service.crawling.movie.KOFIC;
-import org.knock.knock_back.service.crawling.movie.MegaBox;
+//import org.knock.knock_back.service.crawling.movie.MegaBox;
 
 /**
  * @author nks
@@ -24,9 +25,7 @@ public class SchedulerConfig {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final KOFIC kofic;
-    private final MegaBox megaBox;
-    private final CGV cgv;
-    private final LOTTE lotte;
+    private final CrawlingService crawlingService;
 
     @Value("${schedule.kofic.use}")
     private boolean useScheduleKOFIC;
@@ -73,7 +72,7 @@ public class SchedulerConfig {
         {
             if (useScheduleMegaBox)
             {
-                megaBox.addNewIndex();
+                crawlingService.startCrawling("MEGABOX");
             }
         }
         catch (Exception e)
@@ -94,7 +93,7 @@ public class SchedulerConfig {
         {
             if (useScheduleCGV)
             {
-                cgv.addNewIndex();
+                crawlingService.startCrawling("CGV");
             }
         }
         catch (Exception e)
@@ -115,7 +114,7 @@ public class SchedulerConfig {
         {
             if (useScheduleLotte)
             {
-                lotte.addNewIndex();
+                crawlingService.startCrawling("LOTTE");
             }
         }
         catch (Exception e)

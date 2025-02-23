@@ -40,7 +40,6 @@ public interface CrawlingInterface {
 
         public void setUpDriver()
         {
-            System.out.println("==================Setup Driver==============");
             driver = driverThreadLocal.get();
             if (urlPath == null) {
                 logger.error("[{}]", "urlPath is null");
@@ -55,7 +54,6 @@ public interface CrawlingInterface {
         {
             try {
 
-                System.out.println("========================prepare Page=================");
                 Class<?> clazz = Class.forName("org.knock.knock_back.component.util.NextBtnWithCssSelector");
                 Constructor<?> constructor = clazz.getDeclaredConstructor();
                 Object instance = constructor.newInstance();
@@ -72,7 +70,6 @@ public interface CrawlingInterface {
         @Override
         public void run() {
 
-            System.out.println("RUN");
             Document urlDoc;
 
             synchronized (this) {
@@ -80,13 +77,7 @@ public interface CrawlingInterface {
             }
 
             synchronized (this) {
-                System.out.println(urlDoc);
-                System.out.println("=============================");
                 elements = urlDoc.select(cssQuery);
-                System.out.println(cssQuery);
-                System.out.println("=================================");
-                System.out.println(elements);
-                System.out.println("===============================");
             }
         }
     }
