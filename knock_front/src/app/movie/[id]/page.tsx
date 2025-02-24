@@ -19,7 +19,7 @@ export default async function Page({
   }
 
   const movieDetail: IMovie = await response.json();
-
+  console.log(movieDetail);
   return (
     <div>
       <div
@@ -77,6 +77,10 @@ export default async function Page({
 
         <h3 className={styles.section_title}>줄거리</h3>
         <p className={styles.plot}>{movieDetail.plot}</p>
+
+        <h3 className={styles.section_title}>예매하기</h3>
+        {/* TODO : 버튼 추가 */}
+        {/* <div className={styles.div__}></div> */}
       </div>
     </div>
   );

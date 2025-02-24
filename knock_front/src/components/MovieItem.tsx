@@ -2,7 +2,7 @@
 
 import styles from '@/styles/components/item-box.module.scss';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { IMovie } from '@/types';
@@ -18,6 +18,10 @@ interface IProps extends IMovie {
 export default function MovieItem(props: IProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
+
+  useEffect(() => {
+    setAlarm(props.setAlarm);
+  }, [props]);
 
   const handleAlarmClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -64,7 +68,16 @@ export default function MovieItem(props: IProps) {
     <Link rel="prefetch" href={`/movie/${props.movieId}`}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
-          <Image src={props.posterBase64} fill alt="영화포스터" sizes="100%" />
+          {props.posterBase64 ? (
+            <Image
+              src={props.posterBase64}
+              fill
+              alt="영화포스터"
+              sizes="100%"
+            />
+          ) : (
+            <div className={styles.div__no_img}>no img</div>
+          )}
         </div>
 
         <div className={styles.div__info}>

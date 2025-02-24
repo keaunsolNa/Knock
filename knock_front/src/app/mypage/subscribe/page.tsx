@@ -13,7 +13,7 @@ export default function Page() {
         <>
           <h5 className={styles.h5__total}>(총 {subscribeMovie.length}개)</h5>
           {subscribeMovie.map((movie) => {
-            return <MovieItem key={movie.movieId} {...movie} display={true} />;
+            return <MovieItem key={movie.movieId} {...movie} setAlarm={true} />;
           })}
         </>
       )}
