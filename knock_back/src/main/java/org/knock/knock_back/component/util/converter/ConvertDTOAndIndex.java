@@ -96,7 +96,7 @@ public class ConvertDTOAndIndex {
         dto.setActors(index.getActors());
         dto.setCompanyNm(index.getCompanyNm());
         dto.setCategoryLevelOne(index.getCategoryLevelOne());
-        dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
+        dto.setCategoryLevelTwo(null == index.getCategoryLevelTwo() ? null : CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
         dto.setRunningTime(index.getRunningTime());
         dto.setPlot(index.getPlot());
         dto.setFavorites(index.getFavorites());
@@ -122,7 +122,7 @@ public class ConvertDTOAndIndex {
         dto.setDirectors(index.getDirectors());
         dto.setActors(index.getActors());
         dto.setCompanyNm(index.getCompanyNm());
-        dto.setCategoryLevelTwo(CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
+        dto.setCategoryLevelTwo(null == index.getCategoryLevelTwo() ? null : CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
         dto.setRunningTime(null == index.getRunningTime() ? 0 : index.getRunningTime());
 
         return dto;

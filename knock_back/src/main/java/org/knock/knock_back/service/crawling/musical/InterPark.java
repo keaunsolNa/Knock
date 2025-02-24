@@ -4,7 +4,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.knock.knock_back.service.crawling.CrawlingInterface;
+import org.knock.knock_back.service.crawling.common.CrawlingInterface;
 
 import java.util.Objects;
 

@@ -1,6 +1,6 @@
 package org.knock.knock_back.controller.crawling;
 
-import org.knock.knock_back.service.crawling.CrawlingService;
+import org.knock.knock_back.service.crawling.common.CrawlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

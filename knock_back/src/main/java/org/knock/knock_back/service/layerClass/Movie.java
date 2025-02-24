@@ -1,5 +1,6 @@
 package org.knock.knock_back.service.layerClass;
 
+import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.knock.knock_back.repository.user.SSOUserRepository;
 import org.knock.knock_back.service.layerInterface.MovieInterface;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class Movie implements MovieInterface {
@@ -32,6 +34,18 @@ public class Movie implements MovieInterface {
 
     public void createMovie(Set<MOVIE_DTO> movies) {
 
+        for (SSO_USER_INDEX ssoUserIndex : ssoUserRepository.findAll()) {
+
+            List<String> movieList = ssoUserIndex.getSubscribeList().get(CategoryLevelOne.MOVIE);
+
+            if (movieList != null) {
+                Set<String> movieIdsToKeep = movies.stream()
+                        .map(MOVIE_DTO::getMovieId)
+                        .collect(Collectors.toSet());
+
+                movieList.removeIf(movieId -> !movieIdsToKeep.contains(movieId));
+            }
+        }
         // DELETE ALL DATA BEFORE CREATE
         movieMaker.deleteMovie();
 

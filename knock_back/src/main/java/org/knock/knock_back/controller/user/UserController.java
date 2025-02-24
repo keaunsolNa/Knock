@@ -20,7 +20,6 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
-
     /**
      * 토큰으로 부터 유저 정보 획득하여 반환한다
      * @return userDto

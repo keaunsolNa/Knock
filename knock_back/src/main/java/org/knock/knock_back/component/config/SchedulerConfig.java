@@ -2,9 +2,7 @@ package org.knock.knock_back.component.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.knock.knock_back.service.crawling.movie.CGV;
-//import org.knock.knock_back.service.crawling.movie.LOTTE;
-import org.knock.knock_back.service.crawling.CrawlingService;
+import org.knock.knock_back.service.crawling.common.CrawlingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.knock.knock_back.service.crawling.movie.KOFIC;
-//import org.knock.knock_back.service.crawling.movie.MegaBox;
 
 /**
  * @author nks

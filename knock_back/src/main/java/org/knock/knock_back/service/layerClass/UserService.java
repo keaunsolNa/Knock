@@ -67,8 +67,7 @@ public class UserService {
             for (CategoryLevelOne category : map.keySet())
             {
                 LinkedList<String> list = map.get(category);
-                Set<?> set =  new HashSet<>(list);
-
+                Set<?> set = makeSet(category, list);
                 userSubscribeList.put(category.name(), set);
             }
 
@@ -94,9 +93,8 @@ public class UserService {
         {
 
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            LinkedList<String> list = user.getSubscribeList().get(categoryLevelOne);
 
-            return makeSet(categoryLevelOne, list);
+            return user.getSubscribeList().get(categoryLevelOne);
         }
 
         catch (Exception e)

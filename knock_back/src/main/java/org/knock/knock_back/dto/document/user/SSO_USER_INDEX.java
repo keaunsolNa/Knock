@@ -72,7 +72,7 @@ public class SSO_USER_INDEX {
     @Column(nullable = false)
     private Date lastLoginTime;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Object)
     @Enumerated(EnumType.STRING)
     private Map<CategoryLevelOne, LinkedList<String>> subscribeList;
 

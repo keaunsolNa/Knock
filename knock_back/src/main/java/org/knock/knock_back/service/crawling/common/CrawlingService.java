@@ -1,4 +1,4 @@
-package org.knock.knock_back.service.crawling;
+package org.knock.knock_back.service.crawling.common;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -7,7 +7,6 @@ import org.knock.knock_back.dto.document.movie.KOFIC_INDEX;
 import org.knock.knock_back.dto.dto.crawling.CrawlingConfig;
 import org.knock.knock_back.dto.dto.crawling.CrawlingProperties;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
-import org.knock.knock_back.service.crawling.common.AbstractCrawlingService;
 import org.knock.knock_back.service.layerClass.Movie;
 
 import org.slf4j.Logger;
@@ -20,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CrawlingService extends AbstractCrawlingService {
@@ -81,9 +82,7 @@ public class CrawlingService extends AbstractCrawlingService {
         if (movieService.checkMovie(title).isPresent()) {
             logger.info("{} Already Exists Movie ", title);
             dto = movieDtoToIndex.MovieIndexToDTO(movieService.checkMovie(title).get());
-            System.out.println(dto);
             setReservationLink(element, dto);
-            System.out.println(dto);
             dtos.add(dto);
             return;
         }
@@ -105,10 +104,13 @@ public class CrawlingService extends AbstractCrawlingService {
             else
             {
                 date = Objects.requireNonNull(dateElements.first()).text().replace(currentConfig.getDateExtract(), "");
+                date = date.trim();
+                logger.info("{} Date Extract : {}", date, date);
             }
             dto.setOpeningTime(date);
         }
 
+        setReservationLink(element, dto);
         encodeBase64(element, dto);
 
         if (currentConfig.getName().equals("MEGABOX")) setPlot(element, dto);
@@ -118,8 +120,22 @@ public class CrawlingService extends AbstractCrawlingService {
 
     private void setReservationLink(Element element, MOVIE_DTO dto) {
         Elements reservationElement = element.select(currentConfig.getReservationQuery());
+
         if (!reservationElement.isEmpty()) {
             String reservationLink = reservationElement.attr(currentConfig.getReservationExtract());
+
+            if (currentConfig.getName().equals("CGV"))
+            {
+                Pattern pattern = Pattern.compile("fnQuickReserve\\('(\\d+)'");
+                Matcher matcher = pattern.matcher(reservationLink);
+                if (matcher.find()) {
+                    reservationLink = matcher.group(1);
+                } else {
+                    logger.warn("No Movie ID Found in OnClick: {}", reservationLink);
+                    return;
+                }
+
+            }
             if (!currentConfig.getName().equals("LOTTE")) reservationLink = currentConfig.getReservationPrefix() + reservationLink;
 
             String[] reservationLinks;
@@ -130,8 +146,6 @@ public class CrawlingService extends AbstractCrawlingService {
                 reservationLinks = dto.getReservationLink();
             }
             reservationLinks[idx] = reservationLink;
-            System.out.println(reservationLinks[idx]);
-            System.out.println(reservationLink);
             dto.setReservationLink(reservationLinks);
         }
     }
