@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
         hostname: 'img.megabox.co.kr',
         pathname: '/SharedImg/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.cgv.co.kr',
+        pathname: '/Movie/Thumbnail/Poster/**',
+      },
     ],
   },
   // async rewrites() {

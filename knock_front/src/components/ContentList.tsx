@@ -27,7 +27,6 @@ export default function ContentList({
     );
 
     if (!response.ok) return;
-
     const data = await response.json();
     setAlarmList(data);
   };
@@ -39,13 +38,21 @@ export default function ContentList({
   return (
     <div className={styles.container}>
       {alarmList
-        ? itemList.map((movie) => (
-            <MovieItem
-              key={movie.movieId}
-              {...movie}
-              setAlarm={alarmList.includes(movie.movieId)}
-            />
-          ))
+        ? itemList.map((movie) => {
+            if (alarmList.length > 0) {
+              return (
+                <MovieItem
+                  key={movie.movieId}
+                  {...movie}
+                  setAlarm={alarmList.includes(movie.movieId)}
+                />
+              );
+            } else {
+              return (
+                <MovieItem key={movie.movieId} {...movie} setAlarm={false} />
+              );
+            }
+          })
         : itemList.map((movie) => <MovieItem key={movie.movieId} {...movie} />)}
     </div>
   );
