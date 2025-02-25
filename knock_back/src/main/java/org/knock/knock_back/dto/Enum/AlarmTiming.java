@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 public enum AlarmTiming {
     ZERO_HOUR,
     ONE_HOUR,
-    TWO_HOUR,
     THR_HOUR,
     SIX_HOUR,
     TWE_HOUR,

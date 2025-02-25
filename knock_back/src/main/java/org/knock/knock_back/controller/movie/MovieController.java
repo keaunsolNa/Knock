@@ -59,7 +59,7 @@ public class MovieController {
     @GetMapping("/recommend")
     public ResponseEntity<Iterable<MOVIE_DTO>> getRecommend(@RequestParam String movieId) {
 
-        return null;
+        return ResponseEntity.ok(movieService.getRecommend(movieId));
     }
 
 }

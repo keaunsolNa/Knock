@@ -21,11 +21,7 @@ public class JwtAuthenticationHeaderFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println("JWT Authentication Filter");
         String authorizationHeader = request.getHeader("Authorization");
-
-        System.out.println(authorizationHeader);
-
         if (authorizationHeader == null) {
             response.sendError(401);
             return;
@@ -33,7 +29,6 @@ public class JwtAuthenticationHeaderFilter extends OncePerRequestFilter {
 
         // "Bearer " 이후의 토큰 값만 추출
         String token = authorizationHeader.replace("Bearer ", "");
-        logger.info(token);
         if (!jwtTokenProvider.validateToken(token)) {
             response.sendError(401);
         }
