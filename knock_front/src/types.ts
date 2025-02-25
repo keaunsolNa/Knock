@@ -9,16 +9,16 @@ export interface ISearch {
   searchCategory: string;
 }
 
-export interface IUser {
+export interface IFavUser {
   id: string;
-  nme: string;
+  name: string;
 }
 
 export interface ICategoryLevelTwo {
   id: string;
   nm: string;
   parentNm: string;
-  favoriteUsers: IUser[];
+  favoriteUsers: IFavUser[];
 }
 
 export interface IMovie {
@@ -33,6 +33,22 @@ export interface IMovie {
   categoryLevelTwo: ICategoryLevelTwo[];
   runningTime: number;
   plot: string;
-  favorites: IUser[];
+  favorites: IFavUser[];
   koficcode: string;
+}
+
+export interface IUser {
+  alarmTimings: string[];
+  email: string;
+  favoriteLevelOne: 'MOVIE' | 'MUSICAL' | 'OPERA' | 'EXHIBITION';
+  id: string;
+  lastLoginTime: string;
+  loginType: 'KAKAO' | 'GOOGLE' | 'NAVER' | 'GUEST';
+  name: string;
+  nickName: string;
+  picture: string;
+  role: string;
+  subscribeList: {
+    MOVIE: IMovie[];
+  };
 }

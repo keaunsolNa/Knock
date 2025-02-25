@@ -18,6 +18,14 @@
     border-top-left-radius: $border-radius--default;
     border-bottom-left-radius: $border-radius--default;
   }
+
+  .div__no_img {
+    @include flexbox-center(100%, 100%);
+    color: $gray-dark;
+    background-color: $gray-light;
+    border-top-left-radius: $border-radius--default;
+    border-bottom-left-radius: $border-radius--default;
+  }
 }
 
 .div__info {

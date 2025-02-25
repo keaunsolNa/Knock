@@ -1,35 +1,109 @@
 'use client';
 
+import { apiRequest } from '@/utils/api';
 import styles from './page.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '@/redux/store';
+
+const alarmType = {
+  movie: { idx: 0, text: '영화 알림' },
+  musical: { idx: 1, text: '뮤지컬 알림' },
+  opera: { idx: 2, text: '오페라 알림' },
+  exhibition: { idx: 3, text: '전시회 알림' },
+};
+
+const alarmSettingList = [
+  { value: 'ONE_HOUR', text: '1시간 전' },
+  { value: 'THR_HOUR', text: '3시간 전' },
+  { value: 'SIX_HOUR', text: '6시간 전' },
+  { value: 'TWE_HOUR', text: '12시간 전' },
+  { value: 'ONE_DAY', text: '1일 전' },
+  { value: 'THR_DAY', text: '3일 전' },
+  { value: 'SEV_DAY', text: '7일 전' },
+];
 
 export default function Page() {
-  const { category } = useParams();
-  const [alarm, setAlarm] = useState(true);
+  console.log('render');
+  const category = useParams().category as string;
+  const dispatch = useAppDispatch();
+  const [alarm, setAlarm] = useState<boolean | null>(null);
+  const [alarmList, setAlarmList] = useState<string[]>(null);
+  const [isFirst, setIsFirst] = useState(true);
 
-  const alarmType = () => {
-    switch (category) {
-      case 'movie':
-        return '영화 알림';
-      case 'musical':
-        return '뮤지컬 알림';
-      case 'opera':
-        return '오페라 알림';
-      case 'exhibition':
-        return '전시회 알림';
+  const handleToggleClick = async () => {
+    if (alarm) {
+      setAlarmList((prev) => {
+        const newAlarmList = [...prev];
+        newAlarmList[alarmType[category].idx] = 'ZERO_HOUR';
+        return newAlarmList;
+      });
     }
+    setAlarm((prev) => !prev);
   };
-  const alarmSettingList = [
-    { value: 1, text: '1시간 전' },
-    { value: 2, text: '3시간 전' },
-    { value: 3, text: '6시간 전' },
-    { value: 4, text: '12시간 전' },
-    { value: 5, text: '1일 전' },
-    { value: 6, text: '3일 전' },
-    { value: 7, text: '7일 전' },
-  ];
+
+  const handleAlarmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    setAlarmList((prev) => {
+      const newAlarmList = [...prev];
+      newAlarmList[alarmType[category].idx] = newValue;
+      return newAlarmList;
+    });
+  };
+
+  const getAlarmSetting = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getAlarmTimings`,
+      dispatch,
+      {
+        method: 'GET',
+      }
+    );
+
+    if (!response.ok) {
+      notFound();
+    }
+
+    const data = await response.json();
+    setAlarmList(data);
+    setAlarm(data[alarmType[category].idx] !== 'ZERO_HOUR');
+  };
+
+  const setNewAlarmSetting = async () => {
+    console.log(alarmList);
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/${category}/changeAlarm`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify(alarmList),
+      }
+    );
+
+    if (!response.ok) {
+      return <div>에러</div>;
+    }
+
+    const data = await response.json();
+  };
+
+  useEffect(() => {
+    getAlarmSetting();
+  }, []);
+
+  useEffect(() => {
+    // TODO : 첫화면 mount시 setNewAlarmSetting 호출하는 이슈 수정
+
+    if (alarmList) {
+      if (isFirst) {
+        setIsFirst(false);
+      } else {
+        setNewAlarmSetting();
+      }
+    }
+  }, [alarmList]);
 
   return (
     <div className={styles.container}>
@@ -41,10 +115,10 @@ export default function Page() {
 
       <form className={styles.form__setting}>
         <div className={styles.div__toggle_wrapper}>
-          <span>{alarmType()}</span>
+          <span>{alarmType[category].text}</span>
           <motion.div
             className={styles.div__toggle_bar}
-            onClick={() => setAlarm((prev) => !prev)}
+            onClick={handleToggleClick}
             style={{
               justifyContent: alarm ? 'flex-end' : 'flex-start',
               backgroundColor: alarm ? '#34c759' : '#d9d9da',
@@ -70,23 +144,34 @@ export default function Page() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {alarmSettingList.map((type) => (
-                <div key={'setting' + type.value}>
-                  <input
-                    className={styles.input__radio}
-                    id={'setting' + type.value}
-                    type="radio"
-                    value={type.value}
-                    name="alarmSetting"
-                  />
-                  <label
-                    className={styles.label__radio}
-                    htmlFor={'setting' + type.value}
-                  >
-                    {type.text}
-                  </label>
-                </div>
-              ))}
+              {alarmSettingList.map((type, idx) => {
+                if (category === 'movie') {
+                  if (![4, 5, 6].includes(idx)) {
+                    return null;
+                  }
+                }
+                return (
+                  <div key={'div_' + type.value}>
+                    <input
+                      className={styles.input__radio}
+                      id={'setting_' + type.value}
+                      type="radio"
+                      value={type.value}
+                      name="alarmSetting"
+                      checked={
+                        alarmList[alarmType[category].idx] === type.value
+                      }
+                      onChange={handleAlarmChange}
+                    />
+                    <label
+                      className={styles.label__radio}
+                      htmlFor={'setting_' + type.value}
+                    >
+                      {type.text}
+                    </label>
+                  </div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

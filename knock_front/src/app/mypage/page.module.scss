@@ -13,54 +13,6 @@
   }
 }
 
-.section__profile {
-  padding: 20px;
-  display: flex;
-  gap: 20px;
-
-  .img__profile {
-    width: 80px;
-    height: 80px;
-  }
-
-  .profile__textbox {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    .div__nickname {
-      height: 30px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 10px;
-
-      span {
-        font-size: 1.5rem;
-        font-weight: $font-bold;
-      }
-
-      svg {
-        width: 23px;
-        height: 23px;
-        fill: $gray-dark;
-        cursor: pointer;
-      }
-    }
-
-    .p__account {
-      font-size: 1rem;
-      color: $gray-dark;
-      line-height: 25px;
-    }
-
-    .div__info {
-      color: $orange;
-      font-size: 0.9rem;
-    }
-  }
-}
-
 .div__menu_box {
   padding: 0 20px;
   background-color: $white;

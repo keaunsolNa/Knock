@@ -1,6 +1,6 @@
 'use client';
 
-import styles from '@/styles/components/item-box.module.scss';
+import styles from '@/styles/components/content-item.module.scss';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
@@ -15,7 +15,7 @@ interface IProps extends IMovie {
   setAlarm?: boolean;
 }
 
-export default function MovieItem(props: IProps) {
+export default function ContentItem(props: IProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
 
