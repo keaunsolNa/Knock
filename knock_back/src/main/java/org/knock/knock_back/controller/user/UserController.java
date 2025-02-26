@@ -1,6 +1,7 @@
 package org.knock.knock_back.controller.user;
 
 import lombok.RequiredArgsConstructor;
+import org.knock.knock_back.dto.Enum.AlarmTiming;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.dto.user.SSO_USER_DTO;
 import org.knock.knock_back.service.layerClass.UserService;
@@ -20,7 +21,6 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
-
     /**
      * 토큰으로 부터 유저 정보 획득하여 반환한다
      * @return userDto
@@ -51,6 +51,26 @@ public class UserController {
     public ResponseEntity<Iterable<?>> getUserSubscribeList(@PathVariable(name = "category") CategoryLevelOne categoryLevelOne)
     {
         return ResponseEntity.ok(userService.getUserSubscribeList(categoryLevelOne));
+    }
+
+    /**
+     * 선호 카테고리를 가져온다.
+     * @return string : 선호 카테고리
+     */
+    @GetMapping (value = "/getSubCategory")
+    public ResponseEntity<String> getUserSubCategory()
+    {
+        return ResponseEntity.ok(userService.getUserSubCategory());
+    }
+
+    /**
+     * 알림 설정을 가져온다.
+     * @return string : 선호 카테고리
+     */
+    @GetMapping (value = "/getAlarmTimings")
+    public ResponseEntity<String[]> getUserAlarmTimings()
+    {
+        return ResponseEntity.ok(userService.getUserAlarmTimings());
     }
 
     /**
@@ -113,9 +133,9 @@ public class UserController {
      */
     @PostMapping (value = "/{category}/changeAlarm")
     public ResponseEntity<Boolean> changeUserAlarm(@PathVariable(name = "category") CategoryLevelOne categoryLevelOne,
-                                                   @RequestBody Map<String, String> valueMap)
+                                                   @RequestBody List<AlarmTiming> valueMap)
     {
-        return ResponseEntity.ok(userService.changeUserAlarm(categoryLevelOne, valueMap.get("value")));
+        return ResponseEntity.ok(userService.changeUserAlarm(categoryLevelOne, valueMap));
     }
 
     /**

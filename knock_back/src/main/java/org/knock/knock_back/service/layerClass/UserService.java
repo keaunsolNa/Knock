@@ -67,8 +67,7 @@ public class UserService {
             for (CategoryLevelOne category : map.keySet())
             {
                 LinkedList<String> list = map.get(category);
-                Set<?> set =  new HashSet<>(list);
-
+                Set<?> set = makeSet(category, list);
                 userSubscribeList.put(category.name(), set);
             }
 
@@ -94,9 +93,8 @@ public class UserService {
         {
 
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            LinkedList<String> list = user.getSubscribeList().get(categoryLevelOne);
 
-            return makeSet(categoryLevelOne, list);
+            return user.getSubscribeList().get(categoryLevelOne);
         }
 
         catch (Exception e)
@@ -107,6 +105,52 @@ public class UserService {
 
     }
 
+    /**
+     * 선호 구독 대상을 가져온다.
+     * @return string : 선호 카테고리
+     */
+    public String getUserSubCategory()
+    {
+        try
+        {
+
+            SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            return user.getFavoriteLevelOne().name();
+        }
+
+        catch (Exception e)
+        {
+            logger.debug(e.getMessage());
+            return null;
+        }
+
+    }
+
+    /**
+     * 카테고리 별 구독 목록을 가져온다.
+     * @return string : 선호 카테고리
+     */
+    public String[] getUserAlarmTimings()
+    {
+        try
+        {
+
+            SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            AlarmTiming[] alarmTimings = user.getAlarmTimings();
+            return Arrays.stream(alarmTimings).map(Enum::name).toArray(String[]::new);
+
+        }
+
+        catch (Exception e)
+        {
+            logger.debug(e.getMessage());
+            return null;
+        }
+
+    }
+    
     /**
      * 구독한다
      * @param categoryLevelOne : 구독할 대상의 종류
@@ -204,14 +248,16 @@ public class UserService {
     /**
      * 유저의 알람 정보를 변경한다
      * @param categoryLevelOne : 변경할 대상
-     * @param alarmValue : 변경할 대상의 알람 정보
+     * @param alarmValues : 변경할 대상의 알람 정보
      * @return boolean : 대상 알람 정보 변경 성공 여부
      */
-    public Boolean changeUserAlarm(CategoryLevelOne categoryLevelOne, String alarmValue)
+    public Boolean changeUserAlarm(CategoryLevelOne categoryLevelOne, List<AlarmTiming> alarmValues)
     {
+
         try
         {
 
+            logger.info("[{}]", alarmValues);
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             int idx = categoryLevelOne.equals(CategoryLevelOne.MOVIE) ? 0
@@ -219,7 +265,7 @@ public class UserService {
                     : categoryLevelOne.equals(CategoryLevelOne.OPERA) ? 2 : 3;
 
             AlarmTiming[] alarmTimings = user.getAlarmTimings();
-            alarmTimings[idx] = AlarmTiming.valueOf(alarmValue);
+            alarmTimings[idx] = alarmValues.get(idx);
             user.updateAlarmTimings(alarmTimings);
 
             ssoUserRepository.save(user);

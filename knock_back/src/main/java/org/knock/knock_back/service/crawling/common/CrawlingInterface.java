@@ -1,4 +1,4 @@
-package org.knock.knock_back.service.crawling;
+package org.knock.knock_back.service.crawling.common;
 
 import lombok.Getter;
 import org.jsoup.Jsoup;

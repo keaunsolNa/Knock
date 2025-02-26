@@ -1,5 +1,10 @@
 package org.knock.knock_back.service.layerClass;
 
+import co.elastic.clients.elasticsearch._types.SortOptions;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import org.knock.knock_back.dto.Enum.CategoryLevelOne;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
@@ -14,24 +19,46 @@ import org.knock.knock_back.repository.user.SSOUserRepository;
 import org.knock.knock_back.service.layerInterface.MovieInterface;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+/**
+ * @author nks
+ * @apiNote Movie 요청을 수행하는 Service
+ */
 @Service
 public class Movie implements MovieInterface {
 
     private final MovieMaker movieMaker;
     private final ConvertDTOAndIndex translation;
     private final SSOUserRepository ssoUserRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
+    private final MovieRepository movieRepository;
 
-    public Movie(MovieRepository movieRepository,
-                 ElasticsearchOperations elasticsearchOperations,
-                 ConvertDTOAndIndex translation, SSOUserRepository ssoUserRepository) {
+    public Movie(ConvertDTOAndIndex translation,
+                 SSOUserRepository ssoUserRepository,
+                 ElasticsearchOperations elasticsearchOperations, MovieRepository movieRepository) {
         this.ssoUserRepository = ssoUserRepository;
         this.movieMaker = new MovieMaker(movieRepository, elasticsearchOperations);
         this.translation = translation;
+        this.elasticsearchOperations = elasticsearchOperations;
+        this.movieRepository = movieRepository;
     }
 
     public void createMovie(Set<MOVIE_DTO> movies) {
 
+        for (SSO_USER_INDEX ssoUserIndex : ssoUserRepository.findAll()) {
+
+            List<String> movieList = ssoUserIndex.getSubscribeList().get(CategoryLevelOne.MOVIE);
+
+            if (movieList != null) {
+                Set<String> movieIdsToKeep = movies.stream()
+                        .map(MOVIE_DTO::getMovieId)
+                        .collect(Collectors.toSet());
+
+                movieList.removeIf(movieId -> !movieIdsToKeep.contains(movieId));
+            }
+        }
         // DELETE ALL DATA BEFORE CREATE
         movieMaker.deleteMovie();
 
@@ -112,52 +139,48 @@ public class Movie implements MovieInterface {
         return result;
     }
 
-    public boolean subscribeMovie (String userId, String movieId)
+    public List<MOVIE_DTO> getRecommend (String movieId)
     {
-        Optional<SSO_USER_INDEX> user = ssoUserRepository.findById(userId);
 
-        if (user.isEmpty()) {
-            return false;
-        }
+        /*
+         *  movieId를 좋아하는 user 집합
+         *  해당 user 들이 좋아하는, parameter movieId를 제외한 영화들
+         *  Map<String[MovieId], Integer> 형태로 점수 메기기
+         *  Integer 순으로 정렬하여 상위 리스트 반환
+         */
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> b
+                        .must(Query.of(t -> t.match(m -> m
+                                .field("subscribeList.MOVIE") // ✅ text 타입이므로 match 사용
+                                .query(movieId)
+                        )))
+                ))
+                .withSort(SortOptions.of(s -> s
+                        .field(f -> f
+                                .field("_score")
+                                .order(SortOrder.Desc)
+                        )))
+                .withMaxResults(100)
+                .build()
+        ;
 
-        MOVIE_INDEX movie = movieMaker.readMovieById(movieId);
-        if (movie.getFavorites() == null) movie.setFavorites(new HashSet<>());
-        movie.getFavorites().add(userId);
+        SearchHits<SSO_USER_INDEX> users = elasticsearchOperations.search(query, SSO_USER_INDEX.class);
 
-        movieMaker.updateMovie(movie);
+        return users.stream()
+                .map(hit -> hit.getContent().getSubscribeList().get(CategoryLevelOne.MOVIE)) // 유저의 영화 리스트 가져오기
+                .filter(Objects::nonNull) // null 값 제거
+                .flatMap(List::stream) // 리스트를 단일 스트림으로 변환
+                .filter(id -> !id.equals(movieId)) // parameter 받은 movieId 제외
+                .collect(Collectors.toMap(Function.identity(), _ -> 1, Integer::sum)) // 영화 ID를 키로, 등장 횟수를 값으로 저장
+                .entrySet().stream() // Map 스트림으로 변환
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()) // 값 기준 내림차순 정렬
+                .limit(6) // 상위 6개만 선택
+                .map(entry -> movieRepository.findById(entry.getKey()).orElse(null)) // movieId로 MOVIE_INDEX 조회
+                .filter(Objects::nonNull) // null 값 제거
+                .map(translation::MovieIndexToDTO)  // MOVIE_INDEX -> MOVIE_DTO 변환
+                .collect(Collectors.toList())   // 리스트로 변환
+        ;
 
-        return true;
-    }
-
-    public boolean subscribeCancelMovie (String userId, String movieId)
-    {
-        Optional<SSO_USER_INDEX> user = ssoUserRepository.findById(userId);
-
-        if (user.isEmpty()) {
-            return false;
-        }
-
-        MOVIE_INDEX movie = movieMaker.readMovieById(movieId);
-        if (movie.getFavorites() == null) movie.setFavorites(new HashSet<>());
-        movie.getFavorites().remove(userId);
-
-        movieMaker.updateMovie(movie);
-
-        return true;
-    }
-
-    public boolean subscribeCheck(String userId, String movieId)
-    {
-        Optional<SSO_USER_INDEX> user = ssoUserRepository.findById(userId);
-
-        if (user.isEmpty()) {
-            return false;
-        }
-
-        MOVIE_INDEX movie = movieMaker.readMovieById(movieId);
-        if (movie.getFavorites() == null) movie.setFavorites(new HashSet<>());
-
-        return movie.getMovieId().contains(userId);
     }
 
 }

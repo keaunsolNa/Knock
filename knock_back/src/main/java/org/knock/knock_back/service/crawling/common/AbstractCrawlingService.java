@@ -5,7 +5,6 @@ import org.jsoup.nodes.Element;
 
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
 import org.knock.knock_back.service.layerClass.Movie;
-import org.knock.knock_back.service.crawling.CrawlingInterface;
 
 import java.util.HashSet;
 import java.util.Set;
