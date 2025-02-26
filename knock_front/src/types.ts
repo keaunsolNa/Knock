@@ -37,6 +37,13 @@ export interface IMovie {
   koficcode: string;
 }
 
+export interface ISubList {
+  movie: IMovie[];
+  musical: any;
+  opera: any;
+  exhibition: any;
+}
+
 export interface IUser {
   alarmTimings: string[];
   email: string;

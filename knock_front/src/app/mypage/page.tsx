@@ -3,15 +3,32 @@
 import styles from './page.module.scss';
 import MenuItem from '@/components/mypage/MenuItem';
 import Profile from '@/components/mypage/Profile';
+import { clearAccessToken } from '@/redux/authSlice';
 import { useAppDispatch } from '@/redux/store';
 import { IUser } from '@/types';
+import { alarmToText, categoryToText, alarmCategoryList } from '@/utils/alarm';
 import { apiRequest } from '@/utils/api';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [userData, setUserData] = useState<IUser>(null);
+
+  const handleOnClickLogout = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/logout`,
+      {
+        method: 'DELETE',
+        credentials: 'include',
+      }
+    );
+    if (response.ok) {
+      dispatch(clearAccessToken());
+      router.push('/login');
+    }
+  };
 
   const getUserData = async () => {
     const response = await apiRequest(
@@ -34,30 +51,6 @@ export default function Page() {
     getUserData();
   }, []);
 
-  const categorySub = () => {
-    switch (userData.favoriteLevelOne) {
-      case 'MOVIE':
-        return '영화';
-      case 'MUSICAL':
-        return '뮤지컬';
-      case 'OPERA':
-        return '오페라';
-      case 'EXHIBITION':
-        return '전시회';
-    }
-  };
-
-  const alarmToText = {
-    ZERO_HOUR: '설정안함',
-    ONE_HOUR: '1시간 전',
-    THR_HOUR: '3시간 전',
-    SIX_HOUR: '6시간 전',
-    TWE_HOUR: '12시간 전',
-    ONE_DAY: '1일 전',
-    THR_DAY: '3일 전',
-    SEV_DAY: '7일 전',
-  };
-
   return (
     <>
       {userData && (
@@ -70,7 +63,9 @@ export default function Page() {
               <MenuItem
                 name="카테고리"
                 link="/mypage/category"
-                value={categorySub()}
+                value={
+                  categoryToText[userData.favoriteLevelOne.toLocaleLowerCase()]
+                }
               />
               <MenuItem name="구독 목록" link="/mypage/subscribe" />
             </div>
@@ -79,26 +74,14 @@ export default function Page() {
           <section className={styles.section__alarm}>
             <h2>⏰ 알림 설정</h2>
             <div className={styles.div__menu_box}>
-              <MenuItem
-                name="영화"
-                link="/mypage/alarm/movie"
-                value={alarmToText[userData.alarmTimings[0]]}
-              />
-              <MenuItem
-                name="뮤지컬"
-                link="/mypage/alarm/musical"
-                value={alarmToText[userData.alarmTimings[1]]}
-              />
-              <MenuItem
-                name="오페라"
-                link="/mypage/alarm/opera"
-                value={alarmToText[userData.alarmTimings[2]]}
-              />
-              <MenuItem
-                name="전시회"
-                link="/mypage/alarm/exhibition"
-                value={alarmToText[userData.alarmTimings[3]]}
-              />
+              {alarmCategoryList.map((category, idx) => (
+                <MenuItem
+                  key={`${category}_link`}
+                  name={categoryToText[category]}
+                  link={`/mypage/alarm/${category}`}
+                  value={alarmToText[userData.alarmTimings[idx]]}
+                />
+              ))}
             </div>
           </section>
 
@@ -118,7 +101,12 @@ export default function Page() {
               </div>
             </section>
           ) : (
-            <button className={styles.btn__logout}>로그아웃</button>
+            <button
+              className={styles.btn__logout}
+              onClick={handleOnClickLogout}
+            >
+              로그아웃
+            </button>
           )}
         </div>
       )}

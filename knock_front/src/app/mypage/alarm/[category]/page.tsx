@@ -6,50 +6,39 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { notFound, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/redux/store';
-
-const alarmType = {
-  movie: { idx: 0, text: '영화 알림' },
-  musical: { idx: 1, text: '뮤지컬 알림' },
-  opera: { idx: 2, text: '오페라 알림' },
-  exhibition: { idx: 3, text: '전시회 알림' },
-};
-
-const alarmSettingList = [
-  { value: 'ONE_HOUR', text: '1시간 전' },
-  { value: 'THR_HOUR', text: '3시간 전' },
-  { value: 'SIX_HOUR', text: '6시간 전' },
-  { value: 'TWE_HOUR', text: '12시간 전' },
-  { value: 'ONE_DAY', text: '1일 전' },
-  { value: 'THR_DAY', text: '3일 전' },
-  { value: 'SEV_DAY', text: '7일 전' },
-];
+import {
+  alarmSettingList,
+  alarmCategoryList,
+  categoryToText,
+  alarmToText,
+} from '@/utils/alarm';
 
 export default function Page() {
-  console.log('render');
-  const category = useParams().category as string;
   const dispatch = useAppDispatch();
-  const [alarm, setAlarm] = useState<boolean | null>(null);
-  const [alarmList, setAlarmList] = useState<string[]>(null);
+  const category = useParams().category as string;
+  const alarmIdx = alarmCategoryList.findIndex((val) => val === category);
+
+  const [alarm, setAlarm] = useState<string[]>(null);
   const [isFirst, setIsFirst] = useState(true);
 
-  const handleToggleClick = async () => {
-    if (alarm) {
-      setAlarmList((prev) => {
-        const newAlarmList = [...prev];
-        newAlarmList[alarmType[category].idx] = 'ZERO_HOUR';
-        return newAlarmList;
-      });
+  const handleToggleClick = () => {
+    let chgVal = 'ZERO_HOUR';
+    if (alarm[alarmIdx] === 'ZERO_HOUR') {
+      chgVal = 'ONE_HOUR';
     }
-    setAlarm((prev) => !prev);
+    setAlarm((prev) => {
+      const newAlarm = [...prev];
+      newAlarm[alarmIdx] = chgVal;
+      return newAlarm;
+    });
   };
 
   const handleAlarmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-
-    setAlarmList((prev) => {
-      const newAlarmList = [...prev];
-      newAlarmList[alarmType[category].idx] = newValue;
-      return newAlarmList;
+    setAlarm((prev) => {
+      const newAlarm = [...prev];
+      newAlarm[alarmIdx] = newValue;
+      return newAlarm;
     });
   };
 
@@ -66,116 +55,114 @@ export default function Page() {
       notFound();
     }
 
-    const data = await response.json();
-    setAlarmList(data);
-    setAlarm(data[alarmType[category].idx] !== 'ZERO_HOUR');
+    const data: string[] = await response.json();
+    setAlarm(data);
   };
 
   const setNewAlarmSetting = async () => {
-    console.log(alarmList);
     const response = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/${category}/changeAlarm`,
       dispatch,
       {
         method: 'POST',
-        body: JSON.stringify(alarmList),
+        body: JSON.stringify(alarm),
       }
     );
 
     if (!response.ok) {
       return <div>에러</div>;
     }
-
-    const data = await response.json();
   };
 
   useEffect(() => {
+    if (!category) return;
     getAlarmSetting();
-  }, []);
+  }, [category]);
 
   useEffect(() => {
-    // TODO : 첫화면 mount시 setNewAlarmSetting 호출하는 이슈 수정
+    if (alarm === null) return;
 
-    if (alarmList) {
-      if (isFirst) {
-        setIsFirst(false);
-      } else {
-        setNewAlarmSetting();
-      }
+    if (isFirst) {
+      setIsFirst(false);
+    } else {
+      setNewAlarmSetting();
     }
-  }, [alarmList]);
+  }, [alarm]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.div__about}>
-        회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이
-        다가오면 알림을 보내드립니다. <br /> <br />
-        원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
-      </div>
+    <>
+      {alarm && (
+        <div className={styles.container}>
+          <div className={styles.div__about}>
+            회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이
+            다가오면 알림을 보내드립니다. <br /> <br />
+            원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
+          </div>
 
-      <form className={styles.form__setting}>
-        <div className={styles.div__toggle_wrapper}>
-          <span>{alarmType[category].text}</span>
-          <motion.div
-            className={styles.div__toggle_bar}
-            onClick={handleToggleClick}
-            style={{
-              justifyContent: alarm ? 'flex-end' : 'flex-start',
-              backgroundColor: alarm ? '#34c759' : '#d9d9da',
-            }}
-          >
-            <motion.div
-              className={styles.div__toggle_circle}
-              layout
-              transition={{
-                type: 'spring',
-                visualDuration: 0.2,
-                bounce: 0.2,
-              }}
-            />
-          </motion.div>
-        </div>
+          <form className={styles.form__setting}>
+            <div className={styles.div__toggle_wrapper}>
+              <span>{`${categoryToText[category]} 알림`}</span>
+              <motion.div
+                className={styles.div__toggle_bar}
+                onClick={handleToggleClick}
+                style={{
+                  justifyContent:
+                    alarm[alarmIdx] !== 'ZERO_HOUR' ? 'flex-end' : 'flex-start',
+                  backgroundColor:
+                    alarm[alarmIdx] !== 'ZERO_HOUR' ? '#34c759' : '#d9d9da',
+                }}
+              >
+                <motion.div
+                  className={styles.div__toggle_circle}
+                  layout
+                  transition={{
+                    type: 'spring',
+                    visualDuration: 0.2,
+                    bounce: 0.2,
+                  }}
+                />
+              </motion.div>
+            </div>
 
-        <AnimatePresence>
-          {alarm && (
-            <motion.div
-              className={styles.div__radio_box}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {alarmSettingList.map((type, idx) => {
-                if (category === 'movie') {
-                  if (![4, 5, 6].includes(idx)) {
-                    return null;
-                  }
-                }
-                return (
-                  <div key={'div_' + type.value}>
-                    <input
-                      className={styles.input__radio}
-                      id={'setting_' + type.value}
-                      type="radio"
-                      value={type.value}
-                      name="alarmSetting"
-                      checked={
-                        alarmList[alarmType[category].idx] === type.value
+            <AnimatePresence>
+              {alarm[alarmIdx] !== 'ZERO_HOUR' && (
+                <motion.div
+                  className={styles.div__radio_box}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {alarmSettingList.map((setting, idx) => {
+                    if (category === 'movie') {
+                      if (![4, 5, 6].includes(idx)) {
+                        return;
                       }
-                      onChange={handleAlarmChange}
-                    />
-                    <label
-                      className={styles.label__radio}
-                      htmlFor={'setting_' + type.value}
-                    >
-                      {type.text}
-                    </label>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </form>
-    </div>
+                    }
+                    return (
+                      <div key={`div__${setting}`}>
+                        <input
+                          className={styles.input__radio}
+                          type="radio"
+                          id={`setting__${setting}`}
+                          value={setting}
+                          checked={alarm[alarmIdx] === setting}
+                          onChange={handleAlarmChange}
+                        />
+                        <label
+                          className={styles.label__radio}
+                          htmlFor={`setting__${setting}`}
+                        >
+                          {alarmToText[setting]}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </form>
+        </div>
+      )}
+    </>
   );
 }

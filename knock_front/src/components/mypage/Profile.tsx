@@ -7,6 +7,13 @@ import { useState } from 'react';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 
+const accountType = {
+  GOOGLE: '구글 회원',
+  KAKAO: ' 카카오톡 회원',
+  NAVER: '네이버 회원',
+  GUEST: '게스트 회원',
+};
+
 export default function Profile({ userData }: { userData: IUser }) {
   const dispatch = useAppDispatch();
 
@@ -14,26 +21,18 @@ export default function Profile({ userData }: { userData: IUser }) {
   const [newName, setNewName] = useState(userData.nickName);
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  const accountType = () => {
-    switch (userData.loginType) {
-      case 'GOOGLE':
-        return '구글 회원';
-      case 'KAKAO':
-        return '카카오톡 회원';
-      case 'NAVER':
-        return '네이버 회원';
-      case 'GUEST':
-        return '게스트 회원';
-    }
-  };
+  const [error, setError] = useState('');
 
   /**
    * 수정 버튼 클릭 시
    * : 닉네임 수정 요청, 로딩 중 입력 막기, 에러시 span태그 보이게
    */
   const onClickSubmit = async (e: React.MouseEvent) => {
+    if (newName.length < 2) {
+      setError('2글자 이상 작성해주세요');
+      return;
+    }
+
     setIsLoading(true);
 
     const response = await apiRequest(
@@ -46,7 +45,7 @@ export default function Profile({ userData }: { userData: IUser }) {
     );
 
     if (!response.ok) {
-      setIsError(true);
+      setError('변경 실패. 잠시 후 다시 요청해주세요.');
       setIsLoading(false);
     }
 
@@ -55,6 +54,7 @@ export default function Profile({ userData }: { userData: IUser }) {
     if (nameChange) {
       setIsLoading(false);
       setIsEdit(false);
+      setError('');
       setOgName(newName);
     }
   };
@@ -66,6 +66,7 @@ export default function Profile({ userData }: { userData: IUser }) {
   const onClickCancel = () => {
     setNewName(ogName);
     setIsEdit(false);
+    setError('');
   };
 
   return (
@@ -94,11 +95,7 @@ export default function Profile({ userData }: { userData: IUser }) {
                     취소
                   </button>
                 </div>
-                {isError && (
-                  <p className={styles.p__error}>
-                    변경 실패. 잠시 후 다시 요청해주세요.
-                  </p>
-                )}
+                <p className={styles.p__error}>{error}</p>
               </>
             ) : (
               <>
@@ -106,7 +103,9 @@ export default function Profile({ userData }: { userData: IUser }) {
                   <span>{ogName}</span>
                   <MdModeEdit onClick={() => setIsEdit(true)} />
                 </div>
-                <p className={styles.p__account}>{accountType()}</p>
+                <p className={styles.p__account}>
+                  {accountType[userData.loginType]}
+                </p>
                 <div className={styles.div__info}>
                   {userData.loginType === 'GUEST'
                     ? '회원가입하고 데이터를 연동해보세요'
