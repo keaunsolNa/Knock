@@ -1,0 +1,86 @@
+.section__profile {
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.img__profile {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.profile__textbox {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.input__nickname {
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  padding: 0px 10px;
+  margin-bottom: 10px;
+  font-family: $font-family;
+  color: $gray-darker;
+}
+
+.div__btn_wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+
+  button {
+    @include flexbox-center(45%, 20px);
+    font-family: $font-family;
+    font-weight: $font-thin;
+    border-radius: 5px;
+    border: none;
+
+    &:first-of-type {
+      background-color: #9fc5f9;
+    }
+    &:last-of-type {
+      background-color: $gray;
+    }
+  }
+}
+
+.p__error {
+  font-size: 0.8rem;
+  color: $orange;
+}
+
+.div__nickname {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  span {
+    font-size: 1.5rem;
+    font-weight: $font-bold;
+  }
+
+  svg {
+    width: 23px;
+    height: 23px;
+    fill: $gray-dark;
+    cursor: pointer;
+  }
+}
+
+.p__account {
+  font-size: 1rem;
+  color: $gray-dark;
+  line-height: 25px;
+}
+
+.div__info {
+  color: $orange;
+  font-size: 0.9rem;
+}

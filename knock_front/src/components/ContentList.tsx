@@ -1,8 +1,8 @@
 'use client';
 
 import { IMovie } from '@/types';
-import MovieItem from './MovieItem';
-import styles from '@/styles/components/list-box.module.scss';
+import ContentItem from './ContentItem';
+import styles from '@/styles/components/content-list.module.scss';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
@@ -41,7 +41,7 @@ export default function ContentList({
         ? itemList.map((movie) => {
             if (alarmList.length > 0) {
               return (
-                <MovieItem
+                <ContentItem
                   key={movie.movieId}
                   {...movie}
                   setAlarm={alarmList.includes(movie.movieId)}
@@ -49,11 +49,13 @@ export default function ContentList({
               );
             } else {
               return (
-                <MovieItem key={movie.movieId} {...movie} setAlarm={false} />
+                <ContentItem key={movie.movieId} {...movie} setAlarm={false} />
               );
             }
           })
-        : itemList.map((movie) => <MovieItem key={movie.movieId} {...movie} />)}
+        : itemList.map((movie) => (
+            <ContentItem key={movie.movieId} {...movie} />
+          ))}
     </div>
   );
 }

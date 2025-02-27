@@ -22,7 +22,7 @@ export const apiRequest = async (
 
   // Access Token 만료
   if (response.status === 401) {
-    await dispatch(refreshAccessToken()); // Access token Refresh 요청
+    dispatch(refreshAccessToken()); // Access token Refresh 요청
     accessToken = store.getState().auth.accessToken;
     if (!accessToken) return response; // Refresh Token도 만료 : 요청페이지에서 logout 진행
 

@@ -1,96 +1,168 @@
 'use client';
 
+import { apiRequest } from '@/utils/api';
 import styles from './page.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '@/redux/store';
+import {
+  alarmSettingList,
+  alarmCategoryList,
+  categoryToText,
+  alarmToText,
+} from '@/utils/alarm';
 
 export default function Page() {
-  const { category } = useParams();
-  const [alarm, setAlarm] = useState(true);
+  const dispatch = useAppDispatch();
+  const category = useParams().category as string;
+  const alarmIdx = alarmCategoryList.findIndex((val) => val === category);
 
-  const alarmType = () => {
-    switch (category) {
-      case 'movie':
-        return '영화 알림';
-      case 'musical':
-        return '뮤지컬 알림';
-      case 'opera':
-        return '오페라 알림';
-      case 'exhibition':
-        return '전시회 알림';
+  const [alarm, setAlarm] = useState<string[]>(null);
+  const [isFirst, setIsFirst] = useState(true);
+
+  const handleToggleClick = () => {
+    let chgVal = 'ZERO_HOUR';
+    if (alarm[alarmIdx] === 'ZERO_HOUR') {
+      chgVal = 'ONE_HOUR';
+    }
+    setAlarm((prev) => {
+      const newAlarm = [...prev];
+      newAlarm[alarmIdx] = chgVal;
+      return newAlarm;
+    });
+  };
+
+  const handleAlarmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setAlarm((prev) => {
+      const newAlarm = [...prev];
+      newAlarm[alarmIdx] = newValue;
+      return newAlarm;
+    });
+  };
+
+  const getAlarmSetting = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getAlarmTimings`,
+      dispatch,
+      {
+        method: 'GET',
+      }
+    );
+
+    if (!response.ok) {
+      notFound();
+    }
+
+    const data: string[] = await response.json();
+    setAlarm(data);
+  };
+
+  const setNewAlarmSetting = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/${category}/changeAlarm`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify(alarm),
+      }
+    );
+
+    if (!response.ok) {
+      return <div>에러</div>;
     }
   };
-  const alarmSettingList = [
-    { value: 1, text: '1시간 전' },
-    { value: 2, text: '3시간 전' },
-    { value: 3, text: '6시간 전' },
-    { value: 4, text: '12시간 전' },
-    { value: 5, text: '1일 전' },
-    { value: 6, text: '3일 전' },
-    { value: 7, text: '7일 전' },
-  ];
+
+  useEffect(() => {
+    if (!category) return;
+    getAlarmSetting();
+  }, [category]);
+
+  useEffect(() => {
+    if (alarm === null) return;
+
+    if (isFirst) {
+      setIsFirst(false);
+    } else {
+      setNewAlarmSetting();
+    }
+  }, [alarm]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.div__about}>
-        회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이
-        다가오면 알림을 보내드립니다. <br /> <br />
-        원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
-      </div>
+    <>
+      {alarm && (
+        <div className={styles.container}>
+          <div className={styles.div__about}>
+            회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이
+            다가오면 알림을 보내드립니다. <br /> <br />
+            원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
+          </div>
 
-      <form className={styles.form__setting}>
-        <div className={styles.div__toggle_wrapper}>
-          <span>{alarmType()}</span>
-          <motion.div
-            className={styles.div__toggle_bar}
-            onClick={() => setAlarm((prev) => !prev)}
-            style={{
-              justifyContent: alarm ? 'flex-end' : 'flex-start',
-              backgroundColor: alarm ? '#34c759' : '#d9d9da',
-            }}
-          >
-            <motion.div
-              className={styles.div__toggle_circle}
-              layout
-              transition={{
-                type: 'spring',
-                visualDuration: 0.2,
-                bounce: 0.2,
-              }}
-            />
-          </motion.div>
+          <form className={styles.form__setting}>
+            <div className={styles.div__toggle_wrapper}>
+              <span>{`${categoryToText[category]} 알림`}</span>
+              <motion.div
+                className={styles.div__toggle_bar}
+                onClick={handleToggleClick}
+                style={{
+                  justifyContent:
+                    alarm[alarmIdx] !== 'ZERO_HOUR' ? 'flex-end' : 'flex-start',
+                  backgroundColor:
+                    alarm[alarmIdx] !== 'ZERO_HOUR' ? '#34c759' : '#d9d9da',
+                }}
+              >
+                <motion.div
+                  className={styles.div__toggle_circle}
+                  layout
+                  transition={{
+                    type: 'spring',
+                    visualDuration: 0.2,
+                    bounce: 0.2,
+                  }}
+                />
+              </motion.div>
+            </div>
+
+            <AnimatePresence>
+              {alarm[alarmIdx] !== 'ZERO_HOUR' && (
+                <motion.div
+                  className={styles.div__radio_box}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {alarmSettingList.map((setting, idx) => {
+                    if (category === 'movie') {
+                      if (![4, 5, 6].includes(idx)) {
+                        return;
+                      }
+                    }
+                    return (
+                      <div key={`div__${setting}`}>
+                        <input
+                          className={styles.input__radio}
+                          type="radio"
+                          id={`setting__${setting}`}
+                          value={setting}
+                          checked={alarm[alarmIdx] === setting}
+                          onChange={handleAlarmChange}
+                        />
+                        <label
+                          className={styles.label__radio}
+                          htmlFor={`setting__${setting}`}
+                        >
+                          {alarmToText[setting]}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </form>
         </div>
-
-        <AnimatePresence>
-          {alarm && (
-            <motion.div
-              className={styles.div__radio_box}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {alarmSettingList.map((type) => (
-                <div key={'setting' + type.value}>
-                  <input
-                    className={styles.input__radio}
-                    id={'setting' + type.value}
-                    type="radio"
-                    value={type.value}
-                    name="alarmSetting"
-                  />
-                  <label
-                    className={styles.label__radio}
-                    htmlFor={'setting' + type.value}
-                  >
-                    {type.text}
-                  </label>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </form>
-    </div>
+      )}
+    </>
   );
 }

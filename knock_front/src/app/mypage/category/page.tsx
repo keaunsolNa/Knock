@@ -1,6 +1,67 @@
+'use client';
+
+import { useAppDispatch } from '@/redux/store';
 import styles from './page.module.scss';
+import { apiRequest } from '@/utils/api';
+import { notFound } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { alarmCategoryList, categoryToText } from '@/utils/alarm';
 
 export default function Page() {
+  const dispatch = useAppDispatch();
+  const [category, setCategory] = useState<string>();
+  const [isFirst, setIsFirst] = useState(true);
+
+  const handelChangeCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCategory(e.target.value);
+  };
+
+  const getSubCategory = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubCategory`,
+      dispatch,
+      {
+        method: 'GET',
+      }
+    );
+    console.log(response);
+
+    if (!response.ok) {
+      notFound();
+    }
+
+    const data = await response.text();
+    setCategory(data.toLowerCase());
+  };
+
+  const setNewAlarmSetting = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/changeCategory`,
+      dispatch,
+      {
+        method: 'POST',
+        body: JSON.stringify({ value: category }),
+      }
+    );
+
+    if (!response.ok) {
+      return <div>에러</div>;
+    }
+  };
+
+  useEffect(() => {
+    getSubCategory();
+  }, []);
+
+  useEffect(() => {
+    if (!category) return;
+    if (isFirst) {
+      setIsFirst(false);
+    } else {
+      setNewAlarmSetting();
+    }
+  }, [category]);
+
   return (
     <div className={styles.container}>
       <div className={styles.div__about}>
@@ -10,27 +71,20 @@ export default function Page() {
       </div>
       <form>
         <div className={styles.div__radio_box}>
-          <div>
-            <input type="radio" id="movie" name="category" value="movie" />
-            <label htmlFor="movie">영화</label>
-          </div>
-          <div>
-            <input type="radio" id="musical" name="category" value="musical" />
-            <label htmlFor="musical">뮤지컬</label>
-          </div>
-          <div>
-            <input type="radio" id="opera" name="category" value="opera" />
-            <label htmlFor="opera">오페라</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="exhibition"
-              name="category"
-              value="exhibition"
-            />
-            <label htmlFor="exhibition">전시회</label>
-          </div>
+          {alarmCategoryList.map((setting) => {
+            return (
+              <div key={`div__${setting}`}>
+                <input
+                  type="radio"
+                  id={setting}
+                  value={setting}
+                  checked={category === setting}
+                  onChange={handelChangeCategory}
+                />
+                <label htmlFor={setting}>{categoryToText[setting]}</label>
+              </div>
+            );
+          })}
         </div>
       </form>
     </div>
