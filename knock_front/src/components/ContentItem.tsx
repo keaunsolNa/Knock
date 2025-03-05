@@ -10,12 +10,14 @@ import Link from 'next/link';
 import { BeatLoader } from 'react-spinners';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
+import CategoryItem from './CategoryItem';
 
 interface IProps extends IMovie {
   setAlarm?: boolean;
+  viewBtn?: boolean;
 }
 
-export default function ContentItem(props: IProps) {
+export default function ContentItem({ viewBtn = true, ...props }: IProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
 
@@ -81,30 +83,43 @@ export default function ContentItem(props: IProps) {
         </div>
 
         <div className={styles.div__info}>
-          <p className={styles.p__date}>{props.openingTime} 개봉</p>
+          <div>
+            <p className={styles.p__date}>
+              {props.openingTime === '개봉 예정'
+                ? '미정'
+                : `${props.openingTime} 개봉`}
+            </p>
+            <div className={styles.div__category_list}>
+              {props.categoryLevelTwo.slice(0, 2).map((category) => (
+                <div key={`${props.movieId}_${category.id}`}>{category.nm}</div>
+              ))}
+            </div>
+          </div>
           <p className={styles.p__title}>{props.movieNm}</p>
         </div>
 
-        <div className={styles.div__alarm}>
-          {alarm === undefined ? (
-            <div className={styles.div__alarm_loading}>
-              <BeatLoader size={10} color={'#ffffff'} />
-            </div>
-          ) : (
-            <button
-              onClick={handleAlarmClick}
-              className={alarm ? styles.btn__alarm_on : styles.btn__alarm_off}
-            >
-              <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
-                transition={{ duration: 0.3 }}
+        {viewBtn && (
+          <div className={styles.div__alarm}>
+            {alarm === undefined ? (
+              <div className={styles.div__alarm_loading}>
+                <BeatLoader size={10} color={'#ffffff'} />
+              </div>
+            ) : (
+              <button
+                onClick={handleAlarmClick}
+                className={alarm ? styles.btn__alarm_on : styles.btn__alarm_off}
               >
-                {alarm ? <BsBellFill /> : <BsBell />}
-              </motion.div>
-            </button>
-          )}
-        </div>
+                <motion.div
+                  initial={{ scale: 1 }}
+                  animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {alarm ? <BsBellFill /> : <BsBell />}
+                </motion.div>
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );

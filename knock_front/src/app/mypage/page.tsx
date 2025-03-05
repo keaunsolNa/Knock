@@ -20,7 +20,7 @@ export default function Page() {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/logout`,
       {
-        method: 'DELETE',
+        method: 'POST',
         credentials: 'include',
       }
     );

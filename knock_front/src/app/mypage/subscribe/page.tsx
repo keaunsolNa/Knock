@@ -1,22 +1,84 @@
-import { IMovie } from '@/types';
+'use client';
+
+import { IMovie, ISubList } from '@/types';
 import styles from './page.module.scss';
-import MovieItem from '@/components/MovieItem';
+import { apiRequest } from '@/utils/api';
+import { useAppDispatch } from '@/redux/store';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import ContentList from '@/components/ContentList';
+import { alarmCategoryList, categoryToText } from '@/utils/alarm';
+import ContentItem from '@/components/ContentItem';
 
 export default function Page() {
-  const subscribeMovie: IMovie[] = [];
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const [subList, setSubList] = useState<ISubList>({
+    MOVIE: [],
+    PERFORMING_ARTS: [],
+    EXHIBITION: [],
+  });
+  const [category, setCategory] = useState('MOVIE');
+
+  const getSubList = async () => {
+    const response = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubscribeList`,
+      dispatch,
+      {
+        method: 'GET',
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        router.push('/login');
+      }
+
+      return <div>서버 에러</div>;
+    }
+    const data = await response.json();
+    setSubList(data);
+  };
+
+  useEffect(() => {
+    // getSubList();
+  }, []);
 
   return (
-    <div className={styles.container}>
-      {subscribeMovie.length === 0 ? (
-        <h3>구독 목록이 없습니다</h3>
-      ) : (
-        <>
-          <h5 className={styles.h5__total}>(총 {subscribeMovie.length}개)</h5>
-          {subscribeMovie.map((movie) => {
-            return <MovieItem key={movie.movieId} {...movie} setAlarm={true} />;
+    subList && (
+      <div className={styles.container}>
+        <div className={styles.div__category_wrapper}>
+          {alarmCategoryList.map((item) => {
+            return (
+              <div
+                key={'btn_' + item}
+                className={
+                  category === item.toUpperCase()
+                    ? styles.div__select_category
+                    : null
+                }
+                onClick={() => setCategory(item.toUpperCase())}
+              >
+                {categoryToText[item]}
+              </div>
+            );
           })}
-        </>
-      )}
-    </div>
+        </div>
+
+        {subList[category].length === 0 ? (
+          <div className={styles.div__no_item}>
+            <h3>구독 목록이 없습니다</h3>
+          </div>
+        ) : (
+          <div className={styles.div__item_wrapper}>
+            <h5>총 {subList[category].length}개</h5>
+            {subList[category].map((item) => (
+              <ContentItem {...item} viewBtn={false} />
+            ))}
+          </div>
+        )}
+      </div>
+    )
   );
 }

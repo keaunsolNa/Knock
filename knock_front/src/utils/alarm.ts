@@ -1,10 +1,9 @@
-export const alarmCategoryList = ['movie', 'musical', 'opera', 'exhibition'];
+export const alarmCategoryList = ['MOVIE', 'PERFORMING_ART', 'EXHIBITION'];
 
 export const categoryToText = {
-  movie: '영화',
-  musical: '뮤지컬',
-  opera: '오페라',
-  exhibition: '전시회',
+  MOVIE: '영화',
+  PERFORMING_ART: '공연 예술',
+  EXHIBITION: '전시회',
 };
 
 export const alarmSettingList = [

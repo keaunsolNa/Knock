@@ -28,8 +28,8 @@ export default function Page() {
     } else if (social === 'google') {
       const baseUrl = 'https://accounts.google.com/o/oauth2/auth?';
       const params = [
-        `response_type=code`,
         `scope=openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email`,
+        `response_type=code`,
         `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`,
         `redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`,
       ];

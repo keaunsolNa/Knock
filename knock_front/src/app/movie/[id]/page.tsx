@@ -34,10 +34,7 @@ export default async function Page({
           height={400}
           priority
         />
-        <SubscribeBtn
-          favorites={movieDetail.favorites}
-          movieId={movieDetail.movieId}
-        />
+        <SubscribeBtn favorites={[]} movieId={movieDetail.movieId} />
       </div>
 
       <div className={styles.div__details}>
