@@ -38,16 +38,15 @@ export interface IMovie {
 }
 
 export interface ISubList {
-  movie: IMovie[];
-  musical: any;
-  opera: any;
-  exhibition: any;
+  MOVIE: IMovie[];
+  PERFORMING_ARTS: any;
+  EXHIBITION: any;
 }
 
 export interface IUser {
   alarmTimings: string[];
   email: string;
-  favoriteLevelOne: 'MOVIE' | 'MUSICAL' | 'OPERA' | 'EXHIBITION';
+  favoriteLevelOne: 'MOVIE' | 'PERFORMING_ARTS' | 'EXHIBITION';
   id: string;
   lastLoginTime: string;
   loginType: 'KAKAO' | 'GOOGLE' | 'NAVER' | 'GUEST';
@@ -57,5 +56,7 @@ export interface IUser {
   role: string;
   subscribeList: {
     MOVIE: IMovie[];
+    PERFORMING_ARTS: any;
+    EXHIBITION: any;
   };
 }

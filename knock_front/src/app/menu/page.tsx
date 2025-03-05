@@ -11,8 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const smallMenuLinks = [
   { name: '영화', link: '/movie' },
-  { name: '뮤지컬 (준비중)', link: '' },
-  { name: '오페라 (준비중)', link: '' },
+  { name: '공연 예술 (준비중)', link: '' },
   { name: '전시회 (준비중)', link: '' },
 ];
 
