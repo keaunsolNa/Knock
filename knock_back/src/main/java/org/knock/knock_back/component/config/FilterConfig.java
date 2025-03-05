@@ -32,6 +32,7 @@ public class FilterConfig {
         FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new JwtAuthenticationFilter(jwtTokenProvider));
         registrationBean.addUrlPatterns("/auth/getAccessToken");
+        registrationBean.addUrlPatterns("/auth/logout");
         registrationBean.setOrder(2);
         return registrationBean;
     }

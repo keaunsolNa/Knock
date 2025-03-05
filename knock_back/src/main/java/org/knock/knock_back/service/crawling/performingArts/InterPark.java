@@ -1,4 +1,4 @@
-package org.knock.knock_back.service.crawling.musical;
+package org.knock.knock_back.service.crawling.performingArts;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;

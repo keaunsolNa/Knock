@@ -102,8 +102,8 @@ public class GoogleOauth implements SocialOauth
         }
         catch (Exception e)
         {
-            logger.error("Exception during Kakao token retrieval: ", e);
-            throw new RuntimeException("Exception during Kakao token retrieval", e);
+            logger.error("Exception during Google token retrieval: ", e);
+            throw new RuntimeException("Exception during Google token retrieval", e);
         }
 
     }

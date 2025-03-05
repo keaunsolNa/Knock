@@ -1,6 +1,7 @@
 package org.knock.knock_back.controller.crawling;
 
 import org.knock.knock_back.service.crawling.common.CrawlingService;
+import org.knock.knock_back.service.crawling.performingArts.KOPIS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,13 @@ import org.knock.knock_back.service.layerClass.KOFICService;
 public class CrawlingController {
 
     private final KOFICService koficService;
+    private final KOPIS kopis;
     private final CrawlingService crawlingService;
 
     @Autowired
-    public CrawlingController(KOFICService koficService, CrawlingService crawlingService) {
+    public CrawlingController(KOFICService koficService, KOPIS kopis, CrawlingService crawlingService) {
         this.koficService = koficService;
+        this.kopis = kopis;
         this.crawlingService = crawlingService;
     }
 
@@ -31,6 +34,15 @@ public class CrawlingController {
      */
     @GetMapping("/{source}")
     public ResponseEntity<String> crawl(@PathVariable String source) {
+
+        if (source.equals("KOPIS")) {
+            kopis.requestAPI();
+            return ResponseEntity.ok("Crawling started for " + source);
+        }
+
+        else if (source.equals("KOFIC")) {
+            koficService.startCrawling();
+        }
 
         try
         {

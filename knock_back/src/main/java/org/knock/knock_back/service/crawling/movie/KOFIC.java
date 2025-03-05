@@ -66,8 +66,6 @@ public class KOFIC {
     public void requestAPI() {
 
         logger.info("Running in thread: {}", Thread.currentThread().getName());
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
 
         Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = null;
         if (categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.MOVIE).isPresent())

@@ -3,6 +3,7 @@ package org.knock.knock_back.component.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knock.knock_back.service.crawling.common.CrawlingService;
+import org.knock.knock_back.service.crawling.performingArts.KOPIS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +23,14 @@ public class SchedulerConfig {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final KOFIC kofic;
+    private final KOPIS kopis;
     private final CrawlingService crawlingService;
 
     @Value("${schedule.kofic.use}")
     private boolean useScheduleKOFIC;
+
+    @Value("${schedule.kopis.use}")
+    private boolean useScheduleKOPIS;
 
     @Value("${schedule.megabox.use}")
     private boolean useScheduleMegaBox;
@@ -56,6 +61,28 @@ public class SchedulerConfig {
             logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
         }
     }
+
+    /**
+     * 주기적으로 KOPIS 에서 영화 정보를 받아온다.
+     * @apiNote cronTab = 1시간에 1번, 정시
+     */
+    @Async
+    @Scheduled(cron = "${schedule.kopis.cron}")
+    public void kopisJob() {
+
+        try
+        {
+            if (useScheduleKOPIS)
+            {
+                kopis.requestAPI();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+        }
+    }
+
 
     /**
      * 주기적으로 MegaBox 에서 상영 예정작 정보를 받아온다.

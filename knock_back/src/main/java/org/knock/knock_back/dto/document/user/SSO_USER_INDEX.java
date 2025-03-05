@@ -90,9 +90,8 @@ public class SSO_USER_INDEX {
         this.lastLoginTime = new Timestamp(System.currentTimeMillis());
         this.subscribeList = new HashMap<>();
         subscribeList.put(CategoryLevelOne.MOVIE, new LinkedList<>());
-        subscribeList.put(CategoryLevelOne.MUSICAL, new LinkedList<>());
         subscribeList.put(CategoryLevelOne.EXHIBITION, new LinkedList<>());
-        subscribeList.put(CategoryLevelOne.OPERA, new LinkedList<>());
+        subscribeList.put(CategoryLevelOne.PERFORMING_ARTS, new LinkedList<>());
     }
 
     public SSO_USER_INDEX update(String name, String email, String picture) {

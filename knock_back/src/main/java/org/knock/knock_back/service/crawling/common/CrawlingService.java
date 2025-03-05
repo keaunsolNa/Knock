@@ -83,6 +83,8 @@ public class CrawlingService extends AbstractCrawlingService {
             logger.info("{} Already Exists Movie ", title);
             dto = movieDtoToIndex.MovieIndexToDTO(movieService.checkMovie(title).get());
             setReservationLink(element, dto);
+            if (dto.getPosterBase64().isEmpty()) encodeBase64(element, dto);
+
             dtos.add(dto);
             return;
         }
@@ -105,7 +107,6 @@ public class CrawlingService extends AbstractCrawlingService {
             {
                 date = Objects.requireNonNull(dateElements.first()).text().replace(currentConfig.getDateExtract(), "");
                 date = date.trim();
-                logger.info("{} Date Extract : {}", date, date);
             }
             dto.setOpeningTime(date);
         }
@@ -150,10 +151,12 @@ public class CrawlingService extends AbstractCrawlingService {
         }
     }
 
+    // 포스터 이미지
     private void encodeBase64(Element element, MOVIE_DTO dto) {
         Elements imgElement = element.select(currentConfig.getPosterQuery());
         if (!imgElement.isEmpty()) {
             String srcPath = Objects.requireNonNull(imgElement.first()).attr(currentConfig.getPosterExtract());
+            if (srcPath.contains("//") && currentConfig.getName().equals("LOTTE")) { srcPath = srcPath.replace("//", "/"); }
             dto.setPosterBase64(srcPath);
         }
     }

@@ -41,6 +41,18 @@ public class TokenMaker {
         accessTokenForKnock.setHttpOnly(true);
         accessTokenForKnock.setSecure(false);
         accessTokenForKnock.setDomain(domain);
+//        accessTokenForKnock.setDomain("localhost");
         accessTokenForKnock.setAttribute("SameSite", "None");
+    }
+
+    public void makeTokenValidOut(Cookie refreshTokenForKnock)
+    {
+        refreshTokenForKnock.setPath("/");
+        refreshTokenForKnock.setHttpOnly(true);
+        refreshTokenForKnock.setSecure(true);
+        refreshTokenForKnock.setDomain(domain);
+//        refreshTokenForKnock.setDomain("localhost");
+        refreshTokenForKnock.setAttribute("SameSite", "None");
+        refreshTokenForKnock.setMaxAge(0);
     }
 }

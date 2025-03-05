@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum CategoryLevelOne {
 
     MOVIE,
-    MUSICAL,
-    OPERA,
+    PERFORMING_ARTS,
     EXHIBITION,
     MY_PAGE,
     BOARD

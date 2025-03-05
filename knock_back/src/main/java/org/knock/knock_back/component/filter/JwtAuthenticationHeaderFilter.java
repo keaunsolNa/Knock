@@ -28,14 +28,13 @@ public class JwtAuthenticationHeaderFilter extends OncePerRequestFilter {
         }
 
         // "Bearer " 이후의 토큰 값만 추출
-        String token = authorizationHeader.replace("Bearer ", "");
-        if (!jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenProvider.validateToken(authorizationHeader)) {
             response.sendError(401);
         }
 
         else
         {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            Authentication authentication = jwtTokenProvider.getAuthentication(authorizationHeader);
 
             // SecurityContext 에 Authentication 객체를 저장.
             SecurityContextHolder.getContext().setAuthentication(authentication);

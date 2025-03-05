@@ -74,6 +74,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 유효한 토큰인지 확인.
         if (jwtTokenProvider.validateToken(token)) {
+
+            System.out.println("CHECK TOKEN");
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아오기.
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
 

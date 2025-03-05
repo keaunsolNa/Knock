@@ -71,7 +71,6 @@ public interface CrawlingInterface {
         public void run() {
 
             Document urlDoc;
-
             synchronized (this) {
                 urlDoc = Jsoup.parse(Objects.requireNonNull(driver.getPageSource()));
             }

@@ -232,7 +232,8 @@ public class UserService {
         {
 
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            user.updateFavoriteLevelOne(CategoryLevelOne.valueOf(categoryName));
+
+            user.updateFavoriteLevelOne(CategoryLevelOne.valueOf(categoryName.toUpperCase()));
             ssoUserRepository.save(user);
 
             return true;
@@ -261,8 +262,7 @@ public class UserService {
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             int idx = categoryLevelOne.equals(CategoryLevelOne.MOVIE) ? 0
-                    : categoryLevelOne.equals(CategoryLevelOne.MUSICAL) ? 1
-                    : categoryLevelOne.equals(CategoryLevelOne.OPERA) ? 2 : 3;
+                    : categoryLevelOne.equals(CategoryLevelOne.PERFORMING_ARTS) ? 1 : 2;
 
             AlarmTiming[] alarmTimings = user.getAlarmTimings();
             alarmTimings[idx] = alarmValues.get(idx);
@@ -336,7 +336,7 @@ public class UserService {
             }
 
             // TODO 다른 것들
-            case CategoryLevelOne.OPERA ->
+            case CategoryLevelOne.PERFORMING_ARTS ->
             {
 
             }
@@ -362,15 +362,23 @@ public class UserService {
                 Set<MOVIE_DTO> set = new HashSet<>();
                 for (String id : list)
                 {
-                    MOVIE_INDEX movieIndex = movieRepository.findById(id).orElseThrow();
-                    set.add(convertDTOAndIndex.MovieIndexToDTO(movieIndex));
+                    MOVIE_INDEX movieIndex;
+                    try
+                    {
+                        movieIndex = movieRepository.findById(id).orElseThrow();
+                        set.add(convertDTOAndIndex.MovieIndexToDTO(movieIndex));
+                    } catch (Exception e)
+                    {
+                        logger.info(e.getMessage());
+                    }
+
                 }
 
                 return set;
             }
 
             // TODO 다른 것들
-            case CategoryLevelOne.MUSICAL ->
+            case CategoryLevelOne.PERFORMING_ARTS ->
             {
 
                 return null;

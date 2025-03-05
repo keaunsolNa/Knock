@@ -15,6 +15,9 @@ import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 import org.knock.knock_back.service.layerClass.OauthService;
@@ -60,8 +63,18 @@ public class OauthController {
     public ResponseEntity<Map<String, Object>> callback(@PathVariable(name = "socialLoginType") SocialLoginType socialLoginType,
                                                         @RequestBody Map<String, String> authorizationCode, HttpServletResponse httpServletResponse) {
 
+        String[] tokens;
+        if (socialLoginType.equals(SocialLoginType.GOOGLE)) {
+
+            tokens = oauthService.requestUserInfo(authorizationCode.get("authorizationCode"));
+
+        }
+        else
+        {
+            tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode.get("authorizationCode"));
+        }
+
         // refreshToken
-        String[] tokens = oauthService.requestAccessToken(socialLoginType, authorizationCode.get("authorizationCode"));
         String refreshTokenValue = tokens[0];
         String accessTokenValue = tokens[1];
 
@@ -108,6 +121,46 @@ public class OauthController {
             response.put("accessToken", accessToken);
 
             return ResponseEntity.ok(response);
+
+        }
+        catch (Exception e)
+        {
+            logger.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    /**
+     * 프론트로부터 refreshToken 받아 제거한다.
+     */
+    @PostMapping(value = "/logout")
+    @ResponseBody
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Map<String, String>> logout( HttpServletRequest request, HttpServletResponse response ) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try
+        {
+            if (auth != null) {
+                new SecurityContextLogoutHandler().logout(request, response, auth);
+            }
+
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null)
+            {
+                for (Cookie cookie : cookies)
+                {
+                    if (cookie.getName().equals("refreshTokenForKnock"))
+                    {
+                        tokenMaker.makeTokenValidOut(cookie);
+                        response.addCookie(cookie);
+                    }
+                }
+            }
+
+            return ResponseEntity.ok().build();
 
         }
         catch (Exception e)
