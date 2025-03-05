@@ -49,6 +49,7 @@ public class UserController {
      * @return set : 카테고리 별 구독 목록 id
      */
     @GetMapping (value = "/{category}/getSubscribeList")
+    @ResponseBody
     public ResponseEntity<Iterable<?>> getUserSubscribeList(@PathVariable(name = "category") CategoryLevelOne categoryLevelOne)
     {
         return ResponseEntity.ok(userService.getUserSubscribeList(categoryLevelOne));
