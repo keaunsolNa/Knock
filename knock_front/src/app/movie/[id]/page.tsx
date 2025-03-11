@@ -10,16 +10,22 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getDetail?movieId=${id}`
-  );
+  const [movieResponse, recoResponse] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getDetail?movieId=${id}`
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/recommend?movieId=${id}`
+    ),
+  ]);
 
-  if (!response.ok) {
+  if (!movieResponse.ok || !recoResponse.ok) {
     return <div>페이지 오류</div>;
   }
 
-  const movieDetail: IMovie = await response.json();
-  console.log(movieDetail);
+  const movieDetail: IMovie = await movieResponse.json();
+  const recoMovies: IMovie[] = await recoResponse.json();
+
   return (
     <div>
       <div
@@ -34,7 +40,10 @@ export default async function Page({
           height={400}
           priority
         />
-        <SubscribeBtn favorites={[]} movieId={movieDetail.movieId} />
+        <SubscribeBtn
+          favorites={movieDetail.favorites}
+          movieId={movieDetail.movieId}
+        />
       </div>
 
       <div className={styles.div__details}>
@@ -76,9 +85,43 @@ export default async function Page({
         <p className={styles.plot}>{movieDetail.plot}</p>
 
         <h3 className={styles.section_title}>예매하기</h3>
-        {/* TODO : 버튼 추가 */}
-        {/* <div className={styles.div__}></div> */}
+        <div className={styles.div__reservation}>
+          <a
+            href={movieDetail.reservationLink[0]}
+            hidden={movieDetail.reservationLink[0] === null}
+          >
+            <img src={'/images/megabox_logo.png'} alt="메가박스 예매링크" />
+          </a>
+          <a
+            href={movieDetail.reservationLink[1]}
+            hidden={movieDetail.reservationLink[1] === null}
+          >
+            <img src={'/images/cgv_logo.png'} alt="cgv 예매링크" />
+          </a>
+          <a
+            href={movieDetail.reservationLink[2]}
+            hidden={movieDetail.reservationLink[2] === null}
+          >
+            <img src={'/images/lotte_logo.png'} alt="롯데시네마 예매링크" />
+          </a>
+        </div>
       </div>
+
+      {recoMovies.length > 0 && (
+        <div className={styles.div__recommend}>
+          <span>구독자's Pick</span>
+          <div className={styles.div__reco_list}>
+            <div className={styles.div__movie_carousel}>
+              {recoMovies.map((movie) => (
+                <img
+                  key={`recommend_${movie.movieId}`}
+                  src={movie.posterBase64}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

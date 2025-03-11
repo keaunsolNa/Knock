@@ -16,11 +16,12 @@ export default function TitleSearch({ searchTitle, searchCategory }: ISearch) {
   const routeMove = () => {
     if (title === '' && searchCategory === '') {
       router.push('/movie', routerOption);
+    } else {
+      router.push(
+        `/movie/search?title=${title}&category=${searchCategory}`,
+        routerOption
+      );
     }
-    router.push(
-      `/movie/search?title=${title}&category=${searchCategory}`,
-      routerOption
-    );
   };
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {

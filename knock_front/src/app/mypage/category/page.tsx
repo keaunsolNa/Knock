@@ -24,14 +24,13 @@ export default function Page() {
         method: 'GET',
       }
     );
-    console.log(response);
 
     if (!response.ok) {
       notFound();
     }
 
     const data = await response.text();
-    setCategory(data.toLowerCase());
+    setCategory(data);
   };
 
   const setNewAlarmSetting = async () => {

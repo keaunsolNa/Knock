@@ -1,12 +1,11 @@
 'use client';
 
-import { IMovie, ISubList } from '@/types';
+import { ISubList } from '@/types';
 import styles from './page.module.scss';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ContentList from '@/components/ContentList';
 import { alarmCategoryList, categoryToText } from '@/utils/alarm';
 import ContentItem from '@/components/ContentItem';
 
@@ -14,11 +13,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const [subList, setSubList] = useState<ISubList>({
-    MOVIE: [],
-    PERFORMING_ARTS: [],
-    EXHIBITION: [],
-  });
+  const [subList, setSubList] = useState<ISubList>();
   const [category, setCategory] = useState('MOVIE');
 
   const getSubList = async () => {
@@ -42,7 +37,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    // getSubList();
+    getSubList();
   }, []);
 
   return (
@@ -54,11 +49,9 @@ export default function Page() {
               <div
                 key={'btn_' + item}
                 className={
-                  category === item.toUpperCase()
-                    ? styles.div__select_category
-                    : null
+                  category === item ? styles.div__select_category : null
                 }
-                onClick={() => setCategory(item.toUpperCase())}
+                onClick={() => setCategory(item)}
               >
                 {categoryToText[item]}
               </div>
@@ -66,7 +59,7 @@ export default function Page() {
           })}
         </div>
 
-        {subList[category].length === 0 ? (
+        {subList[category] === null || subList[category].length === 0 ? (
           <div className={styles.div__no_item}>
             <h3>구독 목록이 없습니다</h3>
           </div>
@@ -74,7 +67,11 @@ export default function Page() {
           <div className={styles.div__item_wrapper}>
             <h5>총 {subList[category].length}개</h5>
             {subList[category].map((item) => (
-              <ContentItem {...item} viewBtn={false} />
+              <ContentItem
+                key={`${category}_${item.movieId}`}
+                {...item}
+                viewBtn={false}
+              />
             ))}
           </div>
         )}

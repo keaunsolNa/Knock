@@ -18,7 +18,6 @@ export default function Page() {
       window.location.href = baseUrl + params.join('&');
     } else if (social === 'naver') {
       const baseUrl = 'https://nid.naver.com/oauth2.0/authorize?';
-      // TODO : naver state 추가 필요
       const params = [
         `response_type=code`,
         `client_id=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}`,

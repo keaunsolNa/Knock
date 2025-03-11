@@ -10,16 +10,16 @@ import Link from 'next/link';
 import { BeatLoader } from 'react-spinners';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
-import CategoryItem from './CategoryItem';
 
 interface IProps extends IMovie {
   setAlarm?: boolean;
   viewBtn?: boolean;
 }
 
-export default function ContentItem({ viewBtn = true, ...props }: IProps) {
+export default function ContentItem(props: IProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setAlarm(props.setAlarm);
@@ -28,6 +28,8 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
   const handleAlarmClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
+
+    setIsLoading(true);
 
     if (alarm) {
       subScribeCancelFetch();
@@ -48,7 +50,16 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
         body: JSON.stringify({ value: props.movieId }),
       }
     );
-    if (response.ok) setAlarm(true);
+
+    if (response.ok) {
+      const data = await response.json();
+      // TODO : fetching 실패시 에러 alert
+      if (data !== -1) {
+        setAlarm(true);
+      }
+    }
+
+    setIsLoading(false);
   };
 
   /**
@@ -63,7 +74,16 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
         body: JSON.stringify({ value: props.movieId }),
       }
     );
-    if (response.ok) setAlarm(false);
+
+    if (response.ok) {
+      const data = await response.json();
+      // TODO : fetching 실패시 에러 alert
+      if (data !== -1) {
+        setAlarm(false);
+      }
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -84,11 +104,7 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
 
         <div className={styles.div__info}>
           <div>
-            <p className={styles.p__date}>
-              {props.openingTime === '개봉 예정'
-                ? '미정'
-                : `${props.openingTime} 개봉`}
-            </p>
+            <p className={styles.p__date}>{`${props.openingTime} 개봉`}</p>
             <div className={styles.div__category_list}>
               {props.categoryLevelTwo.slice(0, 2).map((category) => (
                 <div key={`${props.movieId}_${category.id}`}>{category.nm}</div>
@@ -98,7 +114,7 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
           <p className={styles.p__title}>{props.movieNm}</p>
         </div>
 
-        {viewBtn && (
+        {props.viewBtn && (
           <div className={styles.div__alarm}>
             {alarm === undefined ? (
               <div className={styles.div__alarm_loading}>
@@ -114,7 +130,13 @@ export default function ContentItem({ viewBtn = true, ...props }: IProps) {
                   animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }}
                   transition={{ duration: 0.3 }}
                 >
-                  {alarm ? <BsBellFill /> : <BsBell />}
+                  {isLoading ? (
+                    <BeatLoader size={10} color={'#ffffff'} />
+                  ) : alarm ? (
+                    <BsBellFill />
+                  ) : (
+                    <BsBell />
+                  )}
                 </motion.div>
               </button>
             )}

@@ -2,14 +2,14 @@
 
 import { useAppDispatch } from '@/redux/store';
 import styles from '@/styles/components/subscribe-btn.module.scss';
-import { IUser } from '@/types';
 import { apiRequest } from '@/utils/api';
 import { useEffect, useState } from 'react';
 import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
+import { BeatLoader } from 'react-spinners';
 
 interface IProps {
-  favorites: IUser[];
+  favorites: string[];
   movieId: string;
 }
 
@@ -51,7 +51,12 @@ export default function SubscribeBtn({ favorites, movieId }: IProps) {
       }
     );
     const data = await response.json();
-    setSub({ subCnt: data, isSub: true });
+
+    if (data !== -1) {
+      setSub({ subCnt: data, isSub: true });
+    }
+
+    setIsLoading(false);
   };
 
   /**
@@ -67,7 +72,10 @@ export default function SubscribeBtn({ favorites, movieId }: IProps) {
       }
     );
     const data = await response.json();
-    setSub({ subCnt: data, isSub: false });
+    if (data !== -1) {
+      setSub({ subCnt: data, isSub: false });
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -85,33 +93,36 @@ export default function SubscribeBtn({ favorites, movieId }: IProps) {
       }
     } catch (err) {
       console.log(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <>
-      {sub && (
-        <button
-          onClick={onClickBtn}
-          disabled={isLoading}
-          className={
-            sub.isSub
-              ? `${styles.btn__subscribe} ${styles.alarm__on}`
-              : `${styles.btn__subscribe} ${styles.alarm__off}`
-          }
-        >
-          <motion.div
-            initial={{ scale: 1 }}
-            animate={{ scale: sub.isSub ? [1, 1.2, 1] : [1, 0.8, 1] }}
-            transition={{ duration: 0.3 }}
+      {sub &&
+        (isLoading ? (
+          <button className={styles.btn__loading} disabled>
+            {' '}
+            <BeatLoader size={10} color={'#ffffff'} />
+          </button>
+        ) : (
+          <button
+            onClick={onClickBtn}
+            className={
+              sub.isSub
+                ? `${styles.btn__subscribe} ${styles.alarm__on}`
+                : `${styles.btn__subscribe} ${styles.alarm__off}`
+            }
           >
-            {sub.isSub ? <BsBellFill /> : <BsBell />}
-          </motion.div>
-          <span>{`${sub.subCnt}`}</span>
-        </button>
-      )}
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: sub.isSub ? [1, 1.2, 1] : [1, 0.8, 1] }}
+              transition={{ duration: 0.3 }}
+            >
+              {sub.isSub ? <BsBellFill /> : <BsBell />}
+            </motion.div>
+            <span>{`${sub.subCnt}`}</span>
+          </button>
+        ))}
     </>
   );
 }
