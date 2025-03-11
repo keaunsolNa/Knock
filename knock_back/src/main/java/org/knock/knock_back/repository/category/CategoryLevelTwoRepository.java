@@ -12,5 +12,6 @@ import java.util.Set;
 public interface CategoryLevelTwoRepository extends ElasticsearchRepository<CATEGORY_LEVEL_TWO_INDEX, String>
 {
     Optional<Set<CATEGORY_LEVEL_TWO_INDEX>> findAllByParentNm(CategoryLevelOne parentNm);
+    CATEGORY_LEVEL_TWO_INDEX findByNm(String nm);
 }
 

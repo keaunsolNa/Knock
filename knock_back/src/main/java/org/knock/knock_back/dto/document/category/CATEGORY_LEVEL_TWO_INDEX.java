@@ -21,19 +21,19 @@ public class CATEGORY_LEVEL_TWO_INDEX {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private String id;                                                  // 장르 ID
 
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
     @Column(nullable = false)
-    private String nm;
+    private String nm;                                                  // 장르 이름 (EX; 공포, 미스테리, 뮤지컬 등
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
-    private CategoryLevelOne parentNm;
+    private CategoryLevelOne parentNm;                                  // 상위 장르 이름 (EX; MOVIE, PERFORMING_ARTS 등)
 
     @ManyToMany
-    private Iterable<String> favoriteUsers;
+    private Iterable<String> favoriteUsers;                             // 해당 장르 선호 인원
 
     @Builder
     @PersistenceCreator
@@ -50,16 +50,6 @@ public class CATEGORY_LEVEL_TWO_INDEX {
     {
         this.nm = nm;
         this.parentNm = parentNm;
-    }
-
-    public CATEGORY_LEVEL_TWO_INDEX update(String id, String nm, CategoryLevelOne parentNm, Iterable<String> favoriteUsers)
-    {
-        this.id = id;
-        this.nm = nm;
-        this.parentNm = parentNm;
-        this.favoriteUsers = favoriteUsers;
-
-        return this;
     }
 
     @Override

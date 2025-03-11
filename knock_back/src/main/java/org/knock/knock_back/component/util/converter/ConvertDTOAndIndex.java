@@ -1,6 +1,8 @@
 package org.knock.knock_back.component.util.converter;
 
+import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
+import org.knock.knock_back.dto.dto.performingArts.KOPIS_DTO;
 import org.knock.knock_back.dto.dto.user.SSO_USER_DTO;
 import org.springframework.stereotype.Component;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
@@ -181,6 +183,40 @@ public class ConvertDTOAndIndex {
     }
 
     /**
+     * CATEGORY_LEVEL_TWO DTO -> CATEGORY_LEVEL_TWO INDEX
+     *
+     * @param dto 변환할 CATEGORY_LEVEL_TWO 객체
+     * @return CATEGORY_LEVEL_TWO 반환할 CATEGORY_LEVEL_TWO INDEX 객체
+     */
+    public CATEGORY_LEVEL_TWO_INDEX CLTDtoToCLTIndexOne(CATEGORY_LEVEL_TWO_DTO dto) {
+
+        return new CATEGORY_LEVEL_TWO_INDEX
+                (
+                        dto.getId()
+                        , dto.getNm()
+                        , dto.getParentNm()
+                        , dto.getFavoriteUsers()
+                );
+    }
+
+    /**
+     * CATEGORY_LEVEL_TWO INDEX -> CATEGORY_LEVEL_TWO DTO
+     *
+     * @param index 변환할 CATEGORY_LEVEL_TWO 객체
+     * @return CATEGORY_LEVEL_TWO 반환할 CATEGORY_LEVEL_TWO INDEX 객체
+     */
+    public CATEGORY_LEVEL_TWO_DTO CLTDtoToCLTIndexOne(CATEGORY_LEVEL_TWO_INDEX index) {
+
+        CATEGORY_LEVEL_TWO_DTO dto = new CATEGORY_LEVEL_TWO_DTO();
+        dto.setId(index.getId());
+        dto.setNm(index.getNm());
+        dto.setParentNm(index.getParentNm());
+        dto.setFavoriteUsers(index.getFavoriteUsers());
+
+        return dto;
+    }
+
+    /**
      * SSO_USER INDEX -> SSO_USER DTO
      *
      * @param userIndex 변환할 CATEGORY_LEVEL_TWO 객체
@@ -202,5 +238,94 @@ public class ConvertDTOAndIndex {
         userDto.setSubscribeList(userIndex.getSubscribeList());
 
         return userDto;
+    }
+
+    /**
+     * Iterable<KOPIS_INDEX> to Iterable<KOPIS_DTO>
+     * @return Iterable<KOPIS_DTO>
+     */
+    public Iterable<KOPIS_DTO> kopisIndexToKopisDTO(Iterable<KOPIS_INDEX> indexes) {
+        Set<KOPIS_DTO> result = new HashSet<>();
+        for (KOPIS_INDEX innerIndex : indexes) {
+            result.add(kopisIndexToKopisDTO(innerIndex));
+        }
+
+        return result;
+    }
+
+    /**
+     * Iterable<KOPIS_INDEX> to Iterable<KOPIS_DTO>
+     * @return Iterable<KOPIS_DTO>
+     */
+    public Iterable<KOPIS_INDEX> kopisDtoToKopisIndex(Iterable<KOPIS_DTO> indexes) {
+        Set<KOPIS_INDEX> result = new HashSet<>();
+        for (KOPIS_DTO innerDto : indexes) {
+            result.add(kopisIndexToKopisDTO(innerDto));
+        }
+
+        return result;
+    }
+
+    /**
+     * KOPIS INDEX -> KOPIS DTO
+     *
+     * @param index 변환할 KOPIS 객체
+     * @return KOPIS 반환할 KOPIS DTO 객체
+     */
+    public KOPIS_DTO kopisIndexToKopisDTO(KOPIS_INDEX index) {
+        KOPIS_DTO kopisDto = new KOPIS_DTO();
+        kopisDto.setId(index.getId());
+        kopisDto.setCode(index.getCode());
+        kopisDto.setName(index.getName());
+        kopisDto.setFrom(index.getFrom());
+        kopisDto.setTo(index.getTo());
+        kopisDto.setDirectors(index.getDirectors());
+        kopisDto.setActors(index.getActors());
+        kopisDto.setCompanyNm(index.getCompanyNm());
+        kopisDto.setHoleNm(index.getHoleNm());
+        kopisDto.setPoster(index.getPoster());
+        kopisDto.setStory(index.getStory());
+        kopisDto.setArea(index.getArea());
+        kopisDto.setPrfState(index.getPrfState());
+        kopisDto.setDtguidance(index.getDtguidance());
+        kopisDto.setRelates(index.getRelates());
+        kopisDto.setRunningTime(index.getRunningTime());
+        kopisDto.setCategoryLevelOne(index.getCategoryLevelOne());
+        kopisDto.setCategoryLevelTwo(CLTDtoToCLTIndexOne(index.getCategoryLevelTwo()));
+
+        return kopisDto;
+
+    }
+
+    /**
+     * KOPIS DTO -> KOPIS INDEX
+     *
+     * @param dto 변환할 KOPIS 객체
+     * @return KOPIS 반환할 KOPIS INDEX 객체
+     */
+    public KOPIS_INDEX kopisIndexToKopisDTO(KOPIS_DTO dto) {
+        KOPIS_INDEX kopisIndex = new KOPIS_INDEX();
+
+        kopisIndex.setId(dto.getId());
+        kopisIndex.setCode(dto.getCode());
+        kopisIndex.setName(dto.getName());
+        kopisIndex.setFrom(dto.getFrom());
+        kopisIndex.setTo(dto.getTo());
+        kopisIndex.setDirectors(dto.getDirectors());
+        kopisIndex.setActors(dto.getActors());
+        kopisIndex.setCompanyNm(dto.getCompanyNm());
+        kopisIndex.setHoleNm(dto.getHoleNm());
+        kopisIndex.setPoster(dto.getPoster());
+        kopisIndex.setStory(dto.getStory());
+        kopisIndex.setArea(dto.getArea());
+        kopisIndex.setPrfState(dto.getPrfState());
+        kopisIndex.setDtguidance(dto.getDtguidance());
+        kopisIndex.setRelates(dto.getRelates());
+        kopisIndex.setRunningTime(dto.getRunningTime());
+        kopisIndex.setCategoryLevelOne(dto.getCategoryLevelOne());
+        kopisIndex.setCategoryLevelTwo(CLTDtoToCLTIndexOne(dto.getCategoryLevelTwo()));
+
+        return kopisIndex;
+
     }
 }

@@ -25,38 +25,38 @@ public class MOVIE_INDEX {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String movieId;
+    private String movieId;                                                         // 영화 ID
 
     @Field(type = FieldType.Text, analyzer = "nori", fielddata = true)
-    private String movieNm;
+    private String movieNm;                                                         // 영화 제목
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
-    private Long openingTime;
+    private Long openingTime;                                                       // 영화 개봉시간
 
-    private String KOFICCode;
+    private String KOFICCode;                                                       // 영화 KOFIC 코드
 
-    private String[] reservationLink;
+    private String[] reservationLink;                                               // 영화 예매 링크
 
-    private String posterBase64;
+    private String posterBase64;                                                    // 영화 포스터
 
-    private String[] directors;
+    private String[] directors;                                                     // 영화 감독
 
-    private String[] actors;
+    private String[] actors;                                                        // 영화 배우
 
-    private String[] companyNm;
+    private String[] companyNm;                                                     // 영화 제작사
 
     @Enumerated(EnumType.STRING)
-    private CategoryLevelOne categoryLevelOne;
+    private CategoryLevelOne categoryLevelOne;                                      // 상위 장르 (MOVIE)
 
     @OneToMany
-    private Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo;
+    private Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo;                    // 하위 장르 (EX; 공포, 미스테리)
 
     @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
-    private Long runningTime;
+    private Long runningTime;                                                       // 영화 상영시간
+    
+    private String plot;                                                            // 영화 줄거리
 
-    private String plot;
-
-    private Set<String> favorites;
+    private Set<String> favorites;                                                  // 영화 구독자
 
     @Builder
     public MOVIE_INDEX
@@ -80,28 +80,6 @@ public class MOVIE_INDEX {
         this.runningTime = runningTime;
         this.plot = plot;
         this.favorites = favorites;
-    }
-
-    public MOVIE_INDEX update
-            (String movieNm, Long openingTime, String[] reservationLink, String posterBase64,
-             String[] directors, String[] actors, String[] companyNm,  CategoryLevelOne categoryLevelOne,
-             Iterable<CATEGORY_LEVEL_TWO_INDEX> categoryLevelTwo, Long runningTime,
-             String plot, Set<String> favorites )
-    {
-        this.movieNm = movieNm;
-        this.openingTime = openingTime;
-        this.reservationLink = reservationLink;
-        this.posterBase64 = posterBase64;
-        this.directors = directors;
-        this.actors = actors;
-        this.companyNm = companyNm;
-        this.categoryLevelOne = categoryLevelOne;
-        this.categoryLevelTwo = categoryLevelTwo;
-        this.runningTime = runningTime;
-        this.plot = plot;
-        this.favorites = favorites;
-
-        return this;
     }
 
     @Override

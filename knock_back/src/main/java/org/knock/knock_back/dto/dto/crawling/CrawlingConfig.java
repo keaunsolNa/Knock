@@ -16,6 +16,7 @@ public class CrawlingConfig {
     private String reservationQuery;
     private String reservationExtract;
     private String reservationPrefix;
+    private String detailPrefix;
     private String plotQuery;
     private String posterQuery;
     private String posterExtract;

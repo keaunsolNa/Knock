@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.knock.knock_back.component.util.converter.StringDateConvertLongTimeStamp;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
+import org.knock.knock_back.dto.Enum.PrfState;
 import org.knock.knock_back.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.repository.category.CategoryLevelTwoRepository;
@@ -59,12 +60,11 @@ public class KOPIS {
         return sb.toString();
     }
 
-//    @Async
     public void requestAPI() {
 
         logger.info("Running in thread: {}", Thread.currentThread().getName());
 
-        Iterable<CATEGORY_LEVEL_TWO_INDEX> musicalSubCategoryIndex = null;
+        Iterable<CATEGORY_LEVEL_TWO_INDEX> musicalSubCategoryIndex;
         categoryLevelTwoList = new HashMap<>();
 
         if (categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.PERFORMING_ARTS).isPresent())
@@ -78,8 +78,6 @@ public class KOPIS {
             }
         }
 
-        logger.info("musicalSubCategoryIndex: {}", musicalSubCategoryIndex);
-        logger.info("TEST");
         // 변수 설정
         //   - 요청(Request) 인터페이스 Map
         Map<String, String> paramMap = new HashMap<>();
@@ -97,7 +95,7 @@ public class KOPIS {
                 // Request URL 연결 객체 생성
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
-                if (Integer.parseInt(paramMap.get("cpage")) > 4) break;
+                if (Integer.parseInt(paramMap.get("cpage")) > 3000) break;
                 JSONArray performanceList = getJsonObject(requestURL);
 
                 if (null == performanceList || performanceList.isEmpty())
@@ -137,8 +135,8 @@ public class KOPIS {
         return jsonObject.getJSONObject("dbs").optJSONArray("db");
     }
 
-//    @Async
     protected void processPerformanceList(JSONArray performanceList) {
+
         List<KOPIS_INDEX> performanceEntities = new ArrayList<>();
 
         for (int i = 0; i < performanceList.length(); i++) {
@@ -188,18 +186,67 @@ public class KOPIS {
             performance.setPoster(detailJson.optString("poster"));
             performance.setStory(detailJson.optString("sty"));
             performance.setArea(detailJson.optString("area"));
-            performance.setState(detailJson.optString("prfstate").equals("공연중"));
+            performance.setPrfState(PrfState.fromKorean(detailJson.optString("prfstate")));
             performance.setDtguidance(detailJson.optString("dtguidance").split(","));
-            performance.setRelates(null);
+
+            String[] relates = null;
+
+            if (!detailJson.optString("relates").isEmpty() && !detailJson.optString("relates").isBlank())
+            {
+
+                Object relatesObject = detailJson.opt("relates");
+
+                if (relatesObject instanceof JSONArray relatesArray) {
+                    relates = new String[relatesArray.length()];
+
+                    for (int i = 0; i < relatesArray.length(); i++) {
+                        JSONObject relateObject = relatesArray.optJSONObject(i);
+                        if (relateObject != null) {
+                            relates[i] = relateObject.optString("relatenm") + " : " + relateObject.optString("relateurl");
+                        }
+                    }
+                } else if (relatesObject instanceof JSONObject relateObject) {
+                    // relates 단일 객체일 경우 배열 크기를 1로 설정
+                    relates = new String[1];
+                    relates[0] = relateObject.optString("relatenm") + " : " + relateObject.optString("relateurl");
+                }
+            }
+
+            performance.setRelates(relates);
+
+            String[] styurls = null;
+
+            if (!detailJson.optString("styurls").isEmpty() && !detailJson.optString("styurls").isBlank())
+            {
+
+                Object styUrlsObject = detailJson.opt("styurls");
+
+                if (styUrlsObject instanceof JSONArray styUrlsArray) {
+                    styurls = new String[styUrlsArray.length()];
+
+                    for (int i = 0; i < styUrlsArray.length(); i++) {
+                        JSONObject relateObject = styUrlsArray.optJSONObject(i);
+                        if (relateObject != null) {
+                            styurls[i] = relateObject.optString("styurl");
+                        }
+                    }
+                } else if (styUrlsObject instanceof JSONObject styUrlObject) {
+                    // styUrl 단일 객체일 경우 배열 크기를 1로 설정
+                    styurls = new String[1];
+                    styurls[0] = styUrlObject.optString("styurl");
+                }
+            }
+
+            performance.setStyurls(styurls);
+
             performance.setCategoryLevelOne(CategoryLevelOne.PERFORMING_ARTS);
-//            performance.setCategoryLevelTwo(null);
+            performance.setCategoryLevelTwo(categoryLevelTwoRepository.findByNm(detailJson.optString("genrenm")));
 
             String runTime = detailJson.optString("prfruntime");
             int time = 0;
             if (runTime.contains("시간"))  time = Integer.parseInt(runTime.split("시간")[0].trim()) * 60;
             if (runTime.contains("분"))  time += Integer.parseInt(runTime.substring(runTime.indexOf(" ") + 1, runTime.indexOf("분")));
 
-            System.out.println(runTime + " : " + time );
             performance.setRunningTime(new Date(time));
 
         } catch (IOException e) {
@@ -208,29 +255,37 @@ public class KOPIS {
     }
 
     private static StringBuilder getStringBuilder(URL detailUrl) throws IOException {
+
         HttpURLConnection conn = (HttpURLConnection) detailUrl.openConnection();
-        conn.setRequestMethod("GET");
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            response.append(line);
-        }
-
-        if (response.length() < 2000)
+        try
         {
             conn.setRequestMethod("GET");
-            br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            conn.setDoInput(true);
 
-            response = new StringBuilder();
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK)
+            {
+                throw new IOException("HTTP 요청 실패 " + responseCode);
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+
+            StringBuilder response = new StringBuilder();
+            String line;
             while ((line = br.readLine()) != null) {
                 response.append(line);
             }
 
+            br.close();
+            return response;
         }
-        return response;
+        finally
+        {
+            conn.disconnect();
+        }
     }
 
 }

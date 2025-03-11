@@ -33,6 +33,16 @@ public class StringDateConvertLongTimeStamp {
             logger.error("[{}]", "parameter is null");
             return 0L;
         }
+
+        /*
+         * 공연예술의 경우, 마감 일자가 날짜 형식이 아닌 오픈런으로 되어 있는 경우가 있어
+         * 해당 케이스는 99991231 로 치환함.
+         */
+        if (dateString.equals("오픈런"))
+        {
+            dateString = "99991231";
+        }
+
         SimpleDateFormat dateFormat;
         switch (dateString.length())
         {

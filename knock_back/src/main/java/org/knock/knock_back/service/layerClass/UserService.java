@@ -5,10 +5,13 @@ import org.knock.knock_back.component.util.converter.ConvertDTOAndIndex;
 import org.knock.knock_back.dto.Enum.AlarmTiming;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.document.movie.MOVIE_INDEX;
+import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
+import org.knock.knock_back.dto.dto.performingArts.KOPIS_DTO;
 import org.knock.knock_back.dto.dto.user.SSO_USER_DTO;
 import org.knock.knock_back.repository.movie.MovieRepository;
+import org.knock.knock_back.repository.performingArts.KOPISRepository;
 import org.knock.knock_back.repository.user.SSOUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,7 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final ConvertDTOAndIndex convertDTOAndIndex;
     private final MovieRepository movieRepository;
+    private final KOPISRepository kopisRepository;
     private final SSOUserRepository ssoUserRepository;
 
     /**
@@ -335,11 +339,25 @@ public class UserService {
                 return movieIndex.getFavorites().size();
             }
 
-            // TODO 다른 것들
             case CategoryLevelOne.PERFORMING_ARTS ->
             {
+                KOPIS_INDEX performingIndex = kopisRepository.findById(targetId).orElseThrow();
 
+                if (performingIndex.getFavorites() == null || performingIndex.getFavorites().isEmpty())
+                {
+                    performingIndex.setFavorites(new HashSet<>());
+                }
+
+                if (flag) performingIndex.getFavorites().add(userId);
+                else performingIndex.getFavorites().remove(userId);
+
+                kopisRepository.save(performingIndex);
+
+                return performingIndex.getFavorites().size();
             }
+
+            // TODO EXHIBITION
+
         }
 
         return -1;
@@ -381,7 +399,23 @@ public class UserService {
             case CategoryLevelOne.PERFORMING_ARTS ->
             {
 
-                return null;
+                Set<KOPIS_DTO> set = new HashSet<>();
+                for (String id : list)
+                {
+                    KOPIS_INDEX performingArtsIndex;
+                    try
+                    {
+                        performingArtsIndex = kopisRepository.findById(id).orElseThrow();
+                        set.add(convertDTOAndIndex.kopisIndexToKopisDTO(performingArtsIndex));
+
+                    } catch (Exception e)
+                    {
+                        logger.info(e.getMessage());
+                    }
+
+                }
+
+                return set;
             }
         }
 
