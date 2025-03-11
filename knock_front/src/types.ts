@@ -9,16 +9,11 @@ export interface ISearch {
   searchCategory: string;
 }
 
-export interface IFavUser {
-  id: string;
-  name: string;
-}
-
 export interface ICategoryLevelTwo {
   id: string;
   nm: string;
   parentNm: string;
-  favoriteUsers: IFavUser[];
+  favoriteUsers: string[];
 }
 
 export interface IMovie {
@@ -29,11 +24,11 @@ export interface IMovie {
   posterBase64: string;
   directors: string[];
   actors: string[];
-  companyNm: string;
+  companyNm: string[];
   categoryLevelTwo: ICategoryLevelTwo[];
   runningTime: number;
   plot: string;
-  favorites: IFavUser[];
+  favorites: string[];
   koficcode: string;
 }
 

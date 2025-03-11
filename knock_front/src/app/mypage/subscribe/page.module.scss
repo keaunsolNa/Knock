@@ -1,5 +1,6 @@
 .container {
   position: relative;
+  padding-bottom: 50px;
 }
 
 .div__category_wrapper {
@@ -8,9 +9,13 @@
   top: 60px;
   width: 100%;
 
+  background-color: $beige;
+
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
+
+  z-index: $subscribe-category;
 
   div {
     @include flexbox-center(100%, 30px);

@@ -23,21 +23,23 @@ const nextConfig: NextConfig = {
         hostname: 'img.cgv.co.kr',
         pathname: '/Movie/Thumbnail/Poster/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.lottecinema.co.kr',
+        pathname: '/NLCHS/Content/images/movie/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cf.lottecinema.co.kr',
+        pathname: '/NLCHS/Content/images/movie/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cf.lottecinema.co.kr',
+        pathname: '/Media/MovieFile/MovieImg/**',
+      },
     ],
   },
-
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/api/:path*',
-  //       destination: `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/:path*`,
-  //     },
-  //     {
-  //       source: '/auth/:path*',
-  //       destination: `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/:path*`,
-  //     },
-  //   ];
-  // },
 };
 
 export default nextConfig;

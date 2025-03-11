@@ -46,6 +46,7 @@
 
 .section_title {
   padding: 5px 0;
+  margin-top: 20px;
   border-bottom: 1px solid $gray-dark;
   color: $gray-dark;
 }
@@ -74,4 +75,65 @@
   padding: 12px 10px;
   font-weight: $font-thin;
   line-height: 20px;
+}
+
+.div__reservation {
+  height: 100px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 0 $gray-dark;
+  }
+}
+
+.div__recommend {
+  width: 100%;
+  height: 300px;
+  position: relative;
+
+  background-color: $gray;
+  display: flex;
+  align-items: center;
+
+  span {
+    position: absolute;
+    top: -16px;
+    left: 25px;
+    padding: 10px 20px;
+    border-radius: $border-radius--circle;
+
+    background-color: $orange;
+    color: white;
+  }
+
+  .div__reco_list {
+    overflow: hidden;
+    padding: 0 20px;
+  }
+}
+
+.div__movie_carousel {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  overflow-x: auto; /* 가로 스크롤 활성화 */
+  scroll-snap-type: x mandatory; /* 스크롤할 때 부드럽게 요소에 맞춤 */
+  scrollbar-width: none; /* 파이어폭스 스크롤바 숨김 */
+
+  &::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리 스크롤바 숨김 */
+  }
+
+  img {
+    width: 150px;
+    height: 200px;
+    border-radius: 10px;
+    scroll-snap-align: start; /* 스크롤 시 요소의 시작점에서 멈춤 */
+  }
 }

@@ -27,6 +27,7 @@ export default function ContentList({
     );
 
     if (!response.ok) return;
+
     const data = await response.json();
     setAlarmList(data);
   };
@@ -45,16 +46,22 @@ export default function ContentList({
                   key={movie.movieId}
                   {...movie}
                   setAlarm={alarmList.includes(movie.movieId)}
+                  viewBtn={true}
                 />
               );
             } else {
               return (
-                <ContentItem key={movie.movieId} {...movie} setAlarm={false} />
+                <ContentItem
+                  key={movie.movieId}
+                  {...movie}
+                  setAlarm={false}
+                  viewBtn={true}
+                />
               );
             }
           })
         : itemList.map((movie) => (
-            <ContentItem key={movie.movieId} {...movie} />
+            <ContentItem key={movie.movieId} {...movie} viewBtn={true} />
           ))}
     </div>
   );

@@ -17,36 +17,75 @@ export default function Page() {
   const [isError, setIsError] = useState(false);
 
   const getJwtToken = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/login/${social}/callback`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ authorizationCode }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`${response.status} : ${response.statusText}`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/login/${social}/callback`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ authorizationCode }),
       }
+    );
 
-      const data = await response.json();
-      console.log(data);
-      dispatch(setAccessToken(data.accessToken.value));
-      router.push(data.redirectUrl);
-    } catch (error) {
-      console.log(error);
-      console.error('----OAuth 로그인 실패----');
+    if (!response.ok) {
       setIsError(true);
+      throw new Error(`${response.status} : ${response.statusText}`);
     }
+
+    const data = await response.json();
+    dispatch(setAccessToken(data.accessToken.value));
+    router.push(data.redirectUrl);
+  };
+
+  const handleGoogleLogin = async () => {
+    const accessTokenResponse = await fetch(
+      `https://oauth2.googleapis.com/token?code=${authorizationCode}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&client_secret=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET}&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&grant_type=authorization_code`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    if (!accessTokenResponse.ok) {
+      throw new Error(
+        `${accessTokenResponse.status} : ${accessTokenResponse.statusText}`
+      );
+    }
+
+    const { access_token } = await accessTokenResponse.json();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/login/${social}/callback`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ authorizationCode: access_token }),
+      }
+    );
+
+    if (!response.ok) {
+      setIsError(true);
+      throw new Error(`${response.status} : ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    dispatch(setAccessToken(data.accessToken.value));
+    router.push(data.redirectUrl);
   };
 
   useEffect(() => {
-    getJwtToken();
+    if (social === 'google') {
+      handleGoogleLogin();
+    } else {
+      getJwtToken();
+    }
   }, [social, authorizationCode]);
 
   return (
