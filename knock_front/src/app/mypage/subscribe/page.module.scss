@@ -1,11 +1,10 @@
 .container {
   position: relative;
-  padding-bottom: 50px;
 }
 
 .div__category_wrapper {
   padding: 20px;
-  position: fixed;
+  position: sticky;
   top: 60px;
   width: 100%;
 
@@ -31,7 +30,6 @@
 }
 
 .div__no_item {
-  margin-top: 70px;
   min-height: calc(100vh - 130px);
   padding: 0 20px;
 
@@ -46,9 +44,9 @@
 }
 
 .div__item_wrapper {
-  margin-top: 70px;
   min-height: calc(100vh - 130px);
   padding: 0 20px;
+  padding-bottom: 50px;
 
   display: flex;
   flex-direction: column;

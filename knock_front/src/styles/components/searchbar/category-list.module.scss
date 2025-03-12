@@ -7,10 +7,6 @@
   }
 }
 
-/*
-    반응형 리사이징
-  */
-
 @include mobile {
   .div__category {
     overflow-x: auto;
@@ -23,32 +19,15 @@
   }
 }
 
-@mixin category-grid-size($colCnt) {
+@include tablet {
   .div__category {
     overflow-x: auto;
 
     .list {
-      display: grid;
-      grid-template-columns: repeat($colCnt, 1fr);
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      justify-items: center;
+      will-change: transform;
     }
   }
-}
-
-@include tablet {
-  @include category-grid-size(3);
-}
-
-@media all and (min-width: 570px) {
-  @include category-grid-size(4);
-}
-@media all and (min-width: 900px) {
-  @include category-grid-size(5);
-}
-@media all and (min-width: 1200px) {
-  @include category-grid-size(6);
-}
-@media all and (min-width: 1500px) {
-  @include category-grid-size(7);
 }
