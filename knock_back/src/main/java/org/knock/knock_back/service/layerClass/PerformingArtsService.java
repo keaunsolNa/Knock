@@ -12,9 +12,12 @@ import org.knock.knock_back.dto.dto.performingArts.KOPIS_DTO;
 import org.knock.knock_back.repository.performingArts.KOPISRepository;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,8 +41,33 @@ public class PerformingArtsService {
 
     public Iterable<KOPIS_DTO> readPerformingArts() {
 
-        Iterable<KOPIS_INDEX> kopis = kopisRepository.findAll();
-        return convertDTOAndIndex.kopisIndexToKopisDTO(kopis);
+        LocalDate today = LocalDate.now();
+        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> b
+                        .filter(Query.of(f -> f.range(r -> r
+                                .date(builder -> builder
+                                        .field("from")
+                                        .gt(formattedDate))
+                        )))
+                ))
+                .withSort(SortOptions.of(s -> s
+                        .field(f -> f
+                                .field("from")
+                                .order(SortOrder.Asc)
+                        )))
+                .withMaxResults(100)
+                .build()
+                ;
+
+        SearchHits<KOPIS_INDEX> kopis = elasticsearchOperations.search(query, KOPIS_INDEX.class);
+        Iterable<KOPIS_INDEX> kopisIterable = kopis.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+
+        return convertDTOAndIndex.kopisIndexToKopisDTO(kopisIterable);
+
     }
 
     public KOPIS_DTO readPerformingArtsDetail(String id) {

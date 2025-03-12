@@ -1,5 +1,7 @@
 package org.knock.knock_back.service.crawling.common;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.knock.knock_back.component.util.converter.ConvertDTOAndIndex;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -84,6 +87,7 @@ public class CrawlingService extends AbstractCrawlingService {
             dto = movieDtoToIndex.MovieIndexToDTO(movieService.checkMovie(title).get());
             setReservationLink(element, dto);
             if (dto.getPosterBase64().isEmpty()) encodeBase64(element, dto);
+            if (null == dto.getPlot() || dto.getPlot().equals("정보없음")) setPlot(element, dto);
 
             dtos.add(dto);
             return;
@@ -114,7 +118,7 @@ public class CrawlingService extends AbstractCrawlingService {
         setReservationLink(element, dto);
         encodeBase64(element, dto);
 
-        if (currentConfig.getName().equals("MEGABOX")) setPlot(element, dto);
+        setPlot(element, dto);
 
         dtos.add(dto);
     }
@@ -162,14 +166,78 @@ public class CrawlingService extends AbstractCrawlingService {
     }
 
     private void setPlot (Element element, MOVIE_DTO dto) {
-        Elements codeElement = element.select(currentConfig.getPlotQuery());
 
-        if(!codeElement.isEmpty()) {
+        if (currentConfig.getName().equals("CGV"))
+        {
+            try
+            {
+                String classAttribute = element.className();
+                String seqValue = classAttribute.replaceAll("\\D+", ""); // 숫자만 추출
+                Document doc = Jsoup.connect(currentConfig.getDetailPrefix() + seqValue).get();
+                Element metaTag =  doc.selectFirst(currentConfig.getPlotQuery());
 
-            String summeryText = codeElement.text();
-            dto.setPlot(summeryText);
+                if (metaTag != null)
+                {
+                    String content = metaTag.attr("content");
+                    logger.info(content);
+                    dto.setPlot(content);
+                }
+
+            }
+            catch (IOException e)
+            {
+                logger.debug(e.getMessage());
+            }
+        }
+        else if (currentConfig.getName().equals("LOTTE"))
+        {
+
+            Elements detailLinks = element.select("a.btn_col3.ty3");
+            String idValue = "";
+
+            for (Element link : detailLinks) {
+                String hrefValue = link.attr("href");
+
+                Pattern pattern = Pattern.compile("movie=(\\d+)(?:&|$)");
+                Matcher matcher = pattern.matcher(hrefValue);
+
+                if (matcher.find()) {
+                    idValue = matcher.group(1); // 첫 번째 그룹 (숫자 ID) 추출
+                    break; // 첫 번째로 발견된 올바른 movie= 값을 사용하고 루프 종료
+                }
+            }
+
+            ElementExtractor extractor2 = new ElementExtractor(currentConfig.getDetailPrefix() + idValue, currentConfig.getPlotQuery());
+            extractor2.setUpDriver();
+            extractor2.preparePage(extractor2.getDriver(), new String[] {currentConfig.getCssQuery2(), currentConfig.getPlotQuery()});
+            extractor2.run();
+
+            Elements elements = extractor2.getElements();
+
+            for (Element elementValue : elements) {
+                String content = elementValue.attr("content");
+                dto.setPlot(content);
+            }
 
         }
+
+        else
+        {
+            Elements codeElement = element.select(currentConfig.getPlotQuery());
+
+            if(!codeElement.isEmpty()) {
+
+                String summeryText = codeElement.text();
+                dto.setPlot(summeryText);
+
+            }
+        }
+
+        if (null == dto.getPlot() || dto.getPlot().isEmpty() || dto.getPlot().isBlank())
+        {
+            dto.setPlot("정보없음");
+        }
+
     }
 
     /**
@@ -188,4 +256,5 @@ public class CrawlingService extends AbstractCrawlingService {
         }
         return "미정";  // 개봉일 정보가 없을 경우
     }
+
 }

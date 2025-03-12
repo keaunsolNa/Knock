@@ -68,9 +68,21 @@ public class Movie implements MovieInterface {
 
     public Iterable<MOVIE_DTO> readMovies() {
 
-        Iterable<MOVIE_INDEX> movies = movieMaker.readAllMovie();
+        Iterable<MOVIE_DTO> movieDtos = translation.MovieIndexToDTO(movieMaker.readAllMovie());
 
-        return translation.MovieIndexToDTO(movies);
+        List<MOVIE_DTO> list = new ArrayList<>();
+        List<MOVIE_DTO> nullList = new ArrayList<>();
+
+        for (MOVIE_DTO movie : movieDtos) {
+
+            if (movie.getOpeningTime().equals("개봉 예정")) nullList.add(movie);
+            else list.add(movie);
+
+        }
+
+        list.addAll(nullList);
+
+        return list;
     }
 
     public Optional<MOVIE_INDEX> checkMovie(String movieNm) { return movieMaker.readMovieByNm(movieNm); }

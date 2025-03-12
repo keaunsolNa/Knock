@@ -91,7 +91,7 @@ public class NextBtnWithCssSelector {
             }
 
         } catch (Exception e) {
-            logger.error("스크롤링 중 오류 발생: {}", e.getMessage(), e);
+            logger.debug("스크롤링 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 }
