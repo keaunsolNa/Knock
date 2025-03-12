@@ -34,16 +34,6 @@ public class WebDriverUtil {
         options.addArguments("--blink-settings=imagesEnabled=false");
         options.addArguments("--disable-notifications");
 
-//        options.addArguments("--disable-default-apps");
-//        options.addArguments("--disable-blink-features=AutomationControlled");
-//        options.addArguments("--remote-allow-origins=*");
-//        options.addArguments("--single-process");
-//        options.addArguments("--ignore-ssl-errors=yes");
-//        options.addArguments("--ignore-certificate-errors");
-//        options.addArguments("--remote-debugging-port=9222");
-
-
-
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
 

@@ -63,7 +63,7 @@ public class KnockSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000", "https://localhost:53287")); // 개발 & HTTPS 환경 대응
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000", "https://localhost:53287", "https://knock-six.vercel.app")); // 개발 & HTTPS 환경 대응
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트에서 쿠키 헤더 접근 가능하게 함

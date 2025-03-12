@@ -20,7 +20,6 @@ public class PerformingArtsController  {
 
     private final PerformingArtsService performingArtsService;
 
-
     public PerformingArtsController(PerformingArtsService performingArtsService) {
         this.performingArtsService = performingArtsService;
     }

@@ -57,9 +57,10 @@ public interface MovieInterface {
                             .field("movieNm")
                             .query(movieNm)
                             .fuzziness("AUTO")
+                            .analyzer("nori")
                     ))
                     .withSort(Sort.by(Sort.Order.desc("_score")))
-                    .withMaxResults(100)
+                    .withMaxResults(5)
                     .build();
 
             return elasticsearchOperations.search(query, KOFIC_INDEX.class);

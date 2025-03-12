@@ -3,6 +3,10 @@ package org.knock.knock_back.dto.Enum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author nks
+ * @apiNote User 권한 관리용 ENUM
+ */
 @Getter
 @RequiredArgsConstructor
 public enum Role {

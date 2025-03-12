@@ -5,6 +5,10 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author nks
+ * @apiNote 공연예술의 공연상태 관리하기 위한 ENUM
+ */
 @Getter
 public enum PrfState {
 

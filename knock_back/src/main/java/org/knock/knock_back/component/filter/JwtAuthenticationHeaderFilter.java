@@ -12,7 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+/**
+ * @author nks
+ * @apiNote Jwt Token Redirect Filter
+ */
 @RequiredArgsConstructor
 public class JwtAuthenticationHeaderFilter extends OncePerRequestFilter {
 

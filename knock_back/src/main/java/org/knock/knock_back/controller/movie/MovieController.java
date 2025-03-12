@@ -1,5 +1,6 @@
 package org.knock.knock_back.controller.movie;
 
+import org.knock.knock_back.dto.document.movie.KOFIC_INDEX;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
@@ -62,4 +63,12 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getRecommend(movieId));
     }
 
+    /**
+     *
+     */
+    @GetMapping("/similaritySearch")
+    public ResponseEntity<KOFIC_INDEX> getSimilaritySearch(@RequestParam String movieNm) {
+
+        return ResponseEntity.ok(movieService.similaritySearch(movieNm));
+    }
 }

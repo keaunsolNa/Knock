@@ -5,6 +5,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.knock.knock_back.service.crawling.movie.KOFIC;
 
+/**
+ * @author nks
+ * @apiNote KOFIC Service
+ *          크롤링을 위한 Service 객체
+ *          Multi Thread, Async 방식 사용을 위해 
+ *          별도 Service 생성하여 호출
+ */
 @Service
 public class KOFICService {
 

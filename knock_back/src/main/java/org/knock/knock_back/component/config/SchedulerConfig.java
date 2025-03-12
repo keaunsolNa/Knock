@@ -1,7 +1,6 @@
 package org.knock.knock_back.component.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.knock.knock_back.service.crawling.common.CrawlingService;
 import org.knock.knock_back.service.crawling.performingArts.KOPIS;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import org.knock.knock_back.service.crawling.movie.KOFIC;
  */
 @Configuration
 @RequiredArgsConstructor
-@Slf4j
 public class SchedulerConfig {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -58,7 +56,7 @@ public class SchedulerConfig {
         }
         catch (Exception e)
         {
-            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+            logger.debug("[{}] KOFIC 크롤링 중 에러 : ", e.getMessage());
         }
     }
 
@@ -79,7 +77,7 @@ public class SchedulerConfig {
         }
         catch (Exception e)
         {
-            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+            logger.debug("[{}] KOPIS 크롤링 중 에러 : ", e.getMessage());
         }
     }
 
@@ -101,7 +99,7 @@ public class SchedulerConfig {
         }
         catch (Exception e)
         {
-            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+            logger.debug("[{}] MegaBox 크롤링 중 에러 : ", e.getMessage());
         }
     }
 
@@ -122,7 +120,7 @@ public class SchedulerConfig {
         }
         catch (Exception e)
         {
-            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+            logger.debug("[{}] CGV 크롤링 중 에러 : ", e.getMessage());
         }
     }
 
@@ -143,7 +141,7 @@ public class SchedulerConfig {
         }
         catch (Exception e)
         {
-            logger.debug("[{}] 예기치 않은 종료 : ", e.getMessage());
+            logger.debug("[{}] Lotte 크롤링 중 에러 : ", e.getMessage());
         }
     }
 }

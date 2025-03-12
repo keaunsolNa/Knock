@@ -23,6 +23,11 @@ import org.knock.knock_back.dto.document.movie.KOFIC_INDEX;
 import org.knock.knock_back.repository.category.CategoryLevelTwoRepository;
 import org.knock.knock_back.repository.movie.KOFICRepository;
 
+/**
+ * @author nks
+ * @apiNote KOFIC (영화진흥위원회) openAPI 통해 영화 정보를 가져온다.
+ *          해당 정보는 multi thread 방식으로 작동
+ */
 @Service
 public class KOFIC {
 
@@ -48,6 +53,9 @@ public class KOFIC {
         this.koficRepository = koficRepository;
     }
 
+    /**
+     * GET 방식 호출하기 위해 queryString 을 가변적으로 생성한다.
+     */
     public String makeQueryString(Map<String, String> paramMap) {
         final StringBuilder sb = new StringBuilder();
 
@@ -62,11 +70,18 @@ public class KOFIC {
         return sb.toString();
     }
 
+    /**
+     * KOFIC OPEN API 호출 메서드.
+     * Async - Multi Thread 방식
+     */
     @Async
     public void requestAPI() {
 
         logger.info("Running in thread: {}", Thread.currentThread().getName());
 
+        /*
+         * 영화 별 장르는 전역 변수를 통해 관리한다.
+         */
         Iterable<CATEGORY_LEVEL_TWO_INDEX> movieSubCategoryIndex = null;
         if (categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.MOVIE).isPresent())
         {
@@ -97,6 +112,10 @@ public class KOFIC {
                 // Request URL 연결 객체 생성
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
+                /*
+                 * curPage 3000 이상일 경우 종료, 간혹 DB가 더 남아 있는데
+                 * 페이지에 요소가 없는 경우가 있어 이를 대응하기 위함.
+                 */
                 if (Integer.parseInt(paramMap.get("curPage")) > 3000) break;
                 JSONObject boxOfficeResult = getJsonObject(requestURL, "movieListResult");
 
@@ -105,8 +124,10 @@ public class KOFIC {
                     paramMap.put("curPage", String.valueOf(Integer.parseInt(paramMap.get("curPage")) + 1));
                     continue;
                 }
+
                 int totCnt = boxOfficeResult.getInt("totCnt");
 
+                // 요소가 0이라면 break.
                 if (totCnt == 0) break;
 
                 JSONArray dailyBoxOfficeList = boxOfficeResult.getJSONArray("movieList");
@@ -128,13 +149,56 @@ public class KOFIC {
         logger.debug("{} END", getClass().getSimpleName());
     }
 
+    /**
+     * API 호출 위한 connection 생성하고
+     * 결과 값을 JSONObject 형식으로 반환한다.
+     */
     private static JSONObject getJsonObject(URL requestURL, String resultTarget) throws IOException {
 
         HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
 
-        // GET 방식으로 요청
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
+        try
+        {
+            // GET 방식으로 요청
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.setReadTimeout(5000);
+            conn.setDoInput(true);
+
+            StringBuilder response = getStringBuilder(conn);
+
+            JSONObject responseBody = null;
+
+            try
+            {
+                responseBody = new JSONObject(response.toString()).getJSONObject(resultTarget);
+            }
+            catch (Exception e)
+            {
+                logger.debug(e.getMessage());
+            }
+
+            // JSON 객체로  변환
+            return responseBody;
+        }
+
+        finally {
+            conn.disconnect();
+        }
+
+
+    }
+
+    /**
+     * API 호출 결과값을 StringBuilder 타입으로 반환
+     */
+    private static StringBuilder getStringBuilder(HttpURLConnection conn) throws IOException {
+
+        int responseCodeKOFIC = conn.getResponseCode();
+        if (responseCodeKOFIC != HttpURLConnection.HTTP_OK)
+        {
+            throw new IOException("HTTP 요청 실패 " + responseCodeKOFIC);
+        }
 
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
         String readline;
@@ -142,21 +206,12 @@ public class KOFIC {
         while ((readline = br.readLine()) != null) {
             response.append(readline);
         }
-
-        JSONObject responseBody = null;
-        try
-        {
-            responseBody = new JSONObject(response.toString()).getJSONObject(resultTarget);
-        }
-        catch (Exception e)
-        {
-            logger.debug(e.getMessage());
-        }
-
-        // JSON 객체로  변환
-        return responseBody;
+        return response;
     }
 
+    /**
+     * response 된 값을 INDEX 형태에 맞게 가공한다.
+     */
     @Async
     protected void parseMovieList(JSONArray movieJsonArray) {
 
@@ -172,7 +227,6 @@ public class KOFIC {
                 flag = true;
             }
             else continue;
-
 
             String movieCd = movieJson.optString("movieCd").isEmpty() ? "" : movieJson.optString("movieCd");
             String movieNm = movieJson.optString("movieNm").isEmpty() ? "" : movieJson.optString("movieNm");
@@ -230,8 +284,6 @@ public class KOFIC {
             KOFIC_INDEX movie = new KOFIC_INDEX
                     (movieCd, movieNm, prdtYear, openingTime, directors, companys, CategoryLevelOne.MOVIE, set);
 
-
-
             setDetailInfo(movie, movieJson.optString("movieCd"));
 
             movieList.add(movie);
@@ -240,6 +292,9 @@ public class KOFIC {
         koficRepository.saveAll(movieList);
     }
 
+    /**
+     * 목록 페이지에서 각 영화별 id를 가져온 뒤 해당 id의 영화 상세페이지를 가져온다.
+     */
     @Async
     protected void setDetailInfo (KOFIC_INDEX movieIndex, String movieCd) {
 

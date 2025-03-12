@@ -46,7 +46,6 @@ public class OauthController {
 
         return ResponseEntity.ok()
                 .body(oauthService.request(socialLoginType));
-//        oauthService.request(socialLoginType);
     }
 
     /**

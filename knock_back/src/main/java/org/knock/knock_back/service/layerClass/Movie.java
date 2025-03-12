@@ -98,6 +98,7 @@ public class Movie implements MovieInterface {
     {
         SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNm(nm);
 
+        System.out.println("결과 : " + searchHits.stream().findFirst());
         try
         {
             return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();

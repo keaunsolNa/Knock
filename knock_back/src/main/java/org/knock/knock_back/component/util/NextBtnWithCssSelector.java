@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  * @author nks
- * @apiNote Crawling 중 다음 페이지가 있을 경우 Selenium 이 제어하는 웹페이지를 조작한다.
+ * @apiNote Crawling 중 다음 페이지가 있을 경우 Selenium 이 제어하는 웹페이지를 조작한다. method invoke 방식 동작
  */
 @Component
 public class NextBtnWithCssSelector {

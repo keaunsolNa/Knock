@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StopWatch;
 
+/**
+ * @author nks
+ * @apiNote Layer 간 추적 위한 AOP
+ */
 @Aspect
 @Configuration
 public class LoggerAOP {
@@ -26,7 +30,7 @@ public class LoggerAOP {
 
         stopWatch.stop();
 
-        logger.info("{} took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
+        logger.info("{} Controller took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
 
         logger.info("Exiting ControllerTimerLogger");
 
@@ -45,7 +49,7 @@ public class LoggerAOP {
 
         stopWatch.stop();
 
-        logger.info("{} took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
+        logger.info("{} Service took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
 
         logger.info("Exiting ServiceTimerLogger");
 
@@ -64,7 +68,7 @@ public class LoggerAOP {
 
         stopWatch.stop();
 
-        logger.info("{} took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
+        logger.info("{} Filter took {} ms", joinPoint.getSignature().getName(), stopWatch.getTotalTimeMillis());
 
         logger.info("Exiting FilterTimerLogger");
 

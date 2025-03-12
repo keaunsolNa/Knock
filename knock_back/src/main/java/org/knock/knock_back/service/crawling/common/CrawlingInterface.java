@@ -15,13 +15,25 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Objects;
 
+/**
+ * @author nks
+ * @apiNote 영화 크롤링을 위한 Interface, 추상 메서드를 정의한다.
+ */
 @Service
 public interface CrawlingInterface {
 
     Logger logger = LoggerFactory.getLogger(CrawlingInterface.class);
 
+    /**
+     * 모든 크롤링 클래스는 addNewIndex() 메서드 오버로딩 필요
+     */
     void addNewIndex();
 
+    /**
+     * 크롤링할 주소 (urlPath), 크롤링할 주소에 있는 css 선택자 (cssQuery), WebDriver 객체를 받아 Element 를 생성한다.
+     * 멀티 스레드 방식을 위해 WebDriver 객체는 ThreadLocal 
+     * Getter 통해 크롤링한 html 페이지의 특정 요소들과 driver 객체를 가져올 수 있다.
+     */
     class ElementExtractor implements Runnable {
 
         private final String urlPath;
@@ -38,6 +50,9 @@ public interface CrawlingInterface {
             this.cssQuery = cssQuery;
         }
 
+        /**
+         * Webdriver 생성
+         */
         public void setUpDriver()
         {
             driver = driverThreadLocal.get();
@@ -50,6 +65,11 @@ public interface CrawlingInterface {
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
         }
 
+        /**
+         * urlPath 에 있는 html 요소들을 페이지의 형식 (다음 페이지가 있는 경우, Infinity Scroll 인 경우에 따라
+         * 모든 HTML 요소가 로딩될 수 있도록 웹 페이지를 제어한다. 
+         *  편의를 위해 method invoke 방식 사용
+         */
         public void preparePage(WebDriver driver, String[] names)
         {
             try {
@@ -67,6 +87,9 @@ public interface CrawlingInterface {
             }
         }
 
+        /**
+         * HTML 요소를 가져온 뒤 synchronized 방식으로 요소들을 Document 타입으로 파싱한다.
+         */
         @Override
         public void run() {
 
