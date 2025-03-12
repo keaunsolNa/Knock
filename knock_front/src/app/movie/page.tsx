@@ -13,7 +13,6 @@ export default async function Page() {
   }
 
   const allMovies: IMovie[] = await response.json();
-  console.log(allMovies);
   return (
     <>
       <SearchBar searchTitle="" searchCategory="" />

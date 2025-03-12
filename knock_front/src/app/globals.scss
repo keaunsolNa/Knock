@@ -16,16 +16,13 @@ html {
     font-size: 16px;
     font-weight: $font-default;
   }
-  @include desktop {
-    font-size: 16px;
-    font-weight: $font-default;
-  }
 }
 
 body {
   font-family: $font-family;
   -webkit-font-smoothing: antialiased; /* Safari, Chrome */
   -moz-osx-font-smoothing: grayscale; /* macOS */
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 a {

@@ -25,11 +25,9 @@ export default function CategoryItem({
       <Link
         href={`/movie/search?title=${searchTitle}&category=${searchCategory === categoryId ? '' : categoryId}`}
         scroll={false}
-        className={
-          searchCategory === categoryId
-            ? styles.searchbar_select
-            : styles.searchbar
-        }
+        className={`${styles.searchbar} ${
+          searchCategory === categoryId && styles.searchbar_select
+        }`}
       >
         {categoryNm}
       </Link>

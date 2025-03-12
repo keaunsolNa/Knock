@@ -60,7 +60,9 @@ export default async function Page({
             })}
           </div>
           <h2 className={styles.title}>{movieDetail.movieNm}</h2>
-          <h3 className={styles.open_date}>{movieDetail.openingTime} 개봉</h3>
+          <h3
+            className={styles.open_date}
+          >{`${movieDetail.openingTime}${movieDetail.openingTime !== '개봉 예정' ? ' 개봉' : ''}`}</h3>
         </section>
 
         <h3 className={styles.section_title}>기본정보</h3>

@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'img.megabox.co.kr',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'img.cgv.co.kr',
         pathname: '/Movie/Thumbnail/Poster/**',
       },
