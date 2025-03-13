@@ -94,11 +94,28 @@ public class Movie implements MovieInterface {
         return translation.MovieIndexToDTO(movies);
     }
 
-    public KOFIC_INDEX similaritySearch (String nm)
+    public KOFIC_INDEX similaritySearch (String movieNm) throws Exception
     {
-        SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNm(nm);
+        SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNm(movieNm);
 
-        System.out.println("결과 : " + searchHits.stream().findFirst());
+        if (searchHits.getTotalHits() - 1 > 1 &&
+                searchHits.getSearchHit(0).getScore() == searchHits.getSearchHit(1).getScore()) {
+            throw new Exception("_score 동점");
+        }
+        try
+        {
+            return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();
+        }
+        catch (NullPointerException e)
+        {
+            return null;
+        }
+    }
+
+    public KOFIC_INDEX similaritySearch (String movieNm, String directorNm)
+    {
+        SearchHits<KOFIC_INDEX> searchHits = movieMaker.searchKOFICByMovieNmAndDirectorNm(movieNm, directorNm);
+
         try
         {
             return Objects.requireNonNull(searchHits.stream().findFirst().orElse(null)).getContent();

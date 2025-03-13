@@ -66,6 +66,30 @@ public interface MovieInterface {
             return elasticsearchOperations.search(query, KOFIC_INDEX.class);
         }
 
+        public SearchHits<KOFIC_INDEX> searchKOFICByMovieNmAndDirectorNm(String movieNm, String directorNm)
+        {
+            NativeQuery query = NativeQuery.builder()
+                    .withQuery(q -> q.bool(b -> b
+                            .should(s -> s.match(m -> m
+                                    .field("movieNm")
+                                    .query(movieNm)
+                                    .fuzziness("AUTO")
+                                    .analyzer("nori")
+                            ))
+                            .should(s -> s.match(m -> m
+                                    .field("directors")
+                                    .query(directorNm)
+                                    .analyzer("nori")
+                            ))
+                    ))
+                    .withSort(Sort.by(Sort.Order.desc("_score")))
+                    .withMaxResults(5)
+                    .build()
+                    ;
+
+            return elasticsearchOperations.search(query, KOFIC_INDEX.class);
+        }
+
         public void updateMovie(MOVIE_INDEX movieINDEX) {
 
             MOVIE_INDEX movieIndex = movieRepository.findById(movieINDEX.getMovieId()).orElseThrow();

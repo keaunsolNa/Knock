@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN wget -q https://chromedriver.storage.googleapis.com/113.0.5672.0/chromedriver_linux64.zip
 RUN apt-get install -y ./google-chrome-stable_current_amd64.deb
 RUN rm ./google-chrome-stable_current_amd64.deb
 

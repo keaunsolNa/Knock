@@ -11,6 +11,9 @@ import org.knock.knock_back.dto.dto.crawling.CrawlingProperties;
 import org.knock.knock_back.dto.dto.movie.MOVIE_DTO;
 import org.knock.knock_back.service.layerClass.Movie;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,8 +140,108 @@ public class CrawlingService extends AbstractCrawlingService {
          * KOFIC INDEX 에 유사한 제목이 있는지 검색한다.
          * equal 검색이 아닌 이유는 영화사별 영화 제목이 다를 수 있기 때문 (영문, 한글, 띄어쓰기 등)
          * KOFIC 에서 영화 정보를 가져온다.
+         * 이 때 _score 가 동일한 영화가 있을 경우, 감독을 포함하여 재검색하여 정합도를 높인다.
          */
-        KOFIC_INDEX kofic = movieService.similaritySearch(title);
+        KOFIC_INDEX kofic = null;
+
+        try
+        {
+            kofic = movieService.similaritySearch(title);
+        }
+        catch (Exception e)
+        {
+
+            /*
+             * _score 가 동일하다면 감독 정보가 필요하다.
+             * 감독 정보는 목록 페이지에 없으므로, 세부 페이지로 다시 연결이 필요
+             */
+            switch (currentConfig.getName()) {
+                case "MEGABOX" -> {
+                    Elements reservationElement = element.select(currentConfig.getReservationQuery());
+                    String detailLinks = currentConfig.getReservationPrefix() + reservationElement.attr(currentConfig.getReservationExtract());
+
+                    ElementExtractor extractor3 = new ElementExtractor(detailLinks, currentConfig.getPlotQuery());
+                    extractor3.setUpDriver();
+                    extractor3.run();
+
+                    WebDriver driver = extractor3.getDriver();
+                    driver.get(detailLinks);
+
+                    String directorName;
+                    try {
+                        WebElement directorElement = driver.findElement(By.xpath("//div[@class='botInfo']/li[span[contains(text(), '감독')]]"));
+                        directorName = directorElement.getText().replace("감독", "").trim();
+                    } catch (Exception xPathExceptionE) {
+                        directorName = "";
+                    }
+
+                    kofic = movieService.similaritySearch(title, directorName);
+
+                }
+                case "LOTTE" -> {
+
+                    Elements detailLinks = element.select("a.btn_col3.ty3");
+                    String idValue = "";
+
+                    for (Element link : detailLinks) {
+                        String hrefValue = link.attr("href");
+
+                        Pattern pattern = Pattern.compile("movie=(\\d+)(?:&|$)");
+                        Matcher matcher = pattern.matcher(hrefValue);
+
+                        if (matcher.find()) {
+                            idValue = matcher.group(1); // 첫 번째 그룹 (숫자 ID) 추출
+                            break; // 첫 번째로 발견된 올바른 movie= 값을 사용하고 루프 종료
+                        }
+                    }
+
+                    ElementExtractor extractor3 = new ElementExtractor(currentConfig.getDetailPrefix() + idValue, currentConfig.getPlotQuery());
+                    extractor3.setUpDriver();
+                    extractor3.run();
+
+                    WebDriver driver = extractor3.getDriver();
+                    // 롯데시네마 영화 상세 페이지 열기
+                    driver.get(currentConfig.getDetailPrefix() + idValue);
+
+                    String directorName;
+
+                    try {
+                        WebElement directorElement = driver.findElement(By.xpath("//em[contains(text(), '감독')]/following-sibling::span[contains(@class, 'line_type')]/a"));
+                        directorName = Objects.requireNonNull(directorElement).getText();
+                    } catch (Exception xPathExceptionE) {
+                        directorName = "";
+                    }
+
+                    kofic = movieService.similaritySearch(title, directorName);
+
+                }
+                case "CGV" -> {
+                    Elements reservationElement = element.select(currentConfig.getReservationQuery());
+                    String detailLinks = currentConfig.getReservationPrefix() + reservationElement.attr(currentConfig.getReservationExtract());
+
+                    ElementExtractor extractor3 = new ElementExtractor(detailLinks, currentConfig.getPlotQuery());
+                    extractor3.setUpDriver();
+                    extractor3.run();
+
+                    WebDriver driver = extractor3.getDriver();
+                    driver.get(detailLinks);
+
+                    String directorName;
+                    logger.info(detailLinks);
+
+                    try {
+                        WebElement directorElement = driver.findElement(By.xpath("//div[@class='spec']//dt[contains(text(), '감독')]/following-sibling::dd[1]/a"));
+                        directorName = directorElement.getText().trim();
+                    } catch (Exception xPathExceptionE) {
+                        directorName = "";
+                    }
+
+                    kofic = movieService.similaritySearch(title, directorName);
+                }
+            }
+        }
+
+
         if (kofic != null) {
             dto = movieDtoToIndex.koficIndexToMovieDTO(kofic);
         }
