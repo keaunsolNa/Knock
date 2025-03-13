@@ -150,7 +150,7 @@ public class PerformingArtsService {
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .filter(id -> !id.equals(performingArtsId))
-                .collect(Collectors.toMap(Function.identity(), _ -> 1, Integer::sum))
+                .collect(Collectors.toMap(Function.identity(), s -> 1, Integer::sum))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .limit(6)

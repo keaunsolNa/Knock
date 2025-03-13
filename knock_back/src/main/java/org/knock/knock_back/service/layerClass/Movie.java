@@ -201,7 +201,7 @@ public class Movie implements MovieInterface {
                 .filter(Objects::nonNull) // null 값 제거
                 .flatMap(List::stream) // 리스트를 단일 스트림으로 변환
                 .filter(id -> !id.equals(movieId)) // parameter 받은 movieId 제외
-                .collect(Collectors.toMap(Function.identity(), _ -> 1, Integer::sum)) // 영화 ID를 키로, 등장 횟수를 값으로 저장
+                .collect(Collectors.toMap(Function.identity(), s -> 1, Integer::sum)) // 영화 ID를 키로, 등장 횟수를 값으로 저장
                 .entrySet().stream() // Map 스트림으로 변환
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()) // 값 기준 내림차순 정렬
                 .limit(6) // 상위 6개만 선택

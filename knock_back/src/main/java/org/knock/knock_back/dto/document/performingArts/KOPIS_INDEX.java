@@ -52,7 +52,7 @@ public class KOPIS_INDEX {
 
     private PrfState prfState;                                                          // 공연예술 상태
 
-    private String[] dtguidance;                                                        // 공연예술 개봉일
+    private String[] dtguidance;                                                        // 공연예술 공연시간
 
     private String[] relates;                                                           // 공연예술 예매처
 
