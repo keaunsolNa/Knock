@@ -32,6 +32,7 @@ public class KOPIS {
     private final String AUTH_KEY;
     private final CategoryLevelTwoRepository categoryLevelTwoRepository;
     private final KOPISRepository kopisRepository;
+    private static boolean isDuplicate = false;
 
     // Global Field
     private static final Logger logger = LoggerFactory.getLogger(KOPIS.class);
@@ -92,6 +93,8 @@ public class KOPIS {
             while (true)
             {
 
+                if (isDuplicate) break;
+
                 // Request URL 연결 객체 생성
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
 
@@ -140,10 +143,15 @@ public class KOPIS {
         List<KOPIS_INDEX> performanceEntities = new ArrayList<>();
 
         for (int i = 0; i < performanceList.length(); i++) {
+
             JSONObject performanceJson = performanceList.getJSONObject(i);
 
             String mt20id = performanceJson.optString("mt20id");
-            if (kopisRepository.existsById(mt20id)) continue;
+            if (kopisRepository.existsById(mt20id))
+            {
+                isDuplicate = true;
+                continue;
+            }
 
             // 장르 매핑
             String genre = performanceJson.optString("genrenm").toUpperCase();
@@ -196,19 +204,28 @@ public class KOPIS {
 
                 Object relatesObject = detailJson.opt("relates");
 
-                if (relatesObject instanceof JSONArray relatesArray) {
-                    relates = new String[relatesArray.length()];
+                logger.info(relatesObject.toString());
 
-                    for (int i = 0; i < relatesArray.length(); i++) {
-                        JSONObject relateObject = relatesArray.optJSONObject(i);
-                        if (relateObject != null) {
-                            relates[i] = relateObject.optString("relatenm") + " : " + relateObject.optString("relateurl");
+                if (relatesObject instanceof JSONObject relatesJson)
+                {
+
+                    Object relateObject = relatesJson.opt("relate");
+
+                    if (relateObject instanceof JSONArray relatesArray)
+                    {
+
+                        relates = new String[relatesArray.length()];
+                        for (int i = 0; i < relatesArray.length(); i++)
+                        {
+                            JSONObject relateItem = relatesArray.optJSONObject(i);
+                            if (relateItem != null) relates[i] = relateItem.optString("relatenm") + " : " + relateItem.optString("relateurl");
                         }
                     }
-                } else if (relatesObject instanceof JSONObject relateObject) {
-                    // relates 단일 객체일 경우 배열 크기를 1로 설정
-                    relates = new String[1];
-                    relates[0] = relateObject.optString("relatenm") + " : " + relateObject.optString("relateurl");
+                    else if (relateObject instanceof JSONObject relateItem)
+                    {
+                        relates = new String[1];
+                        relates[0] = relateItem.optString("relatenm") + " : " + relateItem.optString("relateurl");
+                    }
                 }
             }
 
@@ -247,7 +264,7 @@ public class KOPIS {
             if (runTime.contains("시간"))  time = Integer.parseInt(runTime.split("시간")[0].trim()) * 60;
             if (runTime.contains("분"))  time += Integer.parseInt(runTime.substring(runTime.indexOf(" ") + 1, runTime.indexOf("분")));
 
-            performance.setRunningTime(new Date(time));
+            performance.setRunningTime((long) time);
 
         } catch (IOException e) {
             logger.debug("상세정보 조회 실패: {}", e.getMessage());

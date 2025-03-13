@@ -3,10 +3,7 @@ package org.knock.knock_back.controller.performingArts;
 import org.knock.knock_back.dto.dto.performingArts.KOPIS_DTO;
 import org.knock.knock_back.service.layerClass.PerformingArtsService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -33,6 +30,11 @@ public class PerformingArtsController  {
         return ResponseEntity.ok(performingArtsService.readPerformingArts());
     }
 
+    @GetMapping("/{category}")
+    public ResponseEntity<Iterable<KOPIS_DTO>> getPerformingArts(@PathVariable(name = "category") String category) {
+
+        return ResponseEntity.ok(performingArtsService.readPerformingArtsByCategoryLevelTwo(category));
+    }
     /**
      * 요청 시 KOPIS 인덱스에 저장된 대상 객체 정보를 가져와 반환한다.
      * @return ResponseEntity<Iterable<KOPIS_DTO>> : 저장된 모든 공연예술 정보

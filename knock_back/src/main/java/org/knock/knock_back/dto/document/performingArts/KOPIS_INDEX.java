@@ -56,8 +56,8 @@ public class KOPIS_INDEX {
 
     private String[] relates;                                                           // 공연예술 예매처
 
-    @Field(type = FieldType.Date, format = DateFormat.epoch_millis)
-    private Date runningTime;                                                           // 공연예술 상영시간
+    @Field(type = FieldType.Long, format = DateFormat.epoch_millis)
+    private Long runningTime;                                                           // 공연예술 상영시간
 
     @Enumerated(EnumType.STRING)
     private CategoryLevelOne categoryLevelOne;                                          // 공연예술 구분 (PERFORMING_ARTS)

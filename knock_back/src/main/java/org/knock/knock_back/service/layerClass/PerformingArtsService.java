@@ -17,7 +17,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,16 +41,23 @@ public class PerformingArtsService {
 
     public Iterable<KOPIS_DTO> readPerformingArts() {
 
-        LocalDate today = LocalDate.now();
-        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        long epochMillis = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())  // 시스템 기본 타임존 기준 변환
+                .toInstant()
+                .toEpochMilli();
 
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.bool(b -> b
                         .filter(Query.of(f -> f.range(r -> r
                                 .date(builder -> builder
                                         .field("from")
-                                        .gt(formattedDate))
-                        )))
+                                        .gte(String.valueOf(epochMillis)) // 현재 날짜보다 작거나 같은 from
+                                ))))
+                        .filter(Query.of(f -> f.range(r -> r
+                                .date(builder -> builder
+                                        .field("to")
+                                        .lte(String.valueOf(epochMillis)) // 현재 날짜보다 크거나 같은 to
+                                ))))
                 ))
                 .withSort(SortOptions.of(s -> s
                         .field(f -> f
@@ -152,5 +159,46 @@ public class PerformingArtsService {
                 .map(convertDTOAndIndex::kopisIndexToKopisDTO)
                 .collect(Collectors.toList())
                 ;
+    }
+
+    public Iterable<KOPIS_DTO> readPerformingArtsByCategoryLevelTwo(String categoryNm) {
+
+        long epochMillis = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())  // 시스템 기본 타임존 기준 변환
+                .toInstant()
+                .toEpochMilli();
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> b
+                        .filter(Query.of(f -> f.term(t -> t
+                                .field("categoryLevelTwo")
+                                .value(categoryNm)
+                        )))
+                        .filter(Query.of(f -> f.range(r -> r
+                                .date(builder -> builder
+                                        .field("from")
+                                        .gte(String.valueOf(epochMillis)) // 현재 날짜보다 작거나 같은 from
+                                ))))
+                        .filter(Query.of(f -> f.range(r -> r
+                                .date(builder -> builder
+                                        .field("to")
+                                        .lte(String.valueOf(epochMillis)) // 현재 날짜보다 크거나 같은 to
+                                ))))
+                ))
+                .withSort(SortOptions.of(s -> s
+                        .field(f -> f
+                                .field("from")
+                                .order(SortOrder.Asc)
+                        )))
+                .withMaxResults(18)
+                .build()
+                ;
+
+        SearchHits<KOPIS_INDEX> kopis = elasticsearchOperations.search(query, KOPIS_INDEX.class);
+        Iterable<KOPIS_INDEX> kopisIterable = kopis.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+
+        return convertDTOAndIndex.kopisIndexToKopisDTO(kopisIterable);
     }
 }

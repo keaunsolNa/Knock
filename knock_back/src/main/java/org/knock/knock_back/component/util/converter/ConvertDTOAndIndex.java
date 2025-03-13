@@ -289,6 +289,7 @@ public class ConvertDTOAndIndex {
         kopisDto.setPrfState(index.getPrfState());
         kopisDto.setDtguidance(index.getDtguidance());
         kopisDto.setRelates(index.getRelates());
+        kopisDto.setStyurls(index.getStyurls());
         kopisDto.setRunningTime(index.getRunningTime());
         kopisDto.setCategoryLevelOne(index.getCategoryLevelOne());
         kopisDto.setCategoryLevelTwo(CLTDtoToCLTIndexOne(index.getCategoryLevelTwo()));

@@ -30,7 +30,7 @@ public class KOPIS_DTO {
     private PrfState prfState;
     private String[] dtguidance;
     private String[] relates;
-    private Date runningTime;
+    private Long runningTime;
     @Enumerated(EnumType.STRING)
     private CategoryLevelOne categoryLevelOne;
     private CATEGORY_LEVEL_TWO_DTO categoryLevelTwo;
