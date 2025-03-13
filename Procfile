@@ -1,1 +1,1 @@
-web: java -Dserver.port=53287 $JAVA_OPTS -jar target/knock_back-0.0.1-SNAPSHOT.jar
+web: sh knock_back/gradlew -p knock_back build && java -jar knock_back/build/libs/*.jar
