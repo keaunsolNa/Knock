@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: knock_back/Dockerfile
+run:
+  web: java -jar knock_back/target/your-app.jar
