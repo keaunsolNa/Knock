@@ -11,8 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const smallMenuLinks = [
   { name: '영화', link: '/movie' },
-  { name: '공연 예술 (준비중)', link: '' },
-  { name: '전시회 (준비중)', link: '' },
+  { name: '공연 예술', link: '/performingArts' },
 ];
 
 const itemVariants = {
@@ -61,37 +60,17 @@ export default function Page() {
         <li>
           <div className={styles.div__big_menu}>
             <span>카테고리</span>
-            {fold ? (
-              <FaChevronDown onClick={convertFold} />
-            ) : (
-              <FaChevronUp onClick={convertFold} />
-            )}
+            {fold ? <FaChevronDown onClick={convertFold} /> : <FaChevronUp onClick={convertFold} />}
           </div>
 
           {/* 서브메뉴 */}
           <AnimatePresence>
             {!fold && (
-              <motion.ul
-                className={styles.ul__small_menu}
-                initial="closed"
-                animate="open"
-                exit="closed"
-                variants={menuVariants}
-              >
+              <motion.ul className={styles.ul__small_menu} initial="closed" animate="open" exit="closed" variants={menuVariants}>
                 {smallMenuLinks.map(({ name, link }, idx) => {
                   return (
-                    <motion.li
-                      key={`category_${idx}`}
-                      custom={idx}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Link
-                        href={link}
-                        className={idx !== 0 ? styles.link__disabled : ''}
-                      >
+                    <motion.li key={`category_${idx}`} custom={idx} variants={itemVariants} initial="hidden" animate="visible" exit="exit">
+                      <Link href={link}>
                         <div>{name}</div>
                       </Link>
                     </motion.li>

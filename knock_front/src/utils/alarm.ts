@@ -1,20 +1,11 @@
-export const alarmCategoryList = ['MOVIE', 'PERFORMING_ARTS', 'EXHIBITION'];
+export const alarmCategoryList = ['MOVIE', 'PERFORMING_ARTS'];
 
 export const categoryToText = {
   MOVIE: '영화',
   PERFORMING_ARTS: '공연 예술',
-  EXHIBITION: '전시회',
 };
 
-export const alarmSettingList = [
-  'ONE_HOUR',
-  'THR_HOUR',
-  'SIX_HOUR',
-  'TWE_HOUR',
-  'ONE_DAY',
-  'THR_DAY',
-  'SEV_DAY',
-];
+export const alarmSettingList = ['ONE_HOUR', 'THR_HOUR', 'SIX_HOUR', 'TWE_HOUR', 'ONE_DAY', 'THR_DAY', 'SEV_DAY'];
 
 export const alarmToText = {
   ZERO_HOUR: '설정안함',

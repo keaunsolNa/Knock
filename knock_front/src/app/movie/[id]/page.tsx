@@ -17,14 +17,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const movieDetail: IMovie = await movieResponse.json();
   const recoMovies: IMovie[] = await recoResponse.json();
+  console.log(movieDetail);
 
   return (
     <div>
       <div className={styles.img__cover_container} style={{ backgroundImage: `url('${movieDetail.posterBase64}')` }}>
         <Image
           className={styles.img__poster}
-          src={movieDetail.posterBase64}
-          alt={`${movieDetail.movieNm}의 포스터이미지`}
+          src={movieDetail.posterBase64 ?? '/images/noImage.png'}
+          alt={movieDetail.posterBase64 ? `${movieDetail.movieNm} 포스터` : `${movieDetail.movieNm} 포스터 대체 이미지`}
           width={300}
           height={400}
           priority

@@ -35,13 +35,12 @@ export interface IMovie {
 export interface ISubList {
   MOVIE: IMovie[];
   PERFORMING_ARTS: any;
-  EXHIBITION: any;
 }
 
 export interface IUser {
   alarmTimings: string[];
   email: string;
-  favoriteLevelOne: 'MOVIE' | 'PERFORMING_ARTS' | 'EXHIBITION';
+  favoriteLevelOne: 'MOVIE' | 'PERFORMING_ARTS';
   id: string;
   lastLoginTime: string;
   loginType: 'KAKAO' | 'GOOGLE' | 'NAVER' | 'GUEST';

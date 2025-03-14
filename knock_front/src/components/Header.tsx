@@ -2,7 +2,6 @@
 
 import styles from '@/styles/components/header.module.scss';
 import { FaArrowLeft } from 'react-icons/fa6';
-import { FaUserCircle } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -25,6 +24,16 @@ export default function Header() {
     }
   };
 
+  const filterBtnBack = () => {
+    if (pathName[0] === 'movie') {
+      return !pathName[1] || pathName[1] === 'search';
+    } else if (pathName[0] === 'performingArts') {
+      return !pathName[2] || pathName[2] === 'search';
+    } else if (pathName[0] === 'mypage') {
+      return !pathName[1];
+    }
+  };
+
   const curMenu = () => {
     switch (pathName[0]) {
       case 'movie':
@@ -34,21 +43,32 @@ export default function Header() {
         if (pathName[1] === 'category') return '카테고리 설정';
         if (pathName[1] === 'subscribe') return '구독 목록';
         if (pathName[1] === 'alarm') return '알람 설정';
+      case 'performingArts':
+        if (!pathName[1]) return '공연 예술';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
+        if (pathName[1] === '') return '';
     }
   };
+
   return (
-    <nav
-      className={`${styles.container} ${pathName[0] === 'mypage' && styles.bg_color}`}
-    >
-      <div className={styles.prev} onClick={handleGoBack}>
-        <FaArrowLeft />
+    <nav className={`${styles.container} ${pathName[0] === 'mypage' && styles.bg_color}`}>
+      <div className={styles.prev} onClick={() => router.back()}>
+        <FaArrowLeft className={filterBtnBack() && styles.hidden} />
       </div>
+
       <div className={styles.cur}>
         <span>{curMenu()}</span>
       </div>
+
       <Link href={'/menu'}>
         <div className={styles.menu}>
-          {pathName[0] !== 'mypage' ? <FaUserCircle /> : null}
           <FiMenu />
         </div>
       </Link>
