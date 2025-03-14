@@ -1,12 +1,8 @@
 import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import styles from '@/styles/components/home/carousel.module.scss';
+import styles from '@/styles/components/intro/carousel.module.scss';
 
-const images = [
-  '/images/howto_1.png',
-  '/images/howto_2.png',
-  '/images/howto_3.png',
-];
+const images = ['/images/howto_1.png', '/images/howto_2.png', '/images/howto_3.png'];
 
 export default function Carousel() {
   const [imgIdx, setImgIdx] = useState(0);
@@ -21,10 +17,7 @@ export default function Carousel() {
     const direction = offset > 100 ? -1 : offset < -100 ? 1 : 0; // 일정 거리 이상이면 이동
 
     if (direction !== 0) {
-      if (
-        (imgIdx === 2 && direction === 1) ||
-        (imgIdx === 0 && direction === -1)
-      ) {
+      if ((imgIdx === 2 && direction === 1) || (imgIdx === 0 && direction === -1)) {
         // 끝에 도달했으면 원래 위치로 복귀
         controls.start({ x: `-${imgIdx * 33}%` });
       } else {
@@ -53,11 +46,7 @@ export default function Carousel() {
 
       <div className={styles.div__dot_container}>
         {images.map((_, idx) => (
-          <div
-            key={`howto_dot_${idx}`}
-            className={idx === imgIdx ? styles.div__cur_dot : null}
-            onClick={() => setImgIdx(idx)}
-          ></div>
+          <div key={`howto_dot_${idx}`} className={idx === imgIdx ? styles.div__cur_dot : null} onClick={() => setImgIdx(idx)}></div>
         ))}
       </div>
     </section>

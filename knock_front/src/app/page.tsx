@@ -1,50 +1,37 @@
 'use client';
 
-import Link from 'next/link';
-import styles from './page.module.scss';
-import Carousel from '@/components/home/Carousel';
-
-import { RootState, useAppDispatch } from '@/redux/store';
-import { useEffect } from 'react';
 import { refreshAccessToken } from '@/redux/authSlice';
-import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from '@/redux/store';
 
-export default function Home() {
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './page.module.scss';
+import { FadeLoader } from 'react-spinners';
+import { useRouter } from 'next/navigation';
+
+export default function SplashScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-
-  const { accessToken, isLoading, error } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { accessToken, redirectUrl } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (accessToken) {
-      router.push('/movie');
-    } else {
-      dispatch(refreshAccessToken());
-    }
-  }, [accessToken]);
+    const checkAuth = async () => {
+      await dispatch(refreshAccessToken());
+      setTimeout(() => {
+        router.push(accessToken ? redirectUrl : '/intro');
+      }, 2000);
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <>
-      {isLoading ? (
-        <div className={styles.container__loading} />
-      ) : (
-        error && null
-      )}
-
       <div className={styles.container}>
-        <Carousel />
-        <section className={styles.section__link}>
-          <Link href={'/login'}>
-            <div className={styles.btn__login}>로그인하고 KNOCK 시작하기</div>
-          </Link>
-          <p>
-            계정 생성 시 KNOCK의 개인정보 처리방침 및 이용약관에 동의하게
-            됩니다.
-          </p>
-        </section>
+        <img src="/logo/knock.jpg" alt="App Icon" />
+      </div>
+      <div className={styles.loading}>
+        <FadeLoader color="#f45f41" radius={2} />
       </div>
     </>
   );

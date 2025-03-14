@@ -2,14 +2,8 @@ import styles from '@/styles/components/searchbar/category-list.module.scss';
 import CategoryItem from '../CategoryItem';
 import { ICategory, ISearch } from '@/types';
 
-export default async function CategoryList({
-  searchTitle,
-  searchCategory,
-}: ISearch) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`,
-    { next: { revalidate: 86400 } }
-  );
+export default async function CategoryList({ searchTitle, searchCategory }: ISearch) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`, { next: { revalidate: 86400 } });
 
   if (!response.ok) {
     return null;
