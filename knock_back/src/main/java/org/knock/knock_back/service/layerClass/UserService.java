@@ -309,7 +309,7 @@ public class UserService {
     }
 
     /**
-     * MOVIE, OPERA 등의 카테고리 index 변경
+     * MOVIE, PERFORMING_ARTS 등의 카테고리 index 변경
      * @param target : 변경할 category
      * @param targetId : 변경할 category ID
      * @param userId : 변경할 user ID
