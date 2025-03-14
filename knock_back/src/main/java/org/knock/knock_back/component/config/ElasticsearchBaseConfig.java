@@ -28,15 +28,18 @@ public class ElasticsearchBaseConfig extends ElasticsearchConfiguration {
 
         try {
             // Bonsai URL에서 id와 password 추출
-            URI uri = new URI(host);
+            String sanitizedHost = host.startsWith("http") ? host : "https://" + host;
+            URI uri = new URI(sanitizedHost);
             String userInfo = uri.getUserInfo();
             String host = uri.getHost();
             int port = uri.getPort();
 
             ClientConfiguration.TerminalClientConfigurationBuilder builder = ClientConfiguration.builder()
-                    .connectedTo(host + ":" + (port == -1 ? 443 : port)) // 기본 포트 443 (HTTPS)
+                    .connectedTo( host + ":" + (port == -1 ? 443 : port)) // 기본 포트 443 (HTTPS)
+                    .usingSsl()
                     .withSocketTimeout(20000)
-                    .withConnectTimeout(20000);
+                    .withConnectTimeout(20000)
+                    ;
 
             if (userInfo != null && userInfo.contains(":")) {
                 String[] credentials = userInfo.split(":");
