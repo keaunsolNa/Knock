@@ -24,6 +24,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * @author nks
+ * @apiNote KOPIS (공연예술통합전산망) openAPI 통해 영화 정보를 가져온다.
+ */
 @Service
 public class KOPIS {
 
@@ -47,6 +51,9 @@ public class KOPIS {
         this.kopisRepository = kopisRepository;
     }
 
+    /**
+     * GET 방식 호출하기 위해 queryString 을 가변적으로 생성한다.
+     */
     public String makeQueryString(Map<String, String> paramMap) {
         final StringBuilder sb = new StringBuilder();
 
@@ -61,6 +68,9 @@ public class KOPIS {
         return sb.toString();
     }
 
+    /**
+     * 외부 컨트롤러에서의 진입 포인트
+     */
     public void requestAPI() {
 
         logger.info("Running in thread: {}", Thread.currentThread().getName());
@@ -121,23 +131,45 @@ public class KOPIS {
         logger.info("KOPIS 데이터 수집 완료");
     }
 
+    /**
+     * Connection 객체 생성 및 JSONArray 반환
+     */
     private static JSONArray getJsonObject(URL requestURL) throws IOException {
 
-        HttpURLConnection conn = (HttpURLConnection) requestURL.openConnection();
-        conn.setRequestMethod("GET");
+        HttpURLConnection conn = null;
+        try
+        {
+             conn = (HttpURLConnection) requestURL.openConnection();
+            conn.setRequestMethod("GET");
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-        String readline;
-        StringBuilder response = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            String readline;
+            StringBuilder response = new StringBuilder();
 
-        while ((readline = br.readLine()) != null) {
-            response.append(readline);
+            while ((readline = br.readLine()) != null) {
+                response.append(readline);
+            }
+
+            JSONObject jsonObject = XML.toJSONObject(response.toString());
+
+            return jsonObject.getJSONObject("dbs").optJSONArray("db");
         }
 
-        JSONObject jsonObject = XML.toJSONObject(response.toString());
-        return jsonObject.getJSONObject("dbs").optJSONArray("db");
+        catch (Exception e)
+        {
+            logger.debug(e.getMessage());
+            return null;
+        }
+
+        finally {
+            assert conn != null;
+            conn.disconnect();
+        }
     }
 
+    /**
+     * 디테일 페이지 열기 전 목록 페이지에서 id 가져온 뒤 장르 매핑 진행
+     */
     protected void processPerformanceList(JSONArray performanceList) {
 
         List<KOPIS_INDEX> performanceEntities = new ArrayList<>();
@@ -174,7 +206,9 @@ public class KOPIS {
         kopisRepository.saveAll(performanceEntities);
     }
 
-//    @Async
+    /**
+     * 디테일 페이지 연결 및 KOPIS_INDEX 객체 생성
+     */
     protected void fetchPerformanceDetails(KOPIS_INDEX performance) {
         try {
 
@@ -271,6 +305,9 @@ public class KOPIS {
         }
     }
 
+    /**
+     * 커넥션 객체 생성 및 연결
+     */
     private static StringBuilder getStringBuilder(URL detailUrl) throws IOException {
 
         HttpURLConnection conn = (HttpURLConnection) detailUrl.openConnection();
