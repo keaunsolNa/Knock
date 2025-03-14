@@ -12,6 +12,7 @@ public class KnockApplication {
 
     public static void main(String[] args) {
 
+        System.out.println("Knock Application");
         SpringApplication.run(KnockApplication.class, args);
 
     }
