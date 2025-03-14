@@ -21,6 +21,7 @@ export default function SplashScreen() {
   }, []);
 
   useEffect(() => {
+    console.log(isLoading);
     if (!isLoading) {
       setTimeout(() => {
         router.push(accessToken ? redirectUrl : '/intro');
