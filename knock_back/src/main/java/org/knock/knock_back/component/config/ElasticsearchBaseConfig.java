@@ -49,11 +49,5 @@ public class ElasticsearchBaseConfig extends ElasticsearchConfiguration {
             throw new RuntimeException("Invalid Elasticsearch URI: " + host, e);
         }
 
-//        return ClientConfiguration.builder()
-//                .connectedTo(host + ":" + port)
-//                .withBasicAuth(id, password)
-//                .withSocketTimeout(20000)
-//                .withConnectTimeout(20000)
-//                .build();
     }
 }
