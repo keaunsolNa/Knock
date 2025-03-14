@@ -2,7 +2,6 @@
 
 import { refreshAccessToken } from '@/redux/authSlice';
 import { RootState, useAppDispatch } from '@/redux/store';
-
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './page.module.scss';
@@ -12,18 +11,23 @@ import { useRouter } from 'next/navigation';
 export default function SplashScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { accessToken, redirectUrl } = useSelector((state: RootState) => state.auth);
+  const { isLoading, accessToken, redirectUrl } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const checkAuth = async () => {
       await dispatch(refreshAccessToken());
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    console.log(isLoading);
+    if (!isLoading) {
       setTimeout(() => {
         router.push(accessToken ? redirectUrl : '/intro');
       }, 2000);
-    };
-
-    checkAuth();
-  }, []);
+    }
+  }, [isLoading]);
 
   return (
     <>
