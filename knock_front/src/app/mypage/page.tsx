@@ -6,7 +6,7 @@ import Profile from '@/components/mypage/Profile';
 import { clearAuth } from '@/redux/authSlice';
 import { useAppDispatch } from '@/redux/store';
 import { IUser } from '@/types';
-import { alarmToText, categoryToText, alarmCategoryList } from '@/utils/alarm';
+import { alarmToText, categoryToText, alarmCategoryList } from '@/utils/typeToText';
 import { apiRequest } from '@/utils/api';
 import { notFound, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

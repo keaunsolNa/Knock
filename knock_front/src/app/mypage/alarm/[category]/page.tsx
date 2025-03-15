@@ -6,12 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { notFound, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/redux/store';
-import {
-  alarmSettingList,
-  alarmCategoryList,
-  categoryToText,
-  alarmToText,
-} from '@/utils/alarm';
+import { alarmSettingList, alarmCategoryList, categoryToText, alarmToText } from '@/utils/typeToText';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -43,13 +38,9 @@ export default function Page() {
   };
 
   const getAlarmSetting = async () => {
-    const response = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getAlarmTimings`,
-      dispatch,
-      {
-        method: 'GET',
-      }
-    );
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getAlarmTimings`, dispatch, {
+      method: 'GET',
+    });
 
     if (!response.ok) {
       notFound();
@@ -60,14 +51,10 @@ export default function Page() {
   };
 
   const setNewAlarmSetting = async () => {
-    const response = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/${category}/changeAlarm`,
-      dispatch,
-      {
-        method: 'POST',
-        body: JSON.stringify(alarm),
-      }
-    );
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/${category}/changeAlarm`, dispatch, {
+      method: 'POST',
+      body: JSON.stringify(alarm),
+    });
 
     if (!response.ok) {
       return <div>에러</div>;
@@ -94,8 +81,7 @@ export default function Page() {
       {alarm && (
         <div className={styles.container}>
           <div className={styles.div__about}>
-            회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이
-            다가오면 알림을 보내드립니다. <br /> <br />
+            회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이 다가오면 알림을 보내드립니다. <br /> <br />
             원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
           </div>
 
@@ -106,10 +92,8 @@ export default function Page() {
                 className={styles.div__toggle_bar}
                 onClick={handleToggleClick}
                 style={{
-                  justifyContent:
-                    alarm[alarmIdx] !== 'ZERO_HOUR' ? 'flex-end' : 'flex-start',
-                  backgroundColor:
-                    alarm[alarmIdx] !== 'ZERO_HOUR' ? '#34c759' : '#d9d9da',
+                  justifyContent: alarm[alarmIdx] !== 'ZERO_HOUR' ? 'flex-end' : 'flex-start',
+                  backgroundColor: alarm[alarmIdx] !== 'ZERO_HOUR' ? '#34c759' : '#d9d9da',
                 }}
               >
                 <motion.div
@@ -126,12 +110,7 @@ export default function Page() {
 
             <AnimatePresence>
               {alarm[alarmIdx] !== 'ZERO_HOUR' && (
-                <motion.div
-                  className={styles.div__radio_box}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+                <motion.div className={styles.div__radio_box} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {alarmSettingList.map((setting, idx) => {
                     if (category === 'movie') {
                       if (![4, 5, 6].includes(idx)) {
@@ -148,10 +127,7 @@ export default function Page() {
                           checked={alarm[alarmIdx] === setting}
                           onChange={handleAlarmChange}
                         />
-                        <label
-                          className={styles.label__radio}
-                          htmlFor={`setting__${setting}`}
-                        >
+                        <label className={styles.label__radio} htmlFor={`setting__${setting}`}>
                           {alarmToText[setting]}
                         </label>
                       </div>

@@ -6,7 +6,7 @@ import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { alarmCategoryList, categoryToText } from '@/utils/alarm';
+import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
 import ContentItem from '@/components/ContentItem';
 
 export default function Page() {
