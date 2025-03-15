@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.elasticsearch.support.HttpHeaders;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,11 +35,15 @@ public class ElasticsearchBaseConfig extends ElasticsearchConfiguration {
             String host = uri.getHost();
             int port = uri.getPort();
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+
             ClientConfiguration.TerminalClientConfigurationBuilder builder = ClientConfiguration.builder()
                     .connectedTo( host + ":" + (port == -1 ? 443 : port)) // 기본 포트 443 (HTTPS)
                     .usingSsl()
                     .withSocketTimeout(20000)
                     .withConnectTimeout(20000)
+                    .withDefaultHeaders(headers)
                     ;
 
             if (userInfo != null && userInfo.contains(":")) {
