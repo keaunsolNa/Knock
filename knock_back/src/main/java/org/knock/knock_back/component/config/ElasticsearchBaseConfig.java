@@ -2,11 +2,16 @@ package org.knock.knock_back.component.config;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,9 +35,10 @@ public class ElasticsearchBaseConfig {
     private String host;
 
     @Bean
-    public ElasticsearchClient elasticsearchClient() {
+    public RestClient getRestClient() {
 
         try {
+
             // Bonsai URL에서 id와 password 추출
             String sanitizedHost = host.startsWith("http") ? host : "https://" + host;
             URI uri = new URI(sanitizedHost);
@@ -40,47 +46,37 @@ public class ElasticsearchBaseConfig {
             String host = uri.getHost();
             int port = uri.getPort() == -1 ? 443 : uri.getPort(); // 기본 포트 설정
 
-            // HTTP 헤더 설정 (X-Elastic-Product 추가)
-            List<BasicHeader> headers = new ArrayList<>();
-            headers.add(new BasicHeader("Content-Type", "application/json"));
-            headers.add(new BasicHeader("X-Elastic-Product", "Elasticsearch")); // 🔥 중요! 이 헤더가 누락되면 Bonsai가 차단
-
-            System.out.println("BEFORE IF");
-            System.out.println(userInfo);
             // 인증 정보가 있다면 Authorization 헤더 추가
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             if (userInfo != null && userInfo.contains(":")) {
-//                String[] credentials = userInfo.split(":");
-//                String auth = Base64.getEncoder().encodeToString((credentials[0] + ":" + credentials[1]).getBytes());
-
-                String encodedAuth = Base64.getEncoder().encodeToString(userInfo.getBytes());
-
-                System.out.println("=================");
-                System.out.println(encodedAuth);
-                System.out.println(userInfo);
-                System.out.println("=================");
-//                String credentials = "randomuser:randompass";
-//                String auth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
-                headers.add(new BasicHeader("Authorization", encodedAuth));
+                String[] credentials = userInfo.split(":");
+                credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(credentials[0], credentials[1]));
             }
 
-            // RestClientBuilder에 헤더 설정
-            RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https"))
-                    .setDefaultHeaders(headers.toArray(new BasicHeader[0]));
-
-            // RestClient 생성
-            RestClient restClient = builder.build();
-
-            // RestClientTransport에 `X-Elastic-Product` 강제 설정
-            RestClientTransport transport = new RestClientTransport(
-                    restClient, new JacksonJsonpMapper()
-            );
-
-            return new ElasticsearchClient(transport);
-
+            return RestClient.builder(new HttpHost(host, port, "https"))
+                    .setHttpClientConfigCallback(httpClientBuilder -> {
+                        httpClientBuilder.disableAuthCaching();
+                        httpClientBuilder.setDefaultHeaders(List.of(
+                                new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
+                        ));
+                        httpClientBuilder.addInterceptorLast((HttpResponseInterceptor)
+                                (response, context) -> response.addHeader("X-Elastic-Product", "Elasticsearch"));
+                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                    }).build();
 
         } catch (URISyntaxException e) {
             throw new RuntimeException("Invalid Elasticsearch URI: " + host, e);
         }
 
+    }
+
+    @Bean
+    public ElasticsearchTransport getElasticsearchTransport() {
+        return new RestClientTransport(getRestClient(), new JacksonJsonpMapper());
+    }
+
+    @Bean
+    public ElasticsearchClient getElasticsearchClient() {
+        return new ElasticsearchClient(getElasticsearchTransport());
     }
 }
