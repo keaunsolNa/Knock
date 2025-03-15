@@ -45,13 +45,22 @@ public class ElasticsearchBaseConfig {
             headers.add(new BasicHeader("Content-Type", "application/json"));
             headers.add(new BasicHeader("X-Elastic-Product", "Elasticsearch")); // 🔥 중요! 이 헤더가 누락되면 Bonsai가 차단
 
+            System.out.println("BEFORE IF");
+            System.out.println(userInfo);
             // 인증 정보가 있다면 Authorization 헤더 추가
             if (userInfo != null && userInfo.contains(":")) {
 //                String[] credentials = userInfo.split(":");
 //                String auth = Base64.getEncoder().encodeToString((credentials[0] + ":" + credentials[1]).getBytes());
-                String credentials = "randomuser:randompass";
-                String auth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
-                headers.add(new BasicHeader("Authorization", auth));
+
+                String encodedAuth = Base64.getEncoder().encodeToString(userInfo.getBytes());
+
+                System.out.println("=================");
+                System.out.println(encodedAuth);
+                System.out.println(userInfo);
+                System.out.println("=================");
+//                String credentials = "randomuser:randompass";
+//                String auth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+                headers.add(new BasicHeader("Authorization", encodedAuth));
             }
 
             // RestClientBuilder에 헤더 설정
