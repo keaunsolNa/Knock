@@ -58,27 +58,33 @@ public class WebDriverUtil {
         options.addArguments("--blink-settings=imagesEnabled=false");
         options.addArguments("--disable-notifications");
 
+        // 🔹 CDP 버전 경고 무시 옵션 추가
+        options.addArguments("--disable-build-check");
+
         // 🔹 고유한 user-data-dir 설정
         options.addArguments("--user-data-dir=" + uniqueTempDir);
         log.info("✅ Chrome option set: --user-data-dir={}", uniqueTempDir);
 
-        ChromeDriverService service = null;
-
-        try
-        {
-            service = new ChromeDriverService.Builder()
-                    .usingDriverExecutable(new File("/app/.cache/selenium/chromedriver")) // Heroku에 맞게 ChromeDriver 경로 수정
-                    .usingAnyFreePort()
-                    .build();
-
-        }
-        finally {
-            assert service != null;
-            service.close();
+        // 🔹 Heroku에서 ChromeDriver 실행 경로 설정
+        File driverExecutable = new File("/app/.chromedriver");
+        if (!driverExecutable.exists()) {
+            log.error("❌ ChromeDriver not found at: {}", driverExecutable.getAbsolutePath());
+            throw new RuntimeException("ChromeDriver not found!");
         }
 
+        ChromeDriverService service = new ChromeDriverService.Builder()
+                .usingDriverExecutable(driverExecutable)
+                .usingAnyFreePort()
+                .build();
 
-        WebDriver driver = new ChromeDriver(options);
+        try {
+            service.start();
+        } catch (Exception e) {
+            log.error("❌ Failed to start ChromeDriver service: {}", e.getMessage());
+            throw new RuntimeException("ChromeDriver service failed to start");
+        }
+
+        WebDriver driver = new ChromeDriver(service, options);
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
 
         log.info("✅ ChromeDriver started successfully!");
