@@ -7,7 +7,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.UUID;
 
 /**
  * @author nks
@@ -24,6 +28,22 @@ public class WebDriverUtil {
     @Bean
     public static WebDriver getChromeDriver() {
 
+        String uniqueTempDir = "/tmp/chrome_user_data_" + UUID.randomUUID();
+        Path tempDirPath = Paths.get(uniqueTempDir);
+        try {
+            Files.createDirectories(tempDirPath);
+        } catch (Exception e) {
+            log.error("Failed to create temp directory for Chrome user data: {}", e.getMessage());
+        }
+
+        // 기존 크롬 프로세스 종료 (충돌 방지)
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("pkill", "-f", "chrome");
+            processBuilder.start();
+        } catch (Exception e) {
+            log.warn("Failed to kill existing Chrome processes: {}", e.getMessage());
+        }
+
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--no-sandbox");
@@ -33,7 +53,9 @@ public class WebDriverUtil {
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--blink-settings=imagesEnabled=false");
         options.addArguments("--disable-notifications");
-        options.addArguments("--user-data-dir=/tmp/chrome_user_data");
+
+        // 🔹 고유한 user-data-dir 설정
+        options.addArguments("--user-data-dir=" + uniqueTempDir);
 
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
