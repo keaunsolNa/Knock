@@ -82,17 +82,12 @@ export default function ContentItem(props: IProps) {
     <Link rel="prefetch" href={`/movie/${props.movieId}`}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
-          {props.posterBase64 ? (
-            <Image
-              src={props.posterBase64}
-              fill
-              alt="영화포스터"
-              sizes="100%"
-              unoptimized={props.posterBase64.includes('cf.lottecinema.co.kr')} // 이미 최적화된 이미지로 최적화 진행시 404
-            />
-          ) : (
-            <div className={styles.div__no_img}>no img</div>
-          )}
+          <Image
+            src={props.posterBase64 ?? '/images/noImage.png'}
+            fill
+            alt={props.posterBase64 ? `${props.movieNm} 포스터` : `${props.movieNm} 포스터 대체 이미지`}
+            sizes="100%"
+          />
         </div>
 
         <div className={styles.div__info}>

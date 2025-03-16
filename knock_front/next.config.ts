@@ -8,8 +8,7 @@ const nextConfig: NextConfig = {
     },
   },
   sassOptions: {
-    prependData:
-      " @use '@/styles/variables' as *; @use '@/styles/mixin' as *; @use '@/styles/z-index' as *;",
+    prependData: " @use '@/styles/variables' as *; @use '@/styles/mixin' as *; @use '@/styles/z-index' as *;",
   },
   images: {
     remotePatterns: [
@@ -42,6 +41,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cf.lottecinema.co.kr',
         pathname: '/Media/MovieFile/MovieImg/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'www.kopis.or.kr',
+        pathname: '/upload/pfmPoster/**',
       },
     ],
   },
