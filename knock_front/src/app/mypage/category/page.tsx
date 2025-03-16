@@ -5,7 +5,7 @@ import styles from './page.module.scss';
 import { apiRequest } from '@/utils/api';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { alarmCategoryList, categoryToText } from '@/utils/alarm';
+import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -17,13 +17,9 @@ export default function Page() {
   };
 
   const getSubCategory = async () => {
-    const response = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubCategory`,
-      dispatch,
-      {
-        method: 'GET',
-      }
-    );
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubCategory`, dispatch, {
+      method: 'GET',
+    });
 
     if (!response.ok) {
       notFound();
@@ -34,14 +30,10 @@ export default function Page() {
   };
 
   const setNewAlarmSetting = async () => {
-    const response = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/changeCategory`,
-      dispatch,
-      {
-        method: 'POST',
-        body: JSON.stringify({ value: category }),
-      }
-    );
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/changeCategory`, dispatch, {
+      method: 'POST',
+      body: JSON.stringify({ value: category }),
+    });
 
     if (!response.ok) {
       return <div>에러</div>;
@@ -73,13 +65,7 @@ export default function Page() {
           {alarmCategoryList.map((setting) => {
             return (
               <div key={`div__${setting}`}>
-                <input
-                  type="radio"
-                  id={setting}
-                  value={setting}
-                  checked={category === setting}
-                  onChange={handelChangeCategory}
-                />
+                <input type="radio" id={setting} value={setting} checked={category === setting} onChange={handelChangeCategory} />
                 <label htmlFor={setting}>{categoryToText[setting]}</label>
               </div>
             );

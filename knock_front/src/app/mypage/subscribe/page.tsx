@@ -6,7 +6,7 @@ import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { alarmCategoryList, categoryToText } from '@/utils/alarm';
+import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
 import ContentItem from '@/components/ContentItem';
 
 export default function Page() {
@@ -17,13 +17,9 @@ export default function Page() {
   const [category, setCategory] = useState('MOVIE');
 
   const getSubList = async () => {
-    const response = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubscribeList`,
-      dispatch,
-      {
-        method: 'GET',
-      }
-    );
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubscribeList`, dispatch, {
+      method: 'GET',
+    });
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -46,13 +42,7 @@ export default function Page() {
         <div className={styles.div__category_wrapper}>
           {alarmCategoryList.map((item) => {
             return (
-              <div
-                key={'btn_' + item}
-                className={
-                  category === item ? styles.div__select_category : null
-                }
-                onClick={() => setCategory(item)}
-              >
+              <div key={'btn_' + item} className={category === item ? styles.div__select_category : null} onClick={() => setCategory(item)}>
                 {categoryToText[item]}
               </div>
             );
@@ -67,11 +57,7 @@ export default function Page() {
           <div className={styles.div__item_wrapper}>
             <h5>총 {subList[category].length}개</h5>
             {subList[category].map((item) => (
-              <ContentItem
-                key={`${category}_${item.movieId}`}
-                {...item}
-                viewBtn={false}
-              />
+              <ContentItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />
             ))}
           </div>
         )}
