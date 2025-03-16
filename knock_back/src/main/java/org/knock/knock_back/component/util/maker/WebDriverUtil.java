@@ -3,10 +3,12 @@ package org.knock.knock_back.component.util.maker;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +34,7 @@ public class WebDriverUtil {
         Path tempDirPath = Paths.get(uniqueTempDir);
         try {
             Files.createDirectories(tempDirPath);
+            log.info("✅ Created user-data-dir: {}", uniqueTempDir);  // 디렉토리 생성 로그
         } catch (Exception e) {
             log.error("Failed to create temp directory for Chrome user data: {}", e.getMessage());
         }
@@ -40,6 +43,7 @@ public class WebDriverUtil {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("pkill", "-f", "chrome");
             processBuilder.start();
+            log.info("✅ Attempted to kill existing Chrome processes.");
         } catch (Exception e) {
             log.warn("Failed to kill existing Chrome processes: {}", e.getMessage());
         }
@@ -56,9 +60,28 @@ public class WebDriverUtil {
 
         // 🔹 고유한 user-data-dir 설정
         options.addArguments("--user-data-dir=" + uniqueTempDir);
+        log.info("✅ Chrome option set: --user-data-dir={}", uniqueTempDir);
+
+        ChromeDriverService service = null;
+
+        try
+        {
+            service = new ChromeDriverService.Builder()
+                    .usingDriverExecutable(new File("/app/.cache/selenium/chromedriver")) // Heroku에 맞게 ChromeDriver 경로 수정
+                    .usingAnyFreePort()
+                    .build();
+
+        }
+        finally {
+            assert service != null;
+            service.close();
+        }
+
 
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
+
+        log.info("✅ ChromeDriver started successfully!");
 
         return driver;
 
