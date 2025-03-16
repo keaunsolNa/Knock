@@ -33,6 +33,7 @@ public class WebDriverUtil {
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--blink-settings=imagesEnabled=false");
         options.addArguments("--disable-notifications");
+        options.addArguments("--user-data-dir=/tmp/chrome_user_data");
 
         WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(100));
