@@ -42,6 +42,7 @@ public class CrawlingController {
 
         else if (source.equals("KOFIC")) {
             koficService.startCrawling();
+            return ResponseEntity.ok("Crawling started for " + source);
         }
 
         try
