@@ -44,6 +44,7 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
             processElement(element, dtos);
         }
 
+        logger.info(dtos.toString());
         saveData(dtos);
     }
 
