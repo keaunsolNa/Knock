@@ -56,8 +56,9 @@ public class CrawlingService extends AbstractCrawlingService {
     public void startCrawling(String sourceName) {
 
         logger.info("Starting crawling {}", sourceName);
-        logger.info("Current config: {}", sourceConfigMap);
-        this.currentConfig = sourceConfigMap.get(sourceName.toUpperCase());
+        logger.info("Current configMap: {}", sourceConfigMap);
+        logger.info("Current config: {}", sourceConfigMap.get(sourceName.toLowerCase()));
+        this.currentConfig = sourceConfigMap.get(sourceName.toLowerCase());
         if (this.currentConfig == null) {
             throw new IllegalArgumentException("Invalid source name: " + sourceName);
         }
