@@ -66,11 +66,11 @@ public class WebDriverUtil {
         log.info("✅ Chrome option set: --user-data-dir={}", uniqueTempDir);
 
         // 🔹 Heroku에서 ChromeDriver 실행 경로 설정
-        File driverExecutable = new File("/app/.chromedriver");
-        if (!driverExecutable.exists()) {
-            log.error("❌ ChromeDriver not found at: {}", driverExecutable.getAbsolutePath());
-            throw new RuntimeException("ChromeDriver not found!");
-        }
+        File driverExecutable = new File("/app/.chromedriver/bin/chromedriver");
+//        if (!driverExecutable.exists()) {
+//            log.error("❌ ChromeDriver not found at: {}", driverExecutable.getAbsolutePath());
+//            throw new RuntimeException("ChromeDriver not found!");
+//        }
 
         ChromeDriverService service = new ChromeDriverService.Builder()
                 .usingDriverExecutable(driverExecutable)
