@@ -55,8 +55,13 @@ public class KnockSecurityConfig {
                 // OAuth2 리소스 서버 설정 (JWT 인증 방식 사용)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtKeyConverter()))
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                ;
+                // JWT 필터 적용 제외 (favicon.ico 포함)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                );
+
 
         return http.build();
     }
