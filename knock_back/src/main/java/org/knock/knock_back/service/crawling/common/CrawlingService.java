@@ -54,6 +54,9 @@ public class CrawlingService extends AbstractCrawlingService {
      * 서비스 클래스를 호출하기 위한 진입 포인트. currentConfig 검증 후 addNewIndex() 메서드 실행
      */
     public void startCrawling(String sourceName) {
+
+        logger.info("Starting crawling {}", sourceName);
+        logger.info("Current config: {}", sourceConfigMap);
         this.currentConfig = sourceConfigMap.get(sourceName.toUpperCase());
         if (this.currentConfig == null) {
             throw new IllegalArgumentException("Invalid source name: " + sourceName);
