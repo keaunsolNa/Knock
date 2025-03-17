@@ -57,6 +57,8 @@ public class WebDriverUtil {
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--blink-settings=imagesEnabled=false");
         options.addArguments("--disable-notifications");
+        options.setBinary(System.getenv("GOOGLE_CHROME_BIN")); // 최신 Chrome 경로
+        System.setProperty("webdriver.chrome.driver", System.getenv("CHROMEDRIVER_PATH"));
 
         // 🔹 CDP 버전 경고 무시 옵션 추가
         options.addArguments("--disable-build-check");
