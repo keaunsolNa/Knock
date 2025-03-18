@@ -33,12 +33,27 @@ public abstract class AbstractCrawlingService implements CrawlingInterface {
     @Override
     public void addNewIndex() {
 
+        logger.info("===================================================");
+        logger.info("ADD NEW INDEX");
+        logger.info(getUrlPath());
+        logger.info(getCssQuery());
+        logger.info("===================================================");
         ElementExtractor extractor = new ElementExtractor(getUrlPath(), getCssQuery());
+        logger.info("===================================================");
         extractor.setUpDriver();
+        logger.info("AFTER SETUP DRIVER");
+        logger.info("===================================================");
         extractor.preparePage(extractor.getDriver(), prepareCss());
+
+        logger.info("===================================================");
+        logger.info("AFTER PREPARE DRIVER");
         extractor.run();
 
+        logger.info("===================================================");
+        logger.info("AFTER RUN DRIVER");
+
         Elements elements = extractor.getElements();
+        logger.info(elements.toString());
         Set<MOVIE_DTO> dtos = new HashSet<>();
         for (Element element : elements) {
             processElement(element, dtos);
