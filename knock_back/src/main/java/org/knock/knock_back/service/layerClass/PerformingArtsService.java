@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.knock.knock_back.component.util.converter.ConvertDTOAndIndex;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
+import org.knock.knock_back.dto.Enum.PerformingArtsGenre;
 import org.knock.knock_back.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
@@ -170,19 +171,19 @@ public class PerformingArtsService {
 
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.bool(b -> b
-                        .filter(Query.of(f -> f.term(t -> t
-                                .field("categoryLevelTwo")
-                                .value(categoryNm)
+                        .must(Query.of(f -> f.term(t -> t
+                                .field("categoryLevelTwo.nm")
+                                .value(PerformingArtsGenre.fromEng(categoryNm))
                         )))
-                        .filter(Query.of(f -> f.range(r -> r
+                        .must(Query.of(f -> f.range(r -> r
                                 .date(builder -> builder
                                         .field("from")
-                                        .gte(String.valueOf(epochMillis)) // 현재 날짜보다 작거나 같은 from
+                                        .lte(String.valueOf(epochMillis))
                                 ))))
-                        .filter(Query.of(f -> f.range(r -> r
+                        .must(Query.of(f -> f.range(r -> r
                                 .date(builder -> builder
                                         .field("to")
-                                        .lte(String.valueOf(epochMillis)) // 현재 날짜보다 크거나 같은 to
+                                        .gte(String.valueOf(epochMillis))
                                 ))))
                 ))
                 .withSort(SortOptions.of(s -> s
