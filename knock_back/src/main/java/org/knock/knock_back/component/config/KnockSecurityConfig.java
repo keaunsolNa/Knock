@@ -50,6 +50,7 @@ public class KnockSecurityConfig {
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/favicon.ico").permitAll()
+                                .requestMatchers("/api/crawling/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // OAuth2 리소스 서버 설정 (JWT 인증 방식 사용)
