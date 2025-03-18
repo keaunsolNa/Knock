@@ -19,6 +19,7 @@ public class CategoryLevelOneConverter implements Converter<String, CategoryLeve
      */
     @Override
     public @NonNull CategoryLevelOne convert(String type) {
-        return CategoryLevelOne.valueOf(type.toUpperCase());
+
+        return CategoryLevelOne.valueOf(type.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase());
     }
 }
