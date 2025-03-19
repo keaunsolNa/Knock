@@ -5,16 +5,17 @@ import { IPerformingArts } from '@/types';
 import Image from 'next/image';
 
 export default async function Page() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/upcoming`);
+  // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/upcomingList`);
 
-  const data: IPerformingArts[] = await response.json();
+  // const data: IPerformingArts[] = await response.json();
   const viewPoster = [];
 
-  for (let i = 0; i < 3; i++) {
-    const slice = data.splice(0, 6);
-    viewPoster.push(slice);
-  }
-
+  // for (let i = 0; i < 3; i++) {
+  //   const slice = data.splice(0, 6);
+  //   viewPoster.push(slice);
+  // }
+  // console.log(response);
+  // console.log(data);
   return (
     <div className={styles.container}>
       <CategoryNav />

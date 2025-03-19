@@ -31,3 +31,20 @@
     }
   }
 }
+
+.filter {
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: $border-radius--circle;
+  cursor: pointer;
+
+  background-color: $gray-light;
+  color: $black-light;
+  flex-shrink: 0;
+}
+
+.filter_select {
+  background-color: $orange;
+  color: $white;
+}
