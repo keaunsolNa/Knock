@@ -1,8 +1,8 @@
 import { IMovie } from '@/types';
 import styles from './page.module.scss';
 import Image from 'next/image';
-import CategoryItem from '@/components/CategoryItem';
 import SubscribeBtn from '@/components/SubscribeBtn';
+import Tag from '@/components/Tag';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,7 +37,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <section className={styles.main_info__wrapper}>
           <div className={styles.div__category_list}>
             {movieDetail.categoryLevelTwo.map((category) => {
-              return <CategoryItem key={category.id} type="detail" categoryNm={category.nm} />;
+              return <Tag text={category.nm} />;
             })}
           </div>
           <h2 className={styles.title}>{movieDetail.movieNm}</h2>

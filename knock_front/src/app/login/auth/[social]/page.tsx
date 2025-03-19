@@ -32,7 +32,8 @@ export default function Page() {
     }
 
     const data = await response.json();
-    dispatch(setAuth(data));
+
+    dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
     router.push(data.redirectUrl);
   };
 
