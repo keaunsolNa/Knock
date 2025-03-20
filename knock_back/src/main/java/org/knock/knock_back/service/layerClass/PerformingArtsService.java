@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.knock.knock_back.component.util.converter.ConvertDTOAndIndex;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.Enum.PerformingArtsGenre;
+import org.knock.knock_back.dto.Enum.PrfState;
 import org.knock.knock_back.dto.document.category.CATEGORY_LEVEL_TWO_INDEX;
 import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
@@ -205,10 +206,7 @@ public class PerformingArtsService {
 
     public Iterable<KOPIS_DTO> getUpcomingList() {
 
-        Iterable<KOPIS_INDEX> index = kopisRepository.findAll();
-
-
-
+        Iterable<KOPIS_INDEX> index = kopisRepository.findByPrfState(PrfState.UPCOMING);
         return convertDTOAndIndex.kopisIndexToKopisDTO(index);
     }
 }

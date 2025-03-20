@@ -43,12 +43,6 @@ public class PerformingArtsController  {
         return ResponseEntity.ok(performingArtsService.readPerformingArtsDetail(performingArtsId));
     }
 
-//    @GetMapping("/getCategory")
-//    public ResponseEntity<Map<String, Object>> getCategory() {
-//
-//        return ResponseEntity.ok(performingArtsService.getCategory());
-//    }
-
     /**
      * 요청 시 prfState UPCOMING 인 공연예술을 가져와 반환한다.
      * @return ResponseEntity<Iterable<KOPIS_DTO>> : 현재 UPCOMING 인 공연예술들

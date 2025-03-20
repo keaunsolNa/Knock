@@ -119,7 +119,14 @@ public class OauthController {
 
             tokenMaker.makeAccessToken(accessTokenForKnock);
 
-            String redirectUrl = "/movie";
+            String redirectUrl = "";
+
+
+            switch (user.getFavoriteLevelOne())
+            {
+                case CategoryLevelOne.MOVIE -> redirectUrl = "/movie";
+                case CategoryLevelOne.PERFORMING_ARTS -> redirectUrl = "/performingArts";
+            }
 
             Map<String, String> response = new HashMap<>();
             response.put("redirectUrl", redirectUrl);
