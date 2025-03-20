@@ -7,9 +7,7 @@ import Fuse from 'fuse.js';
 export default async function Page({ searchParams }: { searchParams: Promise<{ title: string; filter: string }> }) {
   const { title, filter } = await searchParams;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`, {
-    next: { revalidate: 86400 },
-  });
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`);
 
   if (!response.ok) {
     return <div>오류 발생</div>;

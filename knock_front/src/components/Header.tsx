@@ -52,7 +52,8 @@ export default function Header() {
       router.push(`/performingArts/${pathName[1]}/submenu`);
       setFoldMenu(false);
     } else {
-      router.push(`/performingArts/${pathName[1]}`);
+      router.back();
+      // router.push(`/performingArts/${pathName[1]}`);
       setFoldMenu(true);
     }
   };

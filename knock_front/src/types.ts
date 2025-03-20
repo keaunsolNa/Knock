@@ -29,7 +29,8 @@ export interface IMovie {
   categoryLevelTwo: ICategoryLevelTwo[];
   runningTime: number;
   plot: string;
-  favorites: string[];
+  favorites: string[]; // 구독자
+  favoritesCount: number; // 구독자 수
 }
 
 export interface IPerformingArts {
@@ -49,8 +50,9 @@ export interface IPerformingArts {
   dtguidance: string[]; // 공연 시간
   relates: string[]; // 예매처
   runningTime: string;
-  categoryLevelTwo: ICategoryLevelTwo[]; // 장르
+  categoryLevelTwo: ICategoryLevelTwo; // 장르
   favorites: string[]; // 구독자
+  favoritesCount: number; // 구독자 수
 }
 
 export interface IUser {

@@ -23,7 +23,7 @@
 }
 
 .div__details {
-  padding: 50px 35px;
+  padding: 50px 0;
   background-color: $white;
 }
 
@@ -31,6 +31,7 @@
   flex-direction: column;
   display: flex;
   gap: 5px;
+  padding: 0 35px;
   margin-bottom: 35px;
 }
 
@@ -71,12 +72,6 @@
 
 .table_td {
   margin-left: 7px;
-}
-
-.plot {
-  padding: 12px 10px;
-  font-weight: $font-thin;
-  line-height: 20px;
 }
 
 .div__reservation {

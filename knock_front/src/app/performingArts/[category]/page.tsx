@@ -1,7 +1,7 @@
 import ContentList from '@/components/ContentList';
 import SearchBar from '@/components/searchbar/SearchBar';
 import { IPerformingArts } from '@/types';
-import { performingArtsGenreToText } from '@/utils/typeToText';
+import { areaToCode } from '@/utils/typeToText';
 import Fuse from 'fuse.js';
 
 export default async function Page({
@@ -14,9 +14,7 @@ export default async function Page({
   const { category } = await params;
   const { title, filter } = await searchParams;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/category?category=${category}`, {
-    next: { revalidate: 86400 },
-  });
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/category?category=${category}`);
 
   if (!response.ok) {
     return <div>오류 발생</div>;
@@ -24,13 +22,8 @@ export default async function Page({
 
   const allPerform: IPerformingArts[] = await response.json();
 
-  const categoryEngToNm = (address: string) => {
-    const addressToEnum = address.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
-    return performingArtsGenreToText[addressToEnum];
-  };
-
   const categoryFilter = (performList: IPerformingArts[]) => {
-    return performList.filter((perform) => perform.categoryLevelTwo.some(({ nm }) => nm === categoryEngToNm(filter)));
+    return performList.filter((perform) => areaToCode[perform.area] === filter[5]);
   };
 
   const titleFilter = (performList: IPerformingArts[]) => {

@@ -17,7 +17,7 @@ export default function TitleSearch({ link, searchTitle, searchFilter }: ISearch
     if (link === 'movie') {
       router.push(`/movie?title=${title}&filter=${searchFilter}`, routerOption);
     } else {
-      router.push(`/${link}/search?title=${title}&filter=${searchFilter}`, routerOption);
+      router.push(`/${link}?title=${title}&filter=${searchFilter}`, routerOption);
     }
   };
 

@@ -41,7 +41,6 @@ export default function ContentList({
 
     if (!response.ok) return;
     const data = await response.json();
-
     setAlarmList(data);
   };
 
@@ -68,12 +67,12 @@ export default function ContentList({
         : alarmList
           ? itemList.map((perform) => {
               if (alarmList.length > 0) {
-                return <PerformItem key={perform.id} {...perform} setAlarm={alarmList.includes(perform.id)} viewBtn={true} />;
+                return <PerformItem key={perform.id} {...perform} genre={genre} setAlarm={alarmList.includes(perform.id)} viewBtn={true} />;
               } else {
-                return <PerformItem key={perform.id} {...perform} setAlarm={false} viewBtn={true} />;
+                return <PerformItem key={perform.id} {...perform} genre={genre} setAlarm={false} viewBtn={true} />;
               }
             })
-          : itemList.map((perform) => <PerformItem key={perform.id} {...perform} viewBtn={true} />)}
+          : itemList.map((perform) => <PerformItem key={perform.id} {...perform} genre={genre} viewBtn={true} />)}
     </div>
   );
 }
