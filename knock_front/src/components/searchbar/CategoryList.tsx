@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default async function CategoryList({ link, searchTitle, searchFilter }: ISearch) {
   let categoryList: ICategory[] = [];
   if (link === 'movie') {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`, { next: { revalidate: 86400 } });
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`);
 
     if (!response.ok) {
       return null;
@@ -29,6 +29,7 @@ export default async function CategoryList({ link, searchTitle, searchFilter }: 
       <div className={styles.list}>
         {categoryList.map((category: ICategory) => (
           <Link
+            key={category.categoryId}
             href={`/${link}?title=${searchTitle}&filter=${searchFilter === category.categoryId ? '' : category.categoryId}`}
             scroll={false}
             className={`${styles.filter} ${searchFilter === category.categoryId && styles.filter_select}`}

@@ -11,12 +11,13 @@ import { BeatLoader } from 'react-spinners';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 
-interface IMovieProps extends IPerformingArts {
+interface IProps extends IPerformingArts {
   setAlarm?: boolean;
   viewBtn?: boolean;
+  genre: string;
 }
 
-export default function PerformItem(props: IMovieProps) {
+export default function PerformItem(props: IProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,7 +90,7 @@ export default function PerformItem(props: IMovieProps) {
   };
 
   return (
-    <Link rel="prefetch" href={`/movie/${props.id}`}>
+    <Link rel="prefetch" href={`/performingArts/${props.genre}/${props.id}`}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
           <Image

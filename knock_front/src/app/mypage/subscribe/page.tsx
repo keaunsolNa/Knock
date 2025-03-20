@@ -15,7 +15,8 @@ export default function Page() {
 
   const [subList, setSubList] = useState<ISubList>();
   const [category, setCategory] = useState('MOVIE');
-
+  console.log(alarmCategoryList);
+  console.log(subList);
   const getSubList = async () => {
     const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubscribeList`, dispatch, {
       method: 'GET',
@@ -42,7 +43,14 @@ export default function Page() {
         <div className={styles.div__category_wrapper}>
           {alarmCategoryList.map((item) => {
             return (
-              <div key={'btn_' + item} className={category === item ? styles.div__select_category : null} onClick={() => setCategory(item)}>
+              <div
+                key={'btn_' + item}
+                className={category === item ? styles.div__select_category : null}
+                onClick={() => {
+                  console.log(item);
+                  setCategory(item);
+                }}
+              >
                 {categoryToText[item]}
               </div>
             );
