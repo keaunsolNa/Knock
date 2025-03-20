@@ -103,7 +103,7 @@ public class KOPIS {
             while (true)
             {
 
-                if (isDuplicate) break;
+                if (isDuplicate) return;
 
                 // Request URL 연결 객체 생성
                 URL requestURL = URI.create(REQUEST_URL + "?" + makeQueryString(paramMap)).toURL();
@@ -237,8 +237,6 @@ public class KOPIS {
             {
 
                 Object relatesObject = detailJson.opt("relates");
-
-                logger.info(relatesObject.toString());
 
                 if (relatesObject instanceof JSONObject relatesJson)
                 {

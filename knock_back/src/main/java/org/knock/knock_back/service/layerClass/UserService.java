@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.knock.knock_back.component.util.converter.ConvertDTOAndIndex;
 import org.knock.knock_back.dto.Enum.AlarmTiming;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
+import org.knock.knock_back.dto.Enum.PerformingArtsGenre;
 import org.knock.knock_back.dto.document.movie.MOVIE_INDEX;
 import org.knock.knock_back.dto.document.performingArts.KOPIS_INDEX;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
@@ -306,6 +307,44 @@ public class UserService {
             logger.debug(e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * 장르별 구독 id 가져온다.
+     * @param performingArtsGenre : 대상 장르
+     * @return String[] id 배열
+     */
+    public String[] getSubscribeList(PerformingArtsGenre performingArtsGenre)
+    {
+
+        List<String> returnValue;
+
+        try
+        {
+
+            SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            List<String> list = user.getSubscribeList().get(CategoryLevelOne.PERFORMING_ARTS);
+             returnValue = new ArrayList<>();
+
+            for (String id : list)
+            {
+
+                KOPIS_INDEX kopis = new KOPIS_INDEX();
+
+                if (kopisRepository.findById(id).isPresent()) kopis = kopisRepository.findById(id).get();
+                if (kopis.getCategoryLevelTwo().getNm().equals(performingArtsGenre.getKorean())) returnValue.add(id);
+
+            }
+
+        }
+
+        catch (Exception e)
+        {
+            logger.debug(e.getMessage());
+            return null;
+        }
+
+        return returnValue.toArray(new String[0]);
     }
 
     /**

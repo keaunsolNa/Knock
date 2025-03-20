@@ -169,6 +169,7 @@ public class PerformingArtsService {
                 .toInstant()
                 .toEpochMilli();
 
+        System.out.println(categoryNm);
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.bool(b -> b
                         .must(Query.of(f -> f.term(t -> t
@@ -201,5 +202,14 @@ public class PerformingArtsService {
                 .collect(Collectors.toList());
 
         return convertDTOAndIndex.kopisIndexToKopisDTO(kopisIterable);
+    }
+
+    public Iterable<KOPIS_DTO> getUpcomingList() {
+
+        System.out.println("GETUPCOMINGLIST");
+        Iterable<KOPIS_INDEX> index = kopisRepository.findAll();
+
+
+        return convertDTOAndIndex.kopisIndexToKopisDTO(index);
     }
 }

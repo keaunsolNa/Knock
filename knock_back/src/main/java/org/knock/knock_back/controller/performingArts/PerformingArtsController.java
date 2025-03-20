@@ -5,7 +5,6 @@ import org.knock.knock_back.service.layerClass.PerformingArtsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 /**
  * @author nks
@@ -22,16 +21,16 @@ public class PerformingArtsController  {
     }
 
     /**
-     * 요청 시 KOPIS 인덱스에 저장된 모든 객체 정보를 가져와 반환한다. 
+     * 요청 시 KOPIS 인덱스에 저장된 모든 객체 정보를 가져와 반환한다.
      * @return ResponseEntity<Iterable<KOPIS_DTO>> : 저장된 모든 공연예술 정보
      */
-    @GetMapping()
+    @GetMapping("/")
     public ResponseEntity<Iterable<KOPIS_DTO>> getPerformingArts() {
         return ResponseEntity.ok(performingArtsService.readPerformingArts());
     }
 
-    @GetMapping("/{category}")
-    public ResponseEntity<Iterable<KOPIS_DTO>> getPerformingArts(@PathVariable(name = "category") String category) {
+    @GetMapping("/category")
+    public ResponseEntity<Iterable<KOPIS_DTO>> getPerformingArts(@RequestParam(name = "category") String category) {
 
         return ResponseEntity.ok(performingArtsService.readPerformingArtsByCategoryLevelTwo(category));
     }
@@ -44,16 +43,21 @@ public class PerformingArtsController  {
         return ResponseEntity.ok(performingArtsService.readPerformingArtsDetail(performingArtsId));
     }
 
+//    @GetMapping("/getCategory")
+//    public ResponseEntity<Map<String, Object>> getCategory() {
+//
+//        return ResponseEntity.ok(performingArtsService.getCategory());
+//    }
+
     /**
-     * 요청 시 현재 상영 예정작 공연예술에 있는 모든 LEVEL_TWO CATEGORY 정보를 가져와 반환
-     * @return ResponseEntity<Iterable<CATEGORY_LEVEL_TWO_DTO>> : 현재 상영 예정 리스트에 있는 공연예술들
+     * 요청 시 prfState UPCOMING 인 공연예술을 가져와 반환한다.
+     * @return ResponseEntity<Iterable<KOPIS_DTO>> : 현재 UPCOMING 인 공연예술들
      */
-    @GetMapping("/getCategory")
-    public ResponseEntity<Map<String, Object>> getCategory() {
+    @GetMapping("/upcomingList")
+    public ResponseEntity<Iterable<KOPIS_DTO>> getUpcomingList() {
 
-        return ResponseEntity.ok(performingArtsService.getCategory());
+        return ResponseEntity.ok(performingArtsService.getUpcomingList());
     }
-
     /**
      * 요청 시 현재 공연예술을 구독한 다른 사람들이 공통으로 구독하고 있는 공연예술을 리스트로 만들어 반환한다.
      * @param performingArtsId : 확인하고 싶은 공연예술의 id

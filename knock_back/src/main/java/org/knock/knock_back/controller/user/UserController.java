@@ -3,6 +3,7 @@ package org.knock.knock_back.controller.user;
 import lombok.RequiredArgsConstructor;
 import org.knock.knock_back.dto.Enum.AlarmTiming;
 import org.knock.knock_back.dto.Enum.CategoryLevelOne;
+import org.knock.knock_back.dto.Enum.PerformingArtsGenre;
 import org.knock.knock_back.dto.dto.user.SSO_USER_DTO;
 import org.knock.knock_back.service.layerClass.UserService;
 import org.springframework.http.ResponseEntity;
@@ -149,5 +150,17 @@ public class UserController {
     public ResponseEntity<Boolean> changeUserName(@RequestBody Map<String, String> valueMap)
     {
         return ResponseEntity.ok(userService.changeUserName(valueMap.get("value")));
+    }
+
+    /** 유저 공연예술 장르별 구독 목록 조회
+     * @param genre : 대상 장르
+     * @return String[] 공연예술 id
+     */
+    @PostMapping("/performingArts/{genre}/getSubscribeList")
+    public ResponseEntity<String[]> getSubscribeList(@PathVariable(name = "genre") PerformingArtsGenre genre )
+    {
+
+        return ResponseEntity.ok(userService.getSubscribeList(genre));
+
     }
 }

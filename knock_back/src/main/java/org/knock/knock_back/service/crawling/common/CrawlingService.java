@@ -55,10 +55,10 @@ public class CrawlingService extends AbstractCrawlingService {
      */
     public void startCrawling(String sourceName) {
 
-        logger.info("Starting crawling {}", sourceName);
-        logger.info("Current configMap: {}", sourceConfigMap);
-        logger.info("Current config: {}", sourceConfigMap.get(sourceName.toLowerCase()));
-        this.currentConfig = sourceConfigMap.get(sourceName.toLowerCase());
+        logger.info("Current config: {}", sourceConfigMap.get(sourceName.toUpperCase()));
+        this.currentConfig = sourceConfigMap.get(sourceName.toUpperCase());
+
+        logger.info(this.currentConfig.toString());
         if (this.currentConfig == null) {
             throw new IllegalArgumentException("Invalid source name: " + sourceName);
         }
@@ -231,7 +231,6 @@ public class CrawlingService extends AbstractCrawlingService {
                     driver.get(detailLinks);
 
                     String directorName;
-                    logger.info(detailLinks);
 
                     try {
                         WebElement directorElement = driver.findElement(By.xpath("//div[@class='spec']//dt[contains(text(), '감독')]/following-sibling::dd[1]/a"));
@@ -373,7 +372,6 @@ public class CrawlingService extends AbstractCrawlingService {
                 if (metaTag != null)
                 {
                     String content = metaTag.attr("content");
-                    logger.info(content);
                     dto.setPlot(content);
                 }
 
