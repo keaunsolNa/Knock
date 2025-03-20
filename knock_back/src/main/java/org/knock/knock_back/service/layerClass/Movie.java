@@ -49,7 +49,7 @@ public class Movie implements MovieInterface {
 
         for (SSO_USER_INDEX ssoUserIndex : ssoUserRepository.findAll()) {
 
-            List<String> movieList = ssoUserIndex.getSubscribeList().get(CategoryLevelOne.MOVIE);
+            Set<String> movieList = ssoUserIndex.getSubscribeList().get(CategoryLevelOne.MOVIE);
 
             if (movieList != null) {
                 Set<String> movieIdsToKeep = movies.stream()
@@ -90,7 +90,6 @@ public class Movie implements MovieInterface {
     public MOVIE_DTO readMoviesDetail(String id) {
 
         MOVIE_INDEX movies = movieMaker.readMovieById(id);
-
         return translation.MovieIndexToDTO(movies);
     }
 
@@ -199,7 +198,7 @@ public class Movie implements MovieInterface {
         return users.stream()
                 .map(hit -> hit.getContent().getSubscribeList().get(CategoryLevelOne.MOVIE)) // 유저의 영화 리스트 가져오기
                 .filter(Objects::nonNull) // null 값 제거
-                .flatMap(List::stream) // 리스트를 단일 스트림으로 변환
+                .flatMap(Set::stream) // 리스트를 단일 스트림으로 변환
                 .filter(id -> !id.equals(movieId)) // parameter 받은 movieId 제외
                 .collect(Collectors.toMap(Function.identity(), s -> 1, Integer::sum)) // 영화 ID를 키로, 등장 횟수를 값으로 저장
                 .entrySet().stream() // Map 스트림으로 변환

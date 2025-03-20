@@ -9,8 +9,8 @@ import org.knock.knock_back.dto.Enum.Role;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class SSO_USER_DTO {
@@ -46,5 +46,5 @@ public class SSO_USER_DTO {
     private Date lastLoginTime;
 
     @Enumerated(EnumType.STRING)
-    private Map<CategoryLevelOne, LinkedList<String>> subscribeList;
+    private Map<CategoryLevelOne, Set<String>> subscribeList;
 }

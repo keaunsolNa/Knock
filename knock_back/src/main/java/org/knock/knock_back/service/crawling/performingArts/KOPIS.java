@@ -265,31 +265,48 @@ public class KOPIS {
 
             String[] styurls = null;
 
-            if (!detailJson.optString("styurls").isEmpty() && !detailJson.optString("styurls").isBlank())
-            {
+            Object styUrlsObject = detailJson.opt("styurls");
 
-                Object styUrlsObject = detailJson.opt("styurls");
-
-                if (styUrlsObject instanceof JSONArray styUrlsArray) {
-                    styurls = new String[styUrlsArray.length()];
-
-                    for (int i = 0; i < styUrlsArray.length(); i++) {
-                        JSONObject relateObject = styUrlsArray.optJSONObject(i);
-                        if (relateObject != null) {
-                            styurls[i] = relateObject.optString("styurl");
+            if (styUrlsObject instanceof JSONArray styUrlsArray) {
+                // 배열인데 내부 요소가 문자열이라면 JSON 배열로 변환
+                if (styUrlsArray.length() == 1 && styUrlsArray.optString(0).startsWith("[")) {
+                    try {
+                        JSONArray parsedArray = new JSONArray(styUrlsArray.optString(0));
+                        styurls = new String[parsedArray.length()];
+                        for (int i = 0; i < parsedArray.length(); i++) {
+                            styurls[i] = parsedArray.optString(i);
                         }
+                    } catch (Exception e) {
+                        logger.debug(e.getMessage());
                     }
-                } else if (styUrlsObject instanceof JSONObject styUrlObject) {
-                    // styUrl 단일 객체일 경우 배열 크기를 1로 설정
-                    styurls = new String[1];
-                    styurls[0] = styUrlObject.optString("styurl");
+                } else {
+                    // 일반적인 JSONArray 처리
+                    styurls = new String[styUrlsArray.length()];
+                    for (int i = 0; i < styUrlsArray.length(); i++) {
+                        styurls[i] = styUrlsArray.optString(i);
+                    }
+                }
+            } else if (styUrlsObject instanceof String singleUrl) {
+                // 단일 URL이 문자열로 존재하는 경우
+                if (singleUrl.startsWith("[") && singleUrl.endsWith("]")) {
+                    try {
+                        JSONArray parsedArray = new JSONArray(singleUrl);
+                        styurls = new String[parsedArray.length()];
+                        for (int i = 0; i < parsedArray.length(); i++) {
+                            styurls[i] = parsedArray.optString(i);
+                        }
+                    } catch (Exception e) {
+                        logger.debug(e.getMessage());
+                    }
+                } else {
+                    styurls = new String[]{singleUrl};
                 }
             }
 
             performance.setStyurls(styurls);
 
             performance.setCategoryLevelOne(CategoryLevelOne.PERFORMING_ARTS);
-            performance.setCategoryLevelTwo(categoryLevelTwoRepository.findByNm(detailJson.optString("genrenm")));
+            performance.setCategoryLevelTwo(categoryLevelTwoRepository.findByNmAndParentNm(detailJson.optString("genrenm"), CategoryLevelOne.PERFORMING_ARTS));
 
             String runTime = detailJson.optString("prfruntime");
             int time = 0;

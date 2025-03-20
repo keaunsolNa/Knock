@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.knock.knock_back.component.config.JwtTokenProvider;
 import org.knock.knock_back.component.util.maker.TokenMaker;
+import org.knock.knock_back.dto.Enum.CategoryLevelOne;
 import org.knock.knock_back.dto.document.user.SSO_USER_INDEX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +65,7 @@ public class OauthController {
 
         String[] tokens;
         if (socialLoginType.equals(SocialLoginType.GOOGLE)) {
-
             tokens = oauthService.requestUserInfo(authorizationCode.get("authorizationCode"));
-
         }
         else
         {
@@ -83,7 +82,14 @@ public class OauthController {
         tokenMaker.makeRefreshToken(httpServletResponse, refreshTokenForKnock);
         tokenMaker.makeAccessToken(accessToken);
 
-        String redirectUrl = "/movie";
+        SSO_USER_INDEX user = jwtTokenProvider.getUserDetails(accessTokenValue);
+        String redirectUrl = "";
+
+        switch (user.getFavoriteLevelOne())
+        {
+            case CategoryLevelOne.MOVIE -> redirectUrl = "/movie";
+            case CategoryLevelOne.PERFORMING_ARTS -> redirectUrl = "/performingArts";
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("redirectUrl", redirectUrl);

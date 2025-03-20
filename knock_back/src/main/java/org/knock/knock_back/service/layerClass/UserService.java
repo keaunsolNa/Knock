@@ -65,13 +65,13 @@ public class UserService {
         {
 
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Map<CategoryLevelOne, LinkedList<String>> map = user.getSubscribeList();
+            Map<CategoryLevelOne, Set<String>> map = user.getSubscribeList();
 
             Map<String, Iterable<?>> userSubscribeList = new HashMap<>();
 
             for (CategoryLevelOne category : map.keySet())
             {
-                LinkedList<String> list = map.get(category);
+                Set<String> list = map.get(category);
                 Set<?> set = makeSet(category, list);
                 userSubscribeList.put(category.name(), set);
             }
@@ -314,7 +314,7 @@ public class UserService {
      * @param performingArtsGenre : 대상 장르
      * @return String[] id 배열
      */
-    public String[] getSubscribeList(PerformingArtsGenre performingArtsGenre)
+    public String[] getSubscribeList(String performingArtsGenre)
     {
 
         List<String> returnValue;
@@ -323,16 +323,18 @@ public class UserService {
         {
 
             SSO_USER_INDEX user = (SSO_USER_INDEX) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            List<String> list = user.getSubscribeList().get(CategoryLevelOne.PERFORMING_ARTS);
-             returnValue = new ArrayList<>();
+            Set<String> list = user.getSubscribeList().get(CategoryLevelOne.PERFORMING_ARTS);
+            returnValue = new ArrayList<>();
 
             for (String id : list)
             {
 
                 KOPIS_INDEX kopis = new KOPIS_INDEX();
 
+                String value = PerformingArtsGenre.fromEng(performingArtsGenre);
+
                 if (kopisRepository.findById(id).isPresent()) kopis = kopisRepository.findById(id).get();
-                if (kopis.getCategoryLevelTwo().getNm().equals(performingArtsGenre.getKorean())) returnValue.add(id);
+                if (kopis.getCategoryLevelTwo().getNm().equals(value)) returnValue.add(id);
 
             }
 
@@ -341,7 +343,7 @@ public class UserService {
         catch (Exception e)
         {
             logger.debug(e.getMessage());
-            return null;
+            return new String[0];
         }
 
         return returnValue.toArray(new String[0]);
@@ -365,7 +367,7 @@ public class UserService {
 
                 MOVIE_INDEX movieIndex = movieRepository.findById(targetId).orElseThrow();
 
-                if (movieIndex.getFavorites() == null || movieIndex.getFavorites().isEmpty())
+                if (null == movieIndex.getFavorites() || movieIndex.getFavorites().isEmpty())
                 {
                     movieIndex.setFavorites(new HashSet<>());
                 }
@@ -382,7 +384,7 @@ public class UserService {
             {
                 KOPIS_INDEX performingIndex = kopisRepository.findById(targetId).orElseThrow();
 
-                if (performingIndex.getFavorites() == null || performingIndex.getFavorites().isEmpty())
+                if (null == performingIndex.getFavorites() || performingIndex.getFavorites().isEmpty())
                 {
                     performingIndex.setFavorites(new HashSet<>());
                 }
@@ -408,7 +410,7 @@ public class UserService {
      * @param list : 변경할 category ID
      * @return Set<?> : 생성된 DTO 목록
      */
-    private Set<?> makeSet (CategoryLevelOne target, LinkedList<String> list)
+    private Set<?> makeSet (CategoryLevelOne target, Set<String> list)
     {
         switch (target)
         {

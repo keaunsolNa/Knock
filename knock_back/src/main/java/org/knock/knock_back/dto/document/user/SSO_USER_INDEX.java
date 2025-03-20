@@ -13,10 +13,7 @@ import org.knock.knock_back.dto.Enum.Role;
 import org.knock.knock_back.dto.Enum.SocialLoginType;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -74,7 +71,7 @@ public class SSO_USER_INDEX {
 
     @Field(type = FieldType.Object)
     @Enumerated(EnumType.STRING)
-    private Map<CategoryLevelOne, LinkedList<String>> subscribeList;    // 구독 목록
+    private Map<CategoryLevelOne, Set<String>> subscribeList;    // 구독 목록
 
     @Builder
     public SSO_USER_INDEX(String id, String name, String email, String nickName, String picture, SocialLoginType loginType, Role role) {
@@ -89,9 +86,9 @@ public class SSO_USER_INDEX {
         this.alarmTimings = new AlarmTiming[] { AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR };
         this.lastLoginTime = new Timestamp(System.currentTimeMillis());
         this.subscribeList = new HashMap<>();
-        subscribeList.put(CategoryLevelOne.MOVIE, new LinkedList<>());
-        subscribeList.put(CategoryLevelOne.EXHIBITION, new LinkedList<>());
-        subscribeList.put(CategoryLevelOne.PERFORMING_ARTS, new LinkedList<>());
+        subscribeList.put(CategoryLevelOne.MOVIE, new HashSet<>());
+        subscribeList.put(CategoryLevelOne.EXHIBITION, new HashSet<>());
+        subscribeList.put(CategoryLevelOne.PERFORMING_ARTS, new HashSet<>());
     }
 
     public SSO_USER_INDEX update(String name, String email, String picture) {

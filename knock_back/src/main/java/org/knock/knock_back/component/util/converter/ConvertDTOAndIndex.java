@@ -102,7 +102,7 @@ public class ConvertDTOAndIndex {
         dto.setRunningTime(index.getRunningTime());
         dto.setPlot(index.getPlot());
         dto.setFavorites(index.getFavorites());
-
+        dto.setFavoritesCount(null == index.getFavorites() || index.getFavorites().isEmpty() ? 0 : index.getFavorites().size());
         return dto;
     }
 
@@ -126,7 +126,6 @@ public class ConvertDTOAndIndex {
         dto.setCompanyNm(index.getCompanyNm());
         dto.setCategoryLevelTwo(null == index.getCategoryLevelTwo() ? null : CLTIndexToCLTDTO(index.getCategoryLevelTwo()));
         dto.setRunningTime(null == index.getRunningTime() ? 0 : index.getRunningTime());
-
         return dto;
     }
 
@@ -293,6 +292,7 @@ public class ConvertDTOAndIndex {
         kopisDto.setRunningTime(index.getRunningTime());
         kopisDto.setCategoryLevelOne(index.getCategoryLevelOne());
         kopisDto.setCategoryLevelTwo(CLTDtoToCLTIndexOne(index.getCategoryLevelTwo()));
+        kopisDto.setFavoritesCount(null == index.getFavorites() || index.getFavorites().isEmpty() ? 0 : index.getFavorites().size());
 
         return kopisDto;
 

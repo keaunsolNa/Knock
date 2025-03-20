@@ -81,7 +81,6 @@ public class PerformingArtsService {
     public KOPIS_DTO readPerformingArtsDetail(String id) {
 
         KOPIS_INDEX index = kopisRepository.findById(id).orElse(null);
-
         assert index != null;
         return convertDTOAndIndex.kopisIndexToKopisDTO(index);
     }
@@ -149,7 +148,7 @@ public class PerformingArtsService {
         return users.stream()
                 .map(hit -> hit.getContent().getSubscribeList().get(CategoryLevelOne.PERFORMING_ARTS)) // 유저의 영화 리스트 가져오기
                 .filter(Objects::nonNull)
-                .flatMap(List::stream)
+                .flatMap(Set::stream)
                 .filter(id -> !id.equals(performingArtsId))
                 .collect(Collectors.toMap(Function.identity(), s -> 1, Integer::sum))
                 .entrySet().stream()
@@ -206,8 +205,8 @@ public class PerformingArtsService {
 
     public Iterable<KOPIS_DTO> getUpcomingList() {
 
-        System.out.println("GETUPCOMINGLIST");
         Iterable<KOPIS_INDEX> index = kopisRepository.findAll();
+
 
 
         return convertDTOAndIndex.kopisIndexToKopisDTO(index);

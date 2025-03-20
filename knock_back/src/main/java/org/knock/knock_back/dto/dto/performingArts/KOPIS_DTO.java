@@ -35,4 +35,5 @@ public class KOPIS_DTO {
     private CategoryLevelOne categoryLevelOne;
     private CATEGORY_LEVEL_TWO_DTO categoryLevelTwo;
     private Set<String> favorites;
+    private Integer favoritesCount;
 }
