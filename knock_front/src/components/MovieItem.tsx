@@ -11,12 +11,12 @@ import { BeatLoader } from 'react-spinners';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 
-interface IProps extends IMovie {
+interface IMovieProps extends IMovie {
   setAlarm?: boolean;
   viewBtn?: boolean;
 }
 
-export default function ContentItem(props: IProps) {
+export default function MovieItem(props: IMovieProps) {
   const dispatch = useAppDispatch();
   const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
   const [isLoading, setIsLoading] = useState(false);

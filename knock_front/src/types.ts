@@ -1,12 +1,13 @@
 export interface ICategory {
   categoryId: string;
   categoryNm: string;
-  movies: string[];
+  movies?: IMovie[];
 }
 
 export interface ISearch {
-  searchTitle: string;
-  searchCategory: string;
+  link: string;
+  searchTitle?: string;
+  searchFilter?: string;
 }
 
 export interface ICategoryLevelTwo {
@@ -34,8 +35,8 @@ export interface IMovie {
 export interface IPerformingArts {
   id: string;
   name: string;
-  from: string; // 개봉일
-  to: string; // 마감일
+  from: Date; // 개봉일
+  to: Date; // 마감일
   directors: string[]; // 제작자
   actors: string[]; // 출연진
   companyNm: string[]; // 회사
@@ -48,17 +49,7 @@ export interface IPerformingArts {
   dtguidance: string[]; // 공연 시간
   relates: string[]; // 예매처
   runningTime: string;
-  categoryLevelTwo: // 장르
-  | 'THEATER'
-    | 'MUSICAL'
-    | 'CLASSICAL'
-    | 'KOREAN_TRADITIONAL'
-    | 'POPULAR_MUSIC'
-    | 'WESTERN_KOREAN_DANCE'
-    | 'POPULAR_DANCE'
-    | 'CIRCUS_MAGIC'
-    | 'COMPLEX'
-    | 'UNKNOWN';
+  categoryLevelTwo: ICategoryLevelTwo[]; // 장르
   favorites: string[]; // 구독자
 }
 

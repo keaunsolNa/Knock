@@ -1,30 +1,40 @@
 import styles from '@/styles/components/searchbar/category-list.module.scss';
-import CategoryItem from '../CategoryItem';
 import { ICategory, ISearch } from '@/types';
+import { performingArtsArea } from '@/utils/typeToText';
+import Link from 'next/link';
 
-export default async function CategoryList({ searchTitle, searchCategory }: ISearch) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`, { next: { revalidate: 86400 } });
+export default async function CategoryList({ link, searchTitle, searchFilter }: ISearch) {
+  let categoryList: ICategory[] = [];
+  if (link === 'movie') {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`, { next: { revalidate: 86400 } });
 
-  if (!response.ok) {
-    return null;
+    if (!response.ok) {
+      return null;
+    }
+
+    categoryList = await (await response.json()).data;
+
+    categoryList.sort((a, b) => (a.movies.length >= b.movies.length ? -1 : 1));
+  } else {
+    categoryList = performingArtsArea.map((areaText, idx) => {
+      return {
+        categoryNm: areaText,
+        categoryId: `area_${idx}`,
+      };
+    });
   }
-
-  const categoryList: ICategory[] = await (await response.json()).data;
-
-  categoryList.sort((a, b) => (a.movies.length >= b.movies.length ? -1 : 1));
 
   return (
     <div className={styles.div__category}>
       <div className={styles.list}>
-        {categoryList.map((category) => (
-          <CategoryItem
-            key={category.categoryId}
-            type="searchbar"
-            searchTitle={searchTitle}
-            searchCategory={searchCategory}
-            categoryNm={category.categoryNm}
-            categoryId={category.categoryId}
-          />
+        {categoryList.map((category: ICategory) => (
+          <Link
+            href={`/${link}?title=${searchTitle}&filter=${searchFilter === category.categoryId ? '' : category.categoryId}`}
+            scroll={false}
+            className={`${styles.filter} ${searchFilter === category.categoryId && styles.filter_select}`}
+          >
+            {category.categoryNm}
+          </Link>
         ))}
       </div>
     </div>

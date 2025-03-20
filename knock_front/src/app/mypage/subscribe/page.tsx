@@ -7,7 +7,7 @@ import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
-import ContentItem from '@/components/ContentItem';
+import ContentItem from '@/components/MovieItem';
 
 export default function Page() {
   const dispatch = useAppDispatch();
