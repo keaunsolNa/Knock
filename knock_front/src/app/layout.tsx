@@ -3,6 +3,7 @@ import './globals.scss';
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_KR, Anton, Roboto } from 'next/font/google';
 import styles from './layout.module.scss';
+import { UnauthorizedModal } from '@/components/UnauthorizedModal';
 
 export const metadata: Metadata = {
   title: 'Knock',
@@ -38,11 +39,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body
-        className={`${notoSansKR.variable} ${anton.variable} ${roboto.variable}`}
-      >
+      <body className={`${notoSansKR.variable} ${anton.variable} ${roboto.variable}`}>
         <Providers>
-          <div className={styles.container}>{children}</div>
+          <div className={styles.container}>
+            {children}
+            <UnauthorizedModal />
+          </div>
         </Providers>
       </body>
     </html>

@@ -5,14 +5,13 @@ import styles from './page.module.scss';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { alarmCategoryList, categoryToText, genreToLink } from '@/utils/typeToText';
 import MovieItem from '@/components/MovieItem';
 import PerformItem from '@/components/PerformItem';
+import { setModal } from '@/redux/modalSlice';
 
 export default function Page() {
   const dispatch = useAppDispatch();
-  const router = useRouter();
 
   const [subList, setSubList] = useState<ISubList>();
   const [category, setCategory] = useState('MOVIE');
@@ -22,13 +21,15 @@ export default function Page() {
       method: 'GET',
     });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        router.push('/login');
-      }
-
-      return <div>서버 에러</div>;
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
     }
+
+    if (!response.ok) {
+      throw new Error('유저 구독 카테고리 조회 API 에러');
+    }
+
     const data = await response.json();
     setSubList(data);
   };
@@ -61,7 +62,6 @@ export default function Page() {
               if (category === 'MOVIE') {
                 return <MovieItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />;
               } else {
-                // 수정
                 return (
                   <PerformItem key={`${category}_${item.id}`} {...item} genre={genreToLink[item.categoryLevelTwo.nm]} viewBtn={false} />
                 );

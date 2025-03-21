@@ -7,6 +7,7 @@ import { notFound, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/redux/store';
 import { alarmSettingList, alarmCategoryList, categoryToText, alarmToText } from '@/utils/typeToText';
+import { setModal } from '@/redux/modalSlice';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -42,8 +43,13 @@ export default function Page() {
       method: 'GET',
     });
 
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
     if (!response.ok) {
-      notFound();
+      throw new Error('유저 알림세팅 데이터 조회 API 에러');
     }
 
     const data: string[] = await response.json();

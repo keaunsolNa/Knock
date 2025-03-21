@@ -8,6 +8,7 @@ import { BsBell, BsBellFill } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { BeatLoader } from 'react-spinners';
 import { usePathname } from 'next/navigation';
+import { setModal } from '@/redux/modalSlice';
 
 interface IProps {
   favorites: number;
@@ -29,6 +30,15 @@ export default function SubscribeBtn({ favorites, id }: IProps) {
       method: 'POST',
       body: JSON.stringify({ value: id }),
     });
+
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
+    if (!response.ok) {
+      throw new Error('유저 구독 카테고리 조회 API 에러');
+    }
 
     const isSub = await response.json();
 
