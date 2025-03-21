@@ -10,7 +10,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`);
 
   if (!response.ok) {
-    return <div>오류 발생</div>;
+    throw new Error('movie SSR 페이지 API 요청 실패');
   }
 
   const allMovies: IMovie[] = await response.json();

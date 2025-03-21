@@ -44,6 +44,20 @@ export const performingArtsGenreToText = {
   UNKNOWN: '기타',
 };
 
+// prettier-ignore
+export const genreToLink = {
+  "연극": 'theater',
+  "뮤지컬": 'musical',
+  '서양음악(클래식)': 'classical',
+  '한국음악(국악)': 'koreanTraditional',
+  "대중음악": 'popularMusic',
+  '무용(서양/한국무용)': 'westernKoreanDance',
+  "대중무용": 'popularDance',
+  '서커스/마술': 'circusMagic',
+  "복합": 'complex',
+  "기타": 'unknown',
+};
+
 export const performingArtsArea = ['서울', '경기/인천', '충청/대전/세종', '강원도', '경상도', '전라/광주', '제주도', '기타'];
 
 export const areaToCode = {

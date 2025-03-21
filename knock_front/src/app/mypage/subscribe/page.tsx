@@ -6,8 +6,9 @@ import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
-import ContentItem from '@/components/MovieItem';
+import { alarmCategoryList, categoryToText, genreToLink } from '@/utils/typeToText';
+import MovieItem from '@/components/MovieItem';
+import PerformItem from '@/components/PerformItem';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -15,8 +16,7 @@ export default function Page() {
 
   const [subList, setSubList] = useState<ISubList>();
   const [category, setCategory] = useState('MOVIE');
-  console.log(alarmCategoryList);
-  console.log(subList);
+
   const getSubList = async () => {
     const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubscribeList`, dispatch, {
       method: 'GET',
@@ -43,14 +43,7 @@ export default function Page() {
         <div className={styles.div__category_wrapper}>
           {alarmCategoryList.map((item) => {
             return (
-              <div
-                key={'btn_' + item}
-                className={category === item ? styles.div__select_category : null}
-                onClick={() => {
-                  console.log(item);
-                  setCategory(item);
-                }}
-              >
+              <div key={'btn_' + item} className={category === item ? styles.div__select_category : null} onClick={() => setCategory(item)}>
                 {categoryToText[item]}
               </div>
             );
@@ -64,9 +57,16 @@ export default function Page() {
         ) : (
           <div className={styles.div__item_wrapper}>
             <h5>총 {subList[category].length}개</h5>
-            {subList[category].map((item) => (
-              <ContentItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />
-            ))}
+            {subList[category].map((item) => {
+              if (category === 'MOVIE') {
+                return <MovieItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />;
+              } else {
+                // 수정
+                return (
+                  <PerformItem key={`${category}_${item.id}`} {...item} genre={genreToLink[item.categoryLevelTwo.nm]} viewBtn={false} />
+                );
+              }
+            })}
           </div>
         )}
       </div>

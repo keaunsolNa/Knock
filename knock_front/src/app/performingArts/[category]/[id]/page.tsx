@@ -14,12 +14,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   ]);
 
   if (!performResponse.ok || !recoResponse.ok) {
-    return <div>페이지 오류</div>;
+    throw new Error(`performingArts/${id} SSR 페이지 API 요청 실패`);
   }
 
   const performDetail: IPerformingArts = await performResponse.json();
   const recoPerform: IPerformingArts[] = await recoResponse.json();
-  console.log(performDetail);
 
   const dateFormat = (date: Date) => {
     date = new Date(date);

@@ -5,6 +5,9 @@
   margin: 0 auto;
   background-color: $white;
 
+  display: flex;
+  flex-direction: column;
+
   @include mobile {
     width: 100%;
   }

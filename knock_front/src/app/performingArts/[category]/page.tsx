@@ -17,7 +17,7 @@ export default async function Page({
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/category?category=${category}`);
 
   if (!response.ok) {
-    return <div>오류 발생</div>;
+    throw new Error(`performingArts/${category} SSR 페이지 API 요청 실패`);
   }
 
   const allPerform: IPerformingArts[] = await response.json();
