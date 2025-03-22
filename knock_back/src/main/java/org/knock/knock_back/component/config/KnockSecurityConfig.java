@@ -20,37 +20,38 @@ import java.util.List;
 /**
  * @author nks
  * @apiNote Spring Security Filter Chain
+ * - 인증 및 인가, 세션 정책, CORS, CSRF, JWT 설정 포함
  */
 @Configuration
 public class KnockSecurityConfig {
 
     /**
-     * SecurityFilterChain 을 통해 Spring Security 인증 Filter 생성한다.
+     * Spring Security Filter Chain 정의
+     * - JWT 인증 기반이므로 Stateless 세션 유지
+     * - /auth, /user, /api 등은 인증 없이 접근 가능
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // HTTP Basic 인증을 사용하지 않도록 비활성화
+                // HTTP Basic 인증 비활성화 및 401 에러 리턴 설정 (HTTPS 설정)
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                // CSRF 보호 비활성화
-                // TODO : 보호하고, Front 요청만 허용
+                // CSRF 보호 비활성화 (JWT 방식이므로 서버에 세션 상태를 저장하지 않기 때문)
                 .csrf((AbstractHttpConfigurer::disable))
                 // CORS 설정
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // 세션을 설정하지 않도록 (매 요청마다 JWT 검증)
+                // 세션을 설정하지 않도록(Stateless) (매 요청마다 JWT 검증)
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // 요청 권한
-                // TODO : 모든 요청 -> URL 명세 확립 후 결정
+                // 엔드포인트별 접근 권한 설정
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/user/**").permitAll()
-                                .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/favicon.ico").permitAll()
-                                .requestMatchers("/api/crawling/**").permitAll()
+                                .requestMatchers("/auth/**").permitAll()            // 로그인, 토큰 인증 관련
+                                .requestMatchers("/user/**").permitAll()            // 사용자 관련
+                                .requestMatchers("/api/**").permitAll()             // API 관련
+                                .requestMatchers("/favicon.ico").permitAll()        // favicon
+                                .requestMatchers("/api/crawling/**").permitAll()    // 크롤링
                                 .anyRequest().authenticated()
                 )
                 // OAuth2 리소스 서버 설정 (JWT 인증 방식 사용)
@@ -58,7 +59,7 @@ public class KnockSecurityConfig {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtKeyConverter()))
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                // JWT 필터 적용 제외 (favicon.ico 포함)
+                // 인증 실패 시 401 반환
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
@@ -67,24 +68,24 @@ public class KnockSecurityConfig {
         return http.build();
     }
 
+    /**
+     * CORS 설정 정의
+     * - 프론트엔드와 도메인이 다른 경우에도 요청 허용
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000", "https://localhost:53287", "https://knock-six.vercel.app", "https://knock-f24a348e0f1e.herokuapp.com/")); // 개발 & HTTPS 환경 대응
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 허용할 HTTP 메서드
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
-        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트에서 쿠키 헤더 접근 가능하게 함
-        configuration.setExposedHeaders(List.of("Authorization", "Bearer")); // 클라이언트에서 쿠키 헤더 접근 가능하게 함
-        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
-        configuration.setAllowCredentials(true); // 자격 증명 허용
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:3000", "https://localhost:53287",   // 로컬 환경
+                                                "https://knock-six.vercel.app",                                                 // 프론트 vercel 배포 환경
+                                                "https://knock-f24a348e0f1e.herokuapp.com/"                                     // 백엔드 heroku 배포 환경
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));       // 허용할 HTTP 메서드
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));      // 허용할 요청 헤더
+        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));        // 클라이언트에서 접근 가능한 응답 헤더
+        configuration.setAllowCredentials(true); // 쿠키와 인증정보 포함 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
