@@ -7,6 +7,7 @@ import { useAppDispatch } from '@/redux/store';
 import { useEffect, useState } from 'react';
 import MovieItem from './MovieItem';
 import PerformItem from './PerformItem';
+import { setModal } from '@/redux/modalSlice';
 
 export default function ContentList({
   itemList,
@@ -25,7 +26,15 @@ export default function ContentList({
       method: 'GET',
     });
 
-    if (!response.ok) return;
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
+    if (!response.ok) {
+      throw new Error('영화 구독목록 조회 API 에러');
+    }
+
     const data = await response.json();
 
     setAlarmList(data);
@@ -39,16 +48,28 @@ export default function ContentList({
       }
     );
 
-    if (!response.ok) return;
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
+    if (!response.ok) {
+      throw new Error('공연예술 구독목록 조회 API 에러');
+    }
+
     const data = await response.json();
     setAlarmList(data);
   };
 
   useEffect(() => {
-    if (category === 'movie') {
-      getMovieSubscribeList();
-    } else if (category === 'performingArts') {
-      getPerformSubscribeList();
+    try {
+      if (category === 'movie') {
+        getMovieSubscribeList();
+      } else if (category === 'performingArts') {
+        getPerformSubscribeList();
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, []);
 

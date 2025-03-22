@@ -5,12 +5,8 @@ function AboutKnock() {
   return (
     <section className={styles.section__about}>
       <p className={styles.span__about}>
-        <span className={styles.span__category}>
-          영화, 뮤지컬,
-          <br />
-          오페라, 전시회
-        </span>
-        를 <br />
+        <span className={styles.span__category}>영화, 공연예술</span>
+        을 <br />
         사랑하는 당신을 위한
         <span className={styles.span__point}> 티켓팅 헬퍼</span>
       </p>
@@ -23,13 +19,7 @@ function AboutKnock() {
   );
 }
 
-export default function Layout({
-  children,
-  modal,
-}: {
-  children: ReactNode;
-  modal: ReactNode;
-}) {
+export default function Layout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   return (
     <div className={styles.container}>
       <AboutKnock />

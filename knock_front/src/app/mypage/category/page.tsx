@@ -6,6 +6,7 @@ import { apiRequest } from '@/utils/api';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
+import { setModal } from '@/redux/modalSlice';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -21,8 +22,13 @@ export default function Page() {
       method: 'GET',
     });
 
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
     if (!response.ok) {
-      notFound();
+      throw new Error('유저 구독 카테고리 조회 API 에러');
     }
 
     const data = await response.text();
@@ -36,7 +42,7 @@ export default function Page() {
     });
 
     if (!response.ok) {
-      return <div>에러</div>;
+      throw new Error('유저 구독 카테고리 변경 API 에러');
     }
   };
 

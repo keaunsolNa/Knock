@@ -13,12 +13,12 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   ]);
 
   if (!movieResponse.ok || !recoResponse.ok) {
-    return <div>페이지 오류</div>;
+    throw new Error(`movie/${id} SSR 페이지 API 요청 실패`);
   }
 
   const movieDetail: IMovie = await movieResponse.json();
   const recoMovies: IMovie[] = await recoResponse.json();
-  console.log(movieDetail);
+
   return (
     <div>
       <div className={styles.img__cover_container} style={{ backgroundImage: `url('${movieDetail.posterBase64}')` }}>
@@ -37,7 +37,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <section className={styles.main_info__wrapper}>
           <div className={styles.div__category_list}>
             {movieDetail.categoryLevelTwo.map((category) => {
-              return <Tag text={category.nm} />;
+              return <Tag key={category.id} text={category.nm} />;
             })}
           </div>
           <h2 className={styles.title}>{movieDetail.movieNm}</h2>

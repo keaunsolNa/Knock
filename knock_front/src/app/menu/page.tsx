@@ -10,8 +10,16 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const smallMenuLinks = [
-  { name: '영화', link: '/movie' },
-  { name: '공연 예술', link: '/performingArts' },
+  { name: '연극', link: 'theater' },
+  { name: '뮤지컬', link: 'musical' },
+  { name: '서양음악(클래식)', link: 'classical' },
+  { name: '한국음악(국악)', link: 'koreanTraditional' },
+  { name: '대중음악', link: 'popularMusic' },
+  { name: '무용(서양/한국무용)', link: 'westernKoreanDance' },
+  { name: '대중무용', link: 'popularDance' },
+  { name: '서커스/마술', link: 'circusMagic' },
+  { name: '복합', link: 'complex' },
+  { name: '기타', link: 'unknown' },
 ];
 
 const itemVariants = {
@@ -38,10 +46,13 @@ const menuVariants = {
 };
 
 export default function Page() {
-  const [fold, setFold] = useState(false);
+  const [fold, setFold] = useState(true);
   const router = useRouter();
 
-  const convertFold = () => setFold((prev) => !prev);
+  const convertFold = (e: React.MouseEvent<SVGElement>) => {
+    e.preventDefault();
+    setFold((prev) => !prev);
+  };
 
   return (
     <div className={styles.container}>
@@ -58,10 +69,20 @@ export default function Page() {
       <nav className={styles.nav__container}>
         {/* 대메뉴 */}
         <li>
-          <div className={styles.div__big_menu}>
-            <span>카테고리</span>
-            {fold ? <FaChevronDown onClick={convertFold} /> : <FaChevronUp onClick={convertFold} />}
-          </div>
+          <Link href={'/movie'}>
+            <div className={styles.div__big_menu}>
+              <span>영화</span>
+            </div>
+          </Link>
+        </li>
+
+        <li>
+          <Link href={'/performingArts'}>
+            <div className={styles.div__big_menu}>
+              <span>공연 예술</span>
+              {fold ? <FaChevronDown onClick={convertFold} /> : <FaChevronUp onClick={convertFold} />}
+            </div>
+          </Link>
 
           {/* 서브메뉴 */}
           <AnimatePresence>
@@ -69,8 +90,15 @@ export default function Page() {
               <motion.ul className={styles.ul__small_menu} initial="closed" animate="open" exit="closed" variants={menuVariants}>
                 {smallMenuLinks.map(({ name, link }, idx) => {
                   return (
-                    <motion.li key={`category_${idx}`} custom={idx} variants={itemVariants} initial="hidden" animate="visible" exit="exit">
-                      <Link href={link}>
+                    <motion.li
+                      key={`performingArts_genre_${idx}`}
+                      custom={idx}
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <Link href={`/performingArts/${link}`}>
                         <div>{name}</div>
                       </Link>
                     </motion.li>

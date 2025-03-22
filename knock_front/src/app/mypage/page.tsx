@@ -8,8 +8,9 @@ import { useAppDispatch } from '@/redux/store';
 import { IUser } from '@/types';
 import { alarmToText, categoryToText, alarmCategoryList } from '@/utils/typeToText';
 import { apiRequest } from '@/utils/api';
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { setModal } from '@/redux/modalSlice';
 
 export default function Page() {
   const dispatch = useAppDispatch();
@@ -32,8 +33,13 @@ export default function Page() {
       method: 'GET',
     });
 
+    if (response.status === 401) {
+      console.log('401에러 발생');
+      dispatch(setModal({ isOpen: true }));
+    }
+
     if (!response.ok) {
-      notFound();
+      throw new Error('유저 데이터 조회 API 에러');
     }
 
     const data: IUser = await response.json();

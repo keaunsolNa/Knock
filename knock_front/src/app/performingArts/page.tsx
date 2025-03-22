@@ -3,19 +3,24 @@ import styles from './page.module.scss';
 import { TiTicket } from 'react-icons/ti';
 import { IPerformingArts } from '@/types';
 import Image from 'next/image';
+import Link from 'next/link';
+import { genreToLink } from '@/utils/typeToText';
 
 export default async function Page() {
-  // const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/upcomingList`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/performingArts/upcomingList`);
 
-  // const data: IPerformingArts[] = await response.json();
+  if (!response.ok) {
+    throw new Error('performingArts SSR 페이지 API 요청 실패');
+  }
+
+  const data: IPerformingArts[] = await response.json();
   const viewPoster = [];
 
-  // for (let i = 0; i < 3; i++) {
-  //   const slice = data.splice(0, 6);
-  //   viewPoster.push(slice);
-  // }
-  // console.log(response);
-  // console.log(data);
+  for (let i = 0; i < 3; i++) {
+    const slice = data.splice(0, 6);
+    viewPoster.push(slice);
+  }
+
   return (
     <div className={styles.container}>
       <CategoryNav />
@@ -34,9 +39,9 @@ export default async function Page() {
             {viewPoster.map((array: IPerformingArts[]) => (
               <div className={styles.div__poster_list}>
                 {array.map((performance) => (
-                  <div key={performance.id}>
+                  <Link href={`/performingArts/${genreToLink[performance.categoryLevelTwo.nm]}/${performance.id}`} key={performance.id}>
                     <Image src={performance.poster} width={500} height={700} alt={`${performance.name}의 포스터 이미지`} />
-                  </div>
+                  </Link>
                 ))}
               </div>
             ))}
