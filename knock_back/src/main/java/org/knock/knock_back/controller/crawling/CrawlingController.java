@@ -1,5 +1,6 @@
 package org.knock.knock_back.controller.crawling;
 
+import org.knock.knock_back.repository.performingArts.KOPISRepository;
 import org.knock.knock_back.service.crawling.common.CrawlingService;
 import org.knock.knock_back.service.crawling.performingArts.KOPIS;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,14 @@ public class CrawlingController {
     private final KOFICService koficService;
     private final KOPIS kopis;
     private final CrawlingService crawlingService;
+    private final KOPISRepository kopisRepository;
 
     @Autowired
-    public CrawlingController(KOFICService koficService, KOPIS kopis, CrawlingService crawlingService) {
+    public CrawlingController(KOFICService koficService, KOPIS kopis, CrawlingService crawlingService, KOPISRepository kopisRepository) {
         this.koficService = koficService;
         this.kopis = kopis;
         this.crawlingService = crawlingService;
+        this.kopisRepository = kopisRepository;
     }
 
     /**
@@ -36,7 +39,8 @@ public class CrawlingController {
     public ResponseEntity<String> crawl(@PathVariable String source) {
 
         if (source.equals("KOPIS")) {
-            kopis.requestAPI();
+
+            kopis.requestAPIAsync().thenAccept(kopisRepository::saveAll);
             return ResponseEntity.ok("Crawling started for " + source);
         }
 
