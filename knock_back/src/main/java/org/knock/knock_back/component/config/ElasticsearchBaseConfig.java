@@ -1,12 +1,26 @@
 package org.knock.knock_back.component.config;
 
-import lombok.NonNull;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * @author nks
@@ -15,28 +29,54 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "org.knock.knock_back.*")
 @ComponentScan(basePackages = {"org.knock.knock_back.*"})
-public class ElasticsearchBaseConfig extends ElasticsearchConfiguration {
+public class ElasticsearchBaseConfig {
 
     @Value("${elasticsearch.host}")
     private String host;
 
-    @Value("${elasticsearch.port}")
-    private int port;
+    @Bean
+    public RestClient getRestClient() {
 
-    @Value("${elasticsearch.id}")
-    private String id;
+        try {
 
-    @Value("${elasticsearch.password}")
-    private String password;
+            // Bonsai URL에서 id와 password 추출
+            String sanitizedHost = host.startsWith("http") ? host : "https://" + host;
+            URI uri = new URI(sanitizedHost);
+            String userInfo = uri.getUserInfo();
+            String host = uri.getHost();
+            int port = uri.getPort() == -1 ? 443 : uri.getPort(); // 기본 포트 설정
 
-    @Override
-    public @NonNull ClientConfiguration clientConfiguration() {
+            // 인증 정보가 있다면 Authorization 헤더 추가
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            if (userInfo != null && userInfo.contains(":")) {
+                String[] credentials = userInfo.split(":");
+                credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(credentials[0], credentials[1]));
+            }
 
-        return ClientConfiguration.builder()
-                .connectedTo(host + ":" + port)
-                .withBasicAuth(id, password)
-                .withSocketTimeout(20000)
-                .withConnectTimeout(20000)
-                .build();
+            return RestClient.builder(new HttpHost(host, port, "https"))
+                    .setHttpClientConfigCallback(httpClientBuilder -> {
+                        httpClientBuilder.disableAuthCaching();
+                        httpClientBuilder.setDefaultHeaders(List.of(
+                                new BasicHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json")
+                        ));
+                        httpClientBuilder.addInterceptorLast((HttpResponseInterceptor)
+                                (response, context) -> response.addHeader("X-Elastic-Product", "Elasticsearch"));
+                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                    }).build();
+
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Invalid Elasticsearch URI: " + host, e);
+        }
+
+    }
+
+    @Bean
+    public ElasticsearchTransport getElasticsearchTransport() {
+        return new RestClientTransport(getRestClient(), new JacksonJsonpMapper());
+    }
+
+    @Bean
+    public ElasticsearchClient getElasticsearchClient() {
+        return new ElasticsearchClient(getElasticsearchTransport());
     }
 }

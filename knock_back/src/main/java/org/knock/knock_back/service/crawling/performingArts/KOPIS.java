@@ -139,7 +139,7 @@ public class KOPIS {
         HttpURLConnection conn = null;
         try
         {
-             conn = (HttpURLConnection) requestURL.openConnection();
+            conn = (HttpURLConnection) requestURL.openConnection();
             conn.setRequestMethod("GET");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
@@ -179,7 +179,7 @@ public class KOPIS {
             JSONObject performanceJson = performanceList.getJSONObject(i);
 
             String mt20id = performanceJson.optString("mt20id");
-            if (kopisRepository.existsById(mt20id))
+            if (kopisRepository.existsByCode(mt20id))
             {
                 isDuplicate = true;
                 continue;
@@ -263,47 +263,42 @@ public class KOPIS {
 
             performance.setRelates(relates);
 
-            String[] styurls = null;
 
             Object styUrlsObject = detailJson.opt("styurls");
+            List<String> styUrlList = new ArrayList<>();
 
-            if (styUrlsObject instanceof JSONArray styUrlsArray) {
-                // 배열인데 내부 요소가 문자열이라면 JSON 배열로 변환
-                if (styUrlsArray.length() == 1 && styUrlsArray.optString(0).startsWith("[")) {
-                    try {
-                        JSONArray parsedArray = new JSONArray(styUrlsArray.optString(0));
-                        styurls = new String[parsedArray.length()];
-                        for (int i = 0; i < parsedArray.length(); i++) {
-                            styurls[i] = parsedArray.optString(i);
+            if (styUrlsObject instanceof JSONObject jsonObj) {
+                Object styurlRaw = jsonObj.opt("styurl");
+
+                // null 처리
+                if (styurlRaw == null || JSONObject.NULL.equals(styurlRaw)) logger.info("styurl is null, skipping...");
+
+                else {
+
+                    JSONArray urlArray = null;
+
+                    // JSONArray인지 String인지 판단
+                    if (styurlRaw instanceof JSONArray) urlArray = (JSONArray) styurlRaw;
+                    else if (styurlRaw instanceof String)
+                    {
+                        urlArray = new JSONArray();
+                        urlArray.put(styurlRaw);
+                    }
+
+                    // 유효한 URL 배열이라면 styUrlList 추가
+                    if (urlArray != null)
+                    {
+                        for (int i = 0; i < urlArray.length(); i++)
+                        {
+                            String url = urlArray.optString(i, null);
+                            if (url == null || url.isEmpty()) continue;
+                            styUrlList.add(url);
                         }
-                    } catch (Exception e) {
-                        logger.debug(e.getMessage());
                     }
-                } else {
-                    // 일반적인 JSONArray 처리
-                    styurls = new String[styUrlsArray.length()];
-                    for (int i = 0; i < styUrlsArray.length(); i++) {
-                        styurls[i] = styUrlsArray.optString(i);
-                    }
-                }
-            } else if (styUrlsObject instanceof String singleUrl) {
-                // 단일 URL이 문자열로 존재하는 경우
-                if (singleUrl.startsWith("[") && singleUrl.endsWith("]")) {
-                    try {
-                        JSONArray parsedArray = new JSONArray(singleUrl);
-                        styurls = new String[parsedArray.length()];
-                        for (int i = 0; i < parsedArray.length(); i++) {
-                            styurls[i] = parsedArray.optString(i);
-                        }
-                    } catch (Exception e) {
-                        logger.debug(e.getMessage());
-                    }
-                } else {
-                    styurls = new String[]{singleUrl};
                 }
             }
 
-            performance.setStyurls(styurls);
+            performance.setStyurls(styUrlList.toArray(new String[0]));
 
             performance.setCategoryLevelOne(CategoryLevelOne.PERFORMING_ARTS);
             performance.setCategoryLevelTwo(categoryLevelTwoRepository.findByNmAndParentNm(detailJson.optString("genrenm"), CategoryLevelOne.PERFORMING_ARTS));

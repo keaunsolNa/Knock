@@ -13,4 +13,5 @@ import org.springframework.stereotype.Repository;
 public interface KOPISRepository extends ElasticsearchRepository<KOPIS_INDEX, String>
 {
     Iterable<KOPIS_INDEX> findByPrfState(PrfState prfState);
+    boolean existsByCode(String code);
 }
