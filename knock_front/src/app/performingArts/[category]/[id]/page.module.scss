@@ -121,10 +121,27 @@
   gap: 20px;
   overflow-x: auto; /* 가로 스크롤 활성화 */
   scroll-snap-type: x mandatory; /* 스크롤할 때 부드럽게 요소에 맞춤 */
-  scrollbar-width: none; /* 파이어폭스 스크롤바 숨김 */
 
   &::-webkit-scrollbar {
-    display: none; /* 크롬, 사파리 스크롤바 숨김 */
+    height: 8px;
+    background-color: $gray-light;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $orange;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* 스크롤바 배경 */
+    border-radius: 10px;
+  }
+
+  @include mobile {
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
   }
 
   img {

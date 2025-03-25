@@ -36,8 +36,8 @@ export default async function Page() {
 
         <div className={styles.div__view_box}>
           <div className={styles.div__scroll_box}>
-            {viewPoster.map((array: IPerformingArts[]) => (
-              <div className={styles.div__poster_list}>
+            {viewPoster.map((array: IPerformingArts[], idx) => (
+              <div className={styles.div__poster_list} key={`posterBox_${idx}`}>
                 {array.map((performance) => (
                   <Link href={`/performingArts/${genreToLink[performance.categoryLevelTwo.nm]}/${performance.id}`} key={performance.id}>
                     <Image src={performance.poster} width={500} height={700} alt={`${performance.name}의 포스터 이미지`} />
