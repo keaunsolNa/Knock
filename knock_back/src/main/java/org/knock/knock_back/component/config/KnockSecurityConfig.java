@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
@@ -50,8 +48,8 @@ public class KnockSecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()            // 로그인, 토큰 인증 관련
                                 .requestMatchers("/user/**").permitAll()            // 사용자 관련
                                 .requestMatchers("/api/**").permitAll()             // API 관련
+                                .requestMatchers("/message/**").permitAll()         // FCM 관련
                                 .requestMatchers("/favicon.ico").permitAll()        // favicon
-                                .requestMatchers("/api/crawling/**").permitAll()    // 크롤링
                                 .anyRequest().authenticated()
                 )
                 // OAuth2 리소스 서버 설정 (JWT 인증 방식 사용)

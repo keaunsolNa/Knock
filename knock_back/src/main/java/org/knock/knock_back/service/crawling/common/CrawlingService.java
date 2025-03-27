@@ -19,9 +19,12 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -344,13 +347,40 @@ public class CrawlingService extends AbstractCrawlingService {
         }
     }
 
-    // 포스터 이미지 가져오기
-    private void setPoster(Element element, MOVIE_DTO dto) {
+    // 포스터 이미지 가져온 뒤 파일 생성, base64 encoding 후 저장
+    private void setPoster(Element element, MOVIE_DTO dto)
+    {
+
         Elements imgElement = element.select(currentConfig.getPosterQuery());
-        if (!imgElement.isEmpty()) {
+        // TODO : 이미지 없을 때 이미지 base64 파일
+        String base64File;
+
+        if (!imgElement.isEmpty())
+        {
             String srcPath = Objects.requireNonNull(imgElement.first()).attr(currentConfig.getPosterExtract());
+            String outPath = "//";
             if (srcPath.contains("//") && currentConfig.getName().equals("LOTTE")) { srcPath = srcPath.replace("//", "/"); }
-            dto.setPosterBase64(srcPath);
+
+            try {
+                InputStream in = new URL(srcPath).openStream();
+                OutputStream out = new FileOutputStream(outPath);
+                byte[] buffer = new byte[4096];
+                int n;
+
+                while ((n = in.read(buffer)) != -1)
+                {
+                    out.write(buffer, 0, n);
+                }
+
+                byte[] fileContent = Files.readAllBytes(new File(outPath).toPath());
+
+                base64File = Base64.getEncoder().encodeToString(fileContent);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            dto.setPosterBase64(base64File);
         }
     }
 

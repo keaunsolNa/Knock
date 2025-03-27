@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,17 +54,27 @@ public class KOPIS {
 
     @Async
     public CompletableFuture<List<KOPIS_INDEX>> requestAPIAsync() {
+
         logger.info("Running in thread: {}", Thread.currentThread().getName());
 
         categoryLevelTwoList = new HashMap<>();
         categoryLevelTwoRepository.findAllByParentNm(CategoryLevelOne.PERFORMING_ARTS)
                 .ifPresent(result -> result.forEach(cat -> categoryLevelTwoList.put(cat.getNm(), cat)));
 
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1).withMonth(1).withDayOfMonth(1);
+
+        // 원하는 형식으로 포맷터 정의 (yyyyMMdd)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        // 포맷을 적용하여 날짜를 문자열로 변환
+        String formattedDate = oneYearAgo.format(formatter);
+
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("service", AUTH_KEY);
-        paramMap.put("stdate", "20200101");
+        paramMap.put("stdate", formattedDate);
         paramMap.put("eddate", "29991231");
-        paramMap.put("rows", "80");
+        paramMap.put("rows", "100");
         paramMap.put("cpage", "1");
 
         List<KOPIS_INDEX> allPerformances = new ArrayList<>();
@@ -76,7 +88,7 @@ public class KOPIS {
 
             if (performanceList == null || performanceList.isEmpty()) {
                 paramMap.put("cpage", String.valueOf(currentPage + 1));
-                continue;
+                break;
             }
 
             List<KOPIS_INDEX> performances = processPerformanceList(performanceList);
@@ -84,6 +96,9 @@ public class KOPIS {
 
             paramMap.put("cpage", String.valueOf(currentPage + 1));
             logger.info("Page {} processed.", currentPage);
+
+            kopisRepository.saveAll(performances);
+
         }
 
         logger.info("KOPIS 데이터 수집 완료");
