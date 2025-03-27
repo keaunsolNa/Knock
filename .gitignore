@@ -339,6 +339,3 @@ frontend/package-lock.json
 /build/*
 /.gradle/*
 /knock_back/src/main/resources/keystore.p12
-
-!knock_back-0.0.1-SNAPSHOT.jar
-!build/libs/knock_back-0.0.1-SNAPSHOT.jar
