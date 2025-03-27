@@ -8,16 +8,18 @@ import styles from './page.module.scss';
 import { FadeLoader } from 'react-spinners';
 import { useRouter } from 'next/navigation';
 
-export default function SplashScreen() {
+export default function Page() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isLoading, accessToken, redirectUrl } = useSelector((state: RootState) => state.auth);
   const [isFirst, setIsFirst] = useState(true);
 
+  const checkAuth = async () => {
+    await dispatch(refreshAccessToken());
+  };
+
   useEffect(() => {
-    const checkAuth = async () => {
-      await dispatch(refreshAccessToken());
-    };
+    navigator.serviceWorker.register('firebase-messaging-sw.js'); // 서비스 워커 등록
     checkAuth();
   }, []);
 
