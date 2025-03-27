@@ -339,3 +339,4 @@ frontend/package-lock.json
 /build/*
 /.gradle/*
 /knock_back/src/main/resources/keystore.p12
+/knock_back/src/main/resources/knock_firebase.json
