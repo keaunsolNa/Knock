@@ -8,6 +8,9 @@ import { useAppDispatch } from '@/redux/store';
 import { setAuth } from '@/redux/authSlice';
 import { VscDebugRestart } from 'react-icons/vsc';
 import Link from 'next/link';
+import { getToken } from 'firebase/messaging';
+import { messaging } from '@/utils/firebaseConfig';
+import { apiRequest } from '@/utils/api';
 
 export default function Page() {
   const router = useRouter();
@@ -34,6 +37,7 @@ export default function Page() {
     const data = await response.json();
 
     dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
+    await handleDeviceToken();
     router.push(data.redirectUrl);
   };
 
@@ -69,8 +73,35 @@ export default function Page() {
     }
 
     const data = await response.json();
-    dispatch(setAuth(data));
+    dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
+    await handleDeviceToken();
     router.push(data.redirectUrl);
+  };
+
+  const handleDeviceToken = async () => {
+    if (Notification.permission !== 'granted') return;
+
+    try {
+      const currentToken = await getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY });
+
+      if (currentToken) {
+        const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/saveToken`, dispatch, {
+          method: 'POST',
+          body: JSON.stringify({
+            targetToken: currentToken,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('토큰 저장 실패');
+        }
+      } else {
+        alert('푸시 알림 토큰을 가져오는 데 실패했습니다.');
+      }
+    } catch (err) {
+      alert('토큰을 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.log(err);
+    }
   };
 
   useEffect(() => {

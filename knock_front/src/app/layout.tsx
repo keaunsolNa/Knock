@@ -1,5 +1,6 @@
 import { Providers } from '@/redux/provider';
 import './globals.scss';
+import '@/utils/firebaseConfig';
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_KR, Anton, Roboto } from 'next/font/google';
 import styles from './layout.module.scss';
@@ -9,13 +10,14 @@ export const metadata: Metadata = {
   title: 'KNOCK',
   description: '영화, 공연예술을 사랑하는 당신을 위한 티켓팅 헬퍼',
   manifest: '/manifest.json',
-  viewport: 'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
   icons: [{ rel: 'icon', url: '/icons/icon512_maskable.png', sizes: '512x512' }],
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  minimumScale: 1,
   initialScale: 1,
+  width: 'device-width',
+  viewportFit: 'cover',
 };
 
 const notoSansKR = Noto_Sans_KR({
