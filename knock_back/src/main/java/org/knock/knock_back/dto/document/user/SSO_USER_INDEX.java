@@ -83,7 +83,7 @@ public class SSO_USER_INDEX {
         this.loginType = loginType;
         this.role = role;
         this.favoriteLevelOne = CategoryLevelOne.MOVIE;
-        this.alarmTimings = new AlarmTiming[] { AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR, AlarmTiming.ZERO_HOUR };
+        this.alarmTimings = new AlarmTiming[] { AlarmTiming.NONE, AlarmTiming.NONE, AlarmTiming.NONE, AlarmTiming.NONE };
         this.lastLoginTime = new Timestamp(System.currentTimeMillis());
         this.subscribeList = new HashMap<>();
         subscribeList.put(CategoryLevelOne.MOVIE, new HashSet<>());
