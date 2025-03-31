@@ -23,6 +23,7 @@ export interface IMovie {
   openingTime: string;
   reservationLink: string[];
   posterBase64: string;
+  img: string;
   directors: string[];
   actors: string[];
   companyNm: string[];

@@ -5,17 +5,15 @@ export const categoryToText = {
   PERFORMING_ARTS: '공연 예술',
 };
 
-export const alarmSettingList = ['ONE_HOUR', 'THR_HOUR', 'SIX_HOUR', 'TWE_HOUR', 'ONE_DAY', 'THR_DAY', 'SEV_DAY'];
+export const alarmSettingList = ['ZERO_DAY', 'ONE_DAY', 'THR_DAY', 'SEV_DAY', 'TEN_DAY'];
 
 export const alarmToText = {
-  ZERO_HOUR: '설정안함',
-  ONE_HOUR: '1시간 전',
-  THR_HOUR: '3시간 전',
-  SIX_HOUR: '6시간 전',
-  TWE_HOUR: '12시간 전',
+  NONE: '설정안함',
+  ZERO_DAY: '당일',
   ONE_DAY: '1일 전',
   THR_DAY: '3일 전',
   SEV_DAY: '7일 전',
+  TEN_DAY: '10일 전',
 };
 
 export const performingArtsGenreList = [

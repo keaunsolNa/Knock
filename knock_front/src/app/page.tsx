@@ -19,7 +19,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    navigator.serviceWorker.register('firebase-messaging-sw.js'); // 서비스 워커 등록
+    navigator.serviceWorker.register('firebase-messaging-sw.js').catch((err) => console.error(err));
     checkAuth();
   }, []);
 

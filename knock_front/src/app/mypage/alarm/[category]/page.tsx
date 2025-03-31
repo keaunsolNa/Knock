@@ -3,7 +3,7 @@
 import { apiRequest } from '@/utils/api';
 import styles from './page.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
-import { notFound, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/redux/store';
 import { alarmSettingList, alarmCategoryList, categoryToText, alarmToText } from '@/utils/typeToText';
@@ -18,9 +18,9 @@ export default function Page() {
   const [isFirst, setIsFirst] = useState(true);
 
   const handleToggleClick = () => {
-    let chgVal = 'ZERO_HOUR';
-    if (alarm[alarmIdx] === 'ZERO_HOUR') {
-      chgVal = 'ONE_HOUR';
+    let chgVal = 'NONE';
+    if (alarm[alarmIdx] === 'NONE') {
+      chgVal = 'ZERO_DAY';
     }
     setAlarm((prev) => {
       const newAlarm = [...prev];
@@ -87,8 +87,8 @@ export default function Page() {
       {alarm && (
         <div className={styles.container}>
           <div className={styles.div__about}>
-            회원님이 설정한 시간에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이 다가오면 알림을 보내드립니다. <br /> <br />
-            원하는 시간을 설정하고, 중요한 순간을 놓치지 마세요!
+            회원님이 설정한 알림에 따라, 관심 있는 콘텐츠의 개봉/티켓 오픈일이 다가오면 알림을 보내드립니다. <br /> <br />
+            원하는 날짜를 설정하고, 중요한 순간을 놓치지 마세요! <br /> 푸시(push) 알림은 9시에 전송됩니다.
           </div>
 
           <form className={styles.form__setting}>
@@ -98,8 +98,8 @@ export default function Page() {
                 className={styles.div__toggle_bar}
                 onClick={handleToggleClick}
                 style={{
-                  justifyContent: alarm[alarmIdx] !== 'ZERO_HOUR' ? 'flex-end' : 'flex-start',
-                  backgroundColor: alarm[alarmIdx] !== 'ZERO_HOUR' ? '#34c759' : '#d9d9da',
+                  justifyContent: alarm[alarmIdx] !== 'NONE' ? 'flex-end' : 'flex-start',
+                  backgroundColor: alarm[alarmIdx] !== 'NONE' ? '#34c759' : '#d9d9da',
                 }}
               >
                 <motion.div
@@ -115,7 +115,7 @@ export default function Page() {
             </div>
 
             <AnimatePresence>
-              {alarm[alarmIdx] !== 'ZERO_HOUR' && (
+              {alarm[alarmIdx] !== 'NONE' && (
                 <motion.div className={styles.div__radio_box} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {alarmSettingList.map((setting, idx) => {
                     if (category === 'movie') {

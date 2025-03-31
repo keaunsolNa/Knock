@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   description: '영화, 공연예술을 사랑하는 당신을 위한 티켓팅 헬퍼',
   manifest: '/manifest.json',
   icons: [{ rel: 'icon', url: '/icons/icon512_maskable.png', sizes: '512x512' }],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 export const viewport: Viewport = {
