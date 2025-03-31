@@ -73,6 +73,9 @@ public class SSO_USER_INDEX {
     @Enumerated(EnumType.STRING)
     private Map<CategoryLevelOne, Set<String>> subscribeList;    // 구독 목록
 
+    @Field(type =FieldType.Object)
+    private Set<String> deviceToken;
+
     @Builder
     public SSO_USER_INDEX(String id, String name, String email, String nickName, String picture, SocialLoginType loginType, Role role) {
         this.id = id;
