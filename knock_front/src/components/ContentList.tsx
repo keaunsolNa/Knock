@@ -39,6 +39,7 @@ export default function ContentList({
 
     setAlarmList(data);
   };
+
   const getPerformSubscribeList = async () => {
     const response = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/performingArts/${genre}/getSubscribeList`,
@@ -75,25 +76,17 @@ export default function ContentList({
 
   return (
     <div className={styles.container}>
-      {category === 'movie'
-        ? alarmList
-          ? itemList.map((movie) => {
-              if (alarmList.length > 0) {
-                return <MovieItem key={movie.movieId} {...movie} setAlarm={alarmList.includes(movie.movieId)} viewBtn={true} />;
-              } else {
-                return <MovieItem key={movie.movieId} {...movie} setAlarm={false} viewBtn={true} />;
-              }
-            })
-          : itemList.map((movie) => <MovieItem key={movie.movieId} {...movie} viewBtn={true} />)
-        : alarmList
-          ? itemList.map((perform) => {
-              if (alarmList.length > 0) {
-                return <PerformItem key={perform.id} {...perform} genre={genre} setAlarm={alarmList.includes(perform.id)} viewBtn={true} />;
-              } else {
-                return <PerformItem key={perform.id} {...perform} genre={genre} setAlarm={false} viewBtn={true} />;
-              }
-            })
-          : itemList.map((perform) => <PerformItem key={perform.id} {...perform} genre={genre} viewBtn={true} />)}
+      {itemList.length > 0 ? (
+        itemList.map((item) =>
+          category === 'movie' ? (
+            <MovieItem key={item.movieId} {...item} setAlarm={alarmList?.includes(item.movieId)} viewBtn={true} />
+          ) : (
+            <PerformItem key={item.id} {...item} genre={genre} setAlarm={alarmList?.includes(item.id)} viewBtn={true} />
+          )
+        )
+      ) : (
+        <div className={styles.div__no_item}>조회된 컨텐츠가 없습니다</div>
+      )}
     </div>
   );
 }

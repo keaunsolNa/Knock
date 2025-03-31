@@ -46,7 +46,7 @@ const menuVariants = {
 };
 
 export default function Page() {
-  const [fold, setFold] = useState(true);
+  const [fold, setFold] = useState(false);
   const router = useRouter();
 
   const convertFold = (e: React.MouseEvent<SVGElement>) => {

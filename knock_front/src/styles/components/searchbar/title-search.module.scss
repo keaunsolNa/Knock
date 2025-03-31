@@ -47,6 +47,7 @@
   background-color: $gray-light;
   border-radius: 50%;
   border: none;
+  cursor: pointer;
 
   svg {
     @include svg-square(20px, 20px);

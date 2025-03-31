@@ -94,9 +94,8 @@ export default function MovieItem(props: IMovieProps) {
           <div>
             <p className={styles.p__date}>{`${props.openingTime}${props.openingTime !== '개봉 예정' ? ' 개봉' : ''}`}</p>
             <div className={styles.div__category_list}>
-              {props.categoryLevelTwo.slice(0, 2).map((category) => (
-                <div key={`${props.movieId}_${category.id}`}>{category.nm}</div>
-              ))}
+              {props.categoryLevelTwo &&
+                props.categoryLevelTwo.slice(0, 2).map((category) => <div key={`${props.movieId}_${category.id}`}>{category.nm}</div>)}
             </div>
           </div>
           <p className={styles.p__title}>{props.movieNm}</p>
