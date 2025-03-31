@@ -20,7 +20,7 @@ export default function Page() {
   const handleToggleClick = () => {
     let chgVal = 'NONE';
     if (alarm[alarmIdx] === 'NONE') {
-      chgVal = 'ONE_DAY';
+      chgVal = 'ZERO_DAY';
     }
     setAlarm((prev) => {
       const newAlarm = [...prev];
