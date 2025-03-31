@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: [{ rel: 'icon', url: '/icons/icon512_maskable.png', sizes: '512x512' }],
   appleWebApp: {
+    capable: true,
     statusBarStyle: 'black-translucent',
   },
 };
