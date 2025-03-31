@@ -5,10 +5,11 @@ export const categoryToText = {
   PERFORMING_ARTS: '공연 예술',
 };
 
-export const alarmSettingList = ['ONE_DAY', 'THR_DAY', 'SEV_DAY', 'TEN_DAY'];
+export const alarmSettingList = ['ZERO_DAY', 'ONE_DAY', 'THR_DAY', 'SEV_DAY', 'TEN_DAY'];
 
 export const alarmToText = {
   NONE: '설정안함',
+  ZERO_DAY: '당일',
   ONE_DAY: '1일 전',
   THR_DAY: '3일 전',
   SEV_DAY: '7일 전',
