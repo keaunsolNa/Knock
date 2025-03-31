@@ -11,6 +11,9 @@ html {
   @include mobile {
     font-size: 14px;
     font-weight: $font-default;
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-left: env(safe-area-inset-left);
   }
   @include tablet {
     font-size: 16px;

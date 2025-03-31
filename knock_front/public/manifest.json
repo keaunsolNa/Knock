@@ -5,7 +5,7 @@
   "background_color": "#ffffff",
   "theme_color": "transparent",
   "orientation": "portrait",
-  "display": "standalone",
+  "display": "fullscreen",
   "dir": "auto",
   "lang": "ko-KR",
   "start_url": "/",
