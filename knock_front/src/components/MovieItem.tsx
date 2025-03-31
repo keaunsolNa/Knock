@@ -78,14 +78,22 @@ export default function MovieItem(props: IMovieProps) {
     setIsLoading(false);
   };
 
+  const getPosterImg = () => {
+    if (!props.posterBase64) {
+      return props.img ?? '/images/noImage.png';
+    } else {
+      return props.posterBase64;
+    }
+  };
+
   return (
     <Link rel="prefetch" href={`/movie/${props.movieId}`}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
           <Image
-            src={props.posterBase64 ?? '/images/noImage.png'}
+            src={getPosterImg()}
             fill
-            alt={props.posterBase64 ? `${props.movieNm} 포스터` : `${props.movieNm} 포스터 대체 이미지`}
+            alt={props.posterBase64 || props.img ? `${props.movieNm} 포스터` : `${props.movieNm} 포스터 대체 이미지`}
             sizes="100%"
           />
         </div>

@@ -19,13 +19,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const movieDetail: IMovie = await movieResponse.json();
   const recoMovies: IMovie[] = await recoResponse.json();
 
+  const getPosterImg = () => {
+    if (!movieDetail.posterBase64) {
+      return movieDetail.img ?? '/images/noImage.png';
+    } else {
+      return movieDetail.posterBase64;
+    }
+  };
+
   return (
     <div>
-      <div className={styles.img__cover_container} style={{ backgroundImage: `url('${movieDetail.posterBase64}')` }}>
+      <div className={styles.img__cover_container} style={{ backgroundImage: `url('${getPosterImg()}')` }}>
         <Image
           className={styles.img__poster}
-          src={movieDetail.posterBase64 ?? '/images/noImage.png'}
-          alt={movieDetail.posterBase64 ? `${movieDetail.movieNm} 포스터` : `${movieDetail.movieNm} 포스터 대체 이미지`}
+          src={getPosterImg()}
+          alt={movieDetail.posterBase64 || movieDetail.img ? `${movieDetail.movieNm} 포스터` : `${movieDetail.movieNm} 포스터 대체 이미지`}
           width={300}
           height={400}
           priority
