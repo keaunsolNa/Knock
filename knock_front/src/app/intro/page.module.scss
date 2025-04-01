@@ -2,7 +2,8 @@
   flex-grow: 1;
   width: 100%;
 
-  padding: calc(env(safe-area-inset-top) + 30px) env(safe-area-inset-right) 30px env(safe-area-inset-left);
+  padding: calc(env(safe-area-inset-top) + 30px) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 30px)
+    env(safe-area-inset-left);
 
   // padding-top: 30px;
   // padding-bottom: 30px;
