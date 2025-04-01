@@ -23,6 +23,7 @@
 .profile__editBox {
   flex-grow: 1;
   display: grid;
+  max-width: 100%; /* 부모 크기 이상으로 커지는 것 방지 */
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 0.7fr;
   justify-content: space-between;
@@ -34,7 +35,6 @@
   padding: 5px 10px;
   font-family: $font-family;
   color: $gray-darker;
-  font-size: 1.1rem;
 }
 
 .input__nickname:disabled {
@@ -48,13 +48,14 @@
 .div__btn_wrapper {
   margin-top: 8px;
   width: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   div {
     @include flexbox-center(45%, 100%);
-    font-family: $font-family;
+    max-width: 45%;
     font-weight: $font-thin;
     border-radius: 5px;
     color: $gray-darker;

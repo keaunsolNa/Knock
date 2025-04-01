@@ -36,13 +36,11 @@ export default function Page() {
   }, [isLoading]);
 
   return (
-    <>
-      <div className={styles.container}>
-        <img src="/logo/knock.jpg" alt="App Icon" />
-      </div>
+    <div className={styles.container}>
+      <img src="/logo/knock.jpg" alt="App Icon" />
       <div className={styles.loading}>
         <FadeLoader color="#f45f41" radius={2} />
       </div>
-    </>
+    </div>
   );
 }

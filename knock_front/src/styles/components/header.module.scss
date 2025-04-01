@@ -1,6 +1,4 @@
 .container {
-  // padding: calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 20px) calc(env(safe-area-inset-bottom) + 10px)
-  //   calc(env(safe-area-inset-left) + 20px);
   width: 100%;
   height: 60px;
 
@@ -8,7 +6,7 @@
 
   position: sticky;
   z-index: $header;
-  top: 0px;
+  top: env(safe-area-inset-top);
 
   display: flex;
   justify-content: space-between;
