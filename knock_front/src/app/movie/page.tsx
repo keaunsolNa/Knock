@@ -16,7 +16,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
   const allMovies: IMovie[] = await response.json();
 
   const categoryFilter = (movieList: IMovie[]) => {
-    return movieList.filter((movie) => movie.categoryLevelTwo.some(({ id }) => id === filter));
+    return movieList.filter((movie) => movie.categoryLevelTwo?.some(({ id }) => id === filter));
   };
 
   const titleFilter = (movieList: IMovie[]) => {
