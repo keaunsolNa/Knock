@@ -21,10 +21,12 @@ function AboutKnock() {
 
 export default function Layout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   return (
-    <div className={styles.container}>
-      <AboutKnock />
-      {children}
+    <>
+      <div className={styles.container}>
+        <AboutKnock />
+        {children}
+      </div>
       {modal}
-    </div>
+    </>
   );
 }

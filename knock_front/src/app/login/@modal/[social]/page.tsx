@@ -38,5 +38,5 @@ export default function Page() {
     }
   }, [social]);
 
-  return null;
+  return <></>;
 }

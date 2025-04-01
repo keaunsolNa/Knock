@@ -2,7 +2,7 @@
   width: 100%;
   position: sticky;
   z-index: $search-bar;
-  top: 60px;
+  top: calc(env(safe-area-inset-top) + 60px);
 
   padding: $padding-page;
   padding-top: 20px;
