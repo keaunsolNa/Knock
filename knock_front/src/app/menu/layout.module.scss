@@ -1,4 +1,5 @@
 .container {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-left);
   flex-grow: 1;
   background-color: $beige;
 }

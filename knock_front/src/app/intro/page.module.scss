@@ -1,8 +1,11 @@
 .container {
   flex-grow: 1;
   width: 100%;
-  padding-top: 30px;
-  padding-bottom: 30px;
+
+  padding: calc(env(safe-area-inset-top) + 30px) env(safe-area-inset-right) 30px env(safe-area-inset-left);
+
+  // padding-top: 30px;
+  // padding-bottom: 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
