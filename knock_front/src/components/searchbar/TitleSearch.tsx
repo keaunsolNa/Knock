@@ -43,14 +43,14 @@ export default function TitleSearch({ link, searchTitle, searchFilter }: ISearch
     <div className={styles.container}>
       <form onSubmit={submitHandler}>
         <input value={title} onChange={(e) => setTitle(e.currentTarget.value)} placeholder="제목으로 검색해보세요" />
-        <button onClick={routeMove}>
+        <div onClick={routeMove}>
           <IoSearchSharp />
-        </button>
+        </div>
       </form>
 
-      <button className={searchTitle || searchFilter ? resetBtnFiltered : resetBtnDefault} onClick={resetBtnOnClick}>
+      <div className={searchTitle || searchFilter ? resetBtnFiltered : resetBtnDefault} onClick={resetBtnOnClick}>
         <GrPowerReset />
-      </button>
+      </div>
     </div>
   );
 }
