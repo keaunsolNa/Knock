@@ -72,9 +72,10 @@ export default function Page() {
       throw new Error(`${response.status} : ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data: { accessToken: { value: string }; redirectUrl: string } = await response.json();
     dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
     await handleDeviceToken();
+
     router.push(data.redirectUrl);
   };
 
