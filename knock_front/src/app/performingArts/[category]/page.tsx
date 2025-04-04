@@ -21,7 +21,6 @@ export default async function Page({
   }
 
   const allPerform: IPerformingArts[] = await response.json();
-
   const categoryFilter = (performList: IPerformingArts[]) => {
     return performList.filter((perform) => areaToCode[perform.area] === filter[5]);
   };

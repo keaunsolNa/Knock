@@ -19,99 +19,107 @@ export default function Page() {
   const authorizationCode = useSearchParams().get('code');
   const [isError, setIsError] = useState(false);
 
+  useEffect(() => {
+    if (!authorizationCode || !social) return;
+    getJwtToken();
+  }, [social, authorizationCode]);
+
+  /**
+   * JWT accessToken 불러오는 전체로직
+   */
   const getJwtToken = async () => {
+    try {
+      const authorizationCode = await fetchAuthorization();
+      const { accessToken, redirectUrl } = await fetchAccessToken(authorizationCode);
+
+      dispatch(setAuth({ accessToken: accessToken.value, redirectUrl: redirectUrl }));
+      await registerDeviceToken();
+
+      router.push(redirectUrl);
+    } catch (error) {
+      console.error(error);
+      setIsError(true);
+    }
+  };
+
+  /**
+   * google 인증코드 불러오기
+   */
+  const fetchAuthorization = async () => {
+    if (social !== 'google') return authorizationCode;
+
+    const params = new URLSearchParams({
+      code: authorizationCode,
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      client_secret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI,
+      grant_type: 'authorization_code',
+    });
+
+    const response = await fetch(`https://oauth2.googleapis.com/token?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} : ${response.statusText}`);
+    }
+
+    const { access_token } = await response.json();
+    return access_token;
+  };
+
+  /**
+   * 백엔드 AccessToken 불러오기
+   */
+  const fetchAccessToken = async (code: string) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/login/${social}/callback`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ authorizationCode }),
+      body: JSON.stringify({ authorizationCode: code }),
     });
 
     if (!response.ok) {
-      setIsError(true);
       throw new Error(`${response.status} : ${response.statusText}`);
     }
 
-    const data = await response.json();
-
-    dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
-    await handleDeviceToken();
-    router.push(data.redirectUrl);
+    return response.json();
   };
 
-  const handleGoogleLogin = async () => {
-    const accessTokenResponse = await fetch(
-      `https://oauth2.googleapis.com/token?code=${authorizationCode}&client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&client_secret=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET}&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&grant_type=authorization_code`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
-
-    if (!accessTokenResponse.ok) {
-      throw new Error(`${accessTokenResponse.status} : ${accessTokenResponse.statusText}`);
-    }
-
-    const { access_token } = await accessTokenResponse.json();
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/auth/login/${social}/callback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ authorizationCode: access_token }),
-    });
-
-    if (!response.ok) {
-      setIsError(true);
-      throw new Error(`${response.status} : ${response.statusText}`);
-    }
-
-    const data: { accessToken: { value: string }; redirectUrl: string } = await response.json();
-    dispatch(setAuth({ accessToken: data.accessToken.value, redirectUrl: data.redirectUrl }));
-    await handleDeviceToken();
-
-    router.push(data.redirectUrl);
-  };
-
-  const handleDeviceToken = async () => {
+  /**
+   * FCM DeviceToken 등록
+   */
+  const registerDeviceToken = async () => {
     if (Notification.permission !== 'granted') return;
 
     try {
+      // FCM 디바이스 토큰 불러오기
       const currentToken = await getToken(messaging, { vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY });
 
-      if (currentToken) {
-        const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/saveToken`, dispatch, {
-          method: 'POST',
-          body: JSON.stringify({
-            targetToken: currentToken,
-          }),
-        });
+      if (!currentToken) {
+        alert('알림 권한이 없으면 개봉 알림을 받으실 수 없어요!');
+        return;
+      }
 
-        if (!response.ok) {
-          throw new Error('토큰 저장 실패');
-        }
-      } else {
-        alert('푸시 알림 토큰을 가져오는 데 실패했습니다.');
+      const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/saveToken`, dispatch, {
+        method: 'POST',
+        body: JSON.stringify({
+          targetToken: currentToken,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('FCM 토큰 저장 실패');
       }
     } catch (err) {
-      alert('토큰을 가져오는 중 오류가 발생했습니다. 다시 시도해주세요.');
-      console.log(err);
+      console.log('FCM 토큰 처리 실패 : ', err);
     }
   };
-
-  useEffect(() => {
-    if (social === 'google') {
-      handleGoogleLogin();
-    } else {
-      getJwtToken();
-    }
-  }, [social, authorizationCode]);
 
   return (
     <div className={styles.container}>
