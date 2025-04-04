@@ -8,19 +8,7 @@ import { FaChevronUp } from 'react-icons/fa6';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-
-const smallMenuLinks = [
-  { name: '연극', link: 'theater' },
-  { name: '뮤지컬', link: 'musical' },
-  { name: '서양음악(클래식)', link: 'classical' },
-  { name: '한국음악(국악)', link: 'koreanTraditional' },
-  { name: '대중음악', link: 'popularMusic' },
-  { name: '무용(서양/한국무용)', link: 'westernKoreanDance' },
-  { name: '대중무용', link: 'popularDance' },
-  { name: '서커스/마술', link: 'circusMagic' },
-  { name: '복합', link: 'complex' },
-  { name: '기타', link: 'unknown' },
-];
+import { genreToLink } from '@/utils/typeToText';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -67,7 +55,6 @@ export default function Page() {
       </div>
 
       <nav className={styles.nav__container}>
-        {/* 대메뉴 */}
         <li>
           <Link href={'/movie'}>
             <div className={styles.div__big_menu}>
@@ -84,32 +71,28 @@ export default function Page() {
             </div>
           </Link>
 
-          {/* 서브메뉴 */}
           <AnimatePresence>
             {!fold && (
               <motion.ul className={styles.ul__small_menu} initial="closed" animate="open" exit="closed" variants={menuVariants}>
-                {smallMenuLinks.map(({ name, link }, idx) => {
-                  return (
-                    <motion.li
-                      key={`performingArts_genre_${idx}`}
-                      custom={idx}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Link href={`/performingArts/${link}`}>
-                        <div>{name}</div>
-                      </Link>
-                    </motion.li>
-                  );
-                })}
+                {Object.keys(genreToLink).map((name, idx) => (
+                  <motion.li
+                    key={`performingArts_genre_${idx}`}
+                    custom={idx}
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <Link href={`/performingArts/${genreToLink[name]}`}>
+                      <div>{name}</div>
+                    </Link>
+                  </motion.li>
+                ))}
               </motion.ul>
             )}
           </AnimatePresence>
         </li>
 
-        {/* 대메뉴 */}
         <li>
           <Link href={'/mypage'}>
             <div className={styles.div__big_menu}>

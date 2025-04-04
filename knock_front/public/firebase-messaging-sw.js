@@ -3,12 +3,9 @@ self.addEventListener('install', function () {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', function () {
-  console.log('fcm sw activate..');
-});
+self.addEventListener('activate', function () {});
 
 self.addEventListener('push', function (e) {
-  console.log(e);
   if (!e.data.json()) return;
   const resultData = e.data.json().notification;
   const notificationTitle = resultData.title;
