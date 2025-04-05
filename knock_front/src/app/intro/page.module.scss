@@ -8,28 +8,6 @@
     env(safe-area-inset-left);
 }
 
-.section__link {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 0 20px;
-
-  div {
-    @include flexbox-center(100%, 50px);
-    border-radius: 12px;
-    background-color: $orange;
-    color: $white;
-    cursor: pointer;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.54);
-  }
-
-  p {
-    font-size: 10px;
-    color: $gray-dark;
-    text-align: center;
-  }
-}
-
 .section__carousel {
   width: 100%;
   overflow: hidden;
@@ -62,5 +40,27 @@
     .div__cur_dot {
       background-color: $gray-dark;
     }
+  }
+}
+
+.section__link {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 20px;
+
+  div {
+    @include flexbox-center(100%, 50px);
+    border-radius: 12px;
+    background-color: $orange;
+    color: $white;
+    cursor: pointer;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.54);
+  }
+
+  p {
+    font-size: 10px;
+    color: $gray-dark;
+    text-align: center;
   }
 }

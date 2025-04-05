@@ -2,7 +2,7 @@
 
 import styles from './page.module.scss';
 import { useRouter } from 'next/navigation';
-import { motion, useAnimation } from 'framer-motion';
+import { PanInfo, motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
@@ -12,7 +12,13 @@ export default function Page() {
   const images = ['/images/howto_1.png', '/images/howto_2.png', '/images/howto_3.png'];
   const [imgIdx, setImgIdx] = useState(0);
 
-  // 사용자의 푸시 알림 권한 요청
+  useEffect(() => {
+    controls.start({ x: `-${imgIdx * 33}%` });
+  }, [imgIdx, controls]);
+
+  /**
+   *  사용자의 푸시 알림 권한 요청
+   */
   const handleAllowNotification = async () => {
     const permission = await Notification.requestPermission();
 
@@ -21,12 +27,18 @@ export default function Page() {
     }
   };
 
+  /**
+   *  로그인 버튼 onClick 이벤트
+   */
   const onClickHandler = async () => {
     await handleAllowNotification();
     router.push('/login');
   };
 
-  const handleDragEnd = (_, info) => {
+  /**
+   *  이미지 드래그 이벤트
+   */
+  const handleDragEnd = (_, info: PanInfo) => {
     const offset = info.offset.x; // 드래그한 거리
     const direction = offset > 100 ? -1 : offset < -100 ? 1 : 0; // 일정 거리 이상이면 이동
 
@@ -42,10 +54,6 @@ export default function Page() {
       controls.start({ x: `-${imgIdx * 33}%` });
     }
   };
-
-  useEffect(() => {
-    controls.start({ x: `-${imgIdx * 33}%` });
-  }, [imgIdx, controls]);
 
   return (
     <div className={styles.container}>

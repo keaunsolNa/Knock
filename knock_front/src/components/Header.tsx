@@ -6,80 +6,92 @@ import { FiMenu } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function Header() {
-  const pathName = usePathname().split('/').slice(1);
+  const pathName = usePathname();
   const router = useRouter();
   const [foldMenu, setFoldMenu] = useState(true);
 
-  const filterBtnBack = () => {
-    if (pathName[0] === 'movie') {
-      return !pathName[1];
-    } else if (pathName[0] === 'performingArts') {
-      return !pathName[2] || pathName[2] === 'submenu';
-    } else if (pathName[0] === 'mypage') {
-      return !pathName[1];
-    }
-  };
+  const path = useMemo(() => pathName.split('/').slice(1), [pathName]);
+  const root = path[0];
+  const sub = path[1];
+  const third = path[2];
 
-  const curMenu = () => {
-    switch (pathName[0]) {
-      case 'movie':
-        return '영화';
-      case 'mypage':
-        if (!pathName[1]) return '마이페이지';
-        if (pathName[1] === 'category') return '카테고리 설정';
-        if (pathName[1] === 'subscribe') return '구독 목록';
-        if (pathName[1] === 'alarm') return '알람 설정';
-      case 'performingArts':
-        if (!pathName[1]) return '공연 예술';
-        if (pathName[1] === 'theater') return '연극';
-        if (pathName[1] === 'musical') return '뮤지컬';
-        if (pathName[1] === 'classical') return '클래식';
-        if (pathName[1] === 'koreanTraditional') return '국악';
-        if (pathName[1] === 'popularMusic') return '대중 음악';
-        if (pathName[1] === 'westernKoreanDance') return '서양·한국무용';
-        if (pathName[1] === 'popularDance') return '대중 무용';
-        if (pathName[1] === 'circusMagic') return '서커스·마술';
-        if (pathName[1] === 'complex') return '복합';
-        if (pathName[1] === 'unknown') return '기타';
+  /**
+   * 뒤로가기 버튼 숨김 여부
+   */
+  const hideBackButton = useMemo(() => {
+    if (root === 'movie') return !sub;
+    if (root === 'performingArts') return !third || third === 'submenu';
+    if (root === 'mypage') return !sub;
+    return false;
+  }, [root, sub, third]);
+
+  /**
+   * 현재 메뉴 텍스트 반환
+   */
+  const currentMenu = useMemo(() => {
+    if (root === 'movie') return '영화';
+
+    if (root === 'mypage') {
+      const mypageMap: Record<string, string> = {
+        '': '마이페이지',
+        category: '카테고리 설정',
+        subscribe: '구독 목록',
+        alarm: '알람 설정',
+      };
+      return mypageMap[sub ?? ''] ?? '마이페이지';
     }
-  };
+
+    if (root === 'performingArts') {
+      const paMap: Record<string, string> = {
+        '': '공연 예술',
+        theater: '연극',
+        musical: '뮤지컬',
+        classical: '클래식',
+        koreanTraditional: '국악',
+        popularMusic: '대중 음악',
+        westernKoreanDance: '서양·한국무용',
+        popularDance: '대중 무용',
+        circusMagic: '서커스·마술',
+        complex: '복합',
+        unknown: '기타',
+      };
+      return paMap[sub ?? ''] ?? '공연 예술';
+    }
+
+    return '';
+  }, [root, sub]);
 
   const subMenuOnClick = () => {
     if (foldMenu) {
-      router.push(`/performingArts/${pathName[1]}/submenu`);
-      setFoldMenu(false);
+      router.push(`/performingArts/${sub}/submenu`);
     } else {
       router.back();
-      // router.push(`/performingArts/${pathName[1]}`);
-      setFoldMenu(true);
     }
+    setFoldMenu(!foldMenu);
   };
 
+  // submenu 상태 감지
   useEffect(() => {
-    if (pathName[2] === 'submenu') {
-      setFoldMenu(false);
-    } else {
-      setFoldMenu(true);
-    }
-  }, [pathName[2]]);
+    setFoldMenu(third !== 'submenu');
+  }, [third]);
 
   return (
-    <nav className={`${styles.container} ${pathName[0] === 'mypage' && styles.bg_color}`}>
+    <nav className={`${styles.container} ${root === 'mypage' && styles.bg_color}`}>
       <div className={styles.prev} onClick={() => router.back()}>
-        <FaArrowLeft className={filterBtnBack() && styles.hidden} />
+        <FaArrowLeft className={hideBackButton && styles.hidden} />
       </div>
 
       <div className={styles.cur}>
-        {pathName[0] === 'performingArts' && pathName[1] ? (
+        {root === 'performingArts' && sub ? (
           <span className={styles.cur__wrapper} onClick={subMenuOnClick}>
-            <span>{curMenu()}</span>
+            <span>{currentMenu}</span>
             {foldMenu ? <FaChevronDown /> : <FaChevronUp />}
           </span>
         ) : (
-          <span>{curMenu()}</span>
+          <span>{currentMenu}</span>
         )}
       </div>
 
