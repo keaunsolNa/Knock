@@ -94,7 +94,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div className={styles.div__movie_carousel}>
               {recoMovies.map((movie) => (
                 <Link href={`/movie/${movie.movieId}`} key={`recommend_${movie.movieId}`}>
-                  <img src={movie.posterBase64} />
+                  <img src={posterImg} />
                 </Link>
               ))}
             </div>

@@ -3,7 +3,6 @@
 import { useAppDispatch } from '@/redux/store';
 import styles from './page.module.scss';
 import { apiRequest } from '@/utils/api';
-import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { alarmCategoryList, categoryToText } from '@/utils/typeToText';
 import { setModal } from '@/redux/modalSlice';
@@ -13,18 +12,18 @@ export default function Page() {
   const [category, setCategory] = useState<string>();
   const [isFirst, setIsFirst] = useState(true);
 
-  const handelChangeCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory(e.target.value);
   };
 
-  const getSubCategory = async () => {
+  const fetchSubCategory = async () => {
     const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/getSubCategory`, dispatch, {
       method: 'GET',
     });
 
     if (response.status === 401) {
-      console.log('401에러 발생');
       dispatch(setModal({ isOpen: true }));
+      return;
     }
 
     if (!response.ok) {
@@ -35,7 +34,7 @@ export default function Page() {
     setCategory(data);
   };
 
-  const setNewAlarmSetting = async () => {
+  const updateAlarmSetting = async () => {
     const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/changeCategory`, dispatch, {
       method: 'POST',
       body: JSON.stringify({ value: category }),
@@ -47,7 +46,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    getSubCategory();
+    fetchSubCategory();
   }, []);
 
   useEffect(() => {
@@ -55,7 +54,7 @@ export default function Page() {
     if (isFirst) {
       setIsFirst(false);
     } else {
-      setNewAlarmSetting();
+      updateAlarmSetting();
     }
   }, [category]);
 
@@ -71,7 +70,7 @@ export default function Page() {
           {alarmCategoryList.map((setting) => {
             return (
               <div key={`div__${setting}`}>
-                <input type="radio" id={setting} value={setting} checked={category === setting} onChange={handelChangeCategory} />
+                <input type="radio" id={setting} value={setting} checked={category === setting} onChange={handleChangeCategory} />
                 <label htmlFor={setting}>{categoryToText[setting]}</label>
               </div>
             );
