@@ -14,12 +14,8 @@ export default async function Page() {
   }
 
   const data: IPerformingArts[] = await response.json();
-  const viewPoster = [];
 
-  for (let i = 0; i < 3; i++) {
-    const slice = data.splice(0, 6);
-    viewPoster.push(slice);
-  }
+  const posterGroups = Array.from({ length: 3 }, (_, i) => data.slice(i * 6, i * 6 + 6));
 
   return (
     <div className={styles.container}>
@@ -36,7 +32,7 @@ export default async function Page() {
 
         <div className={styles.div__view_box}>
           <div className={styles.div__scroll_box}>
-            {viewPoster.map((array: IPerformingArts[], idx) => (
+            {posterGroups.map((array: IPerformingArts[], idx) => (
               <div className={styles.div__poster_list} key={`posterBox_${idx}`}>
                 {array.map((performance) => (
                   <Link href={`/performingArts/${genreToLink[performance.categoryLevelTwo.nm]}/${performance.id}`} key={performance.id}>

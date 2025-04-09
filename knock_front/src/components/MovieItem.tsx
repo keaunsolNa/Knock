@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { BeatLoader } from 'react-spinners';
 import { apiRequest } from '@/utils/api';
 import { useAppDispatch } from '@/redux/store';
-import { setModal } from '@/redux/modalSlice';
 
 interface IMovieProps extends IMovie {
   setAlarm?: boolean;
