@@ -8,6 +8,10 @@
 }
 
 html {
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+
   @include mobile {
     font-size: 14px;
     font-weight: $font-default;
@@ -23,6 +27,15 @@ body {
   -webkit-font-smoothing: antialiased; /* Safari, Chrome */
   -moz-osx-font-smoothing: grayscale; /* macOS */
   background-color: rgba(0, 0, 0, 0.7);
+
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome */
 }
 
 a {
