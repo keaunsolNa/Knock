@@ -49,7 +49,11 @@ export default function Page() {
         })}
       </div>
 
-      {!subList || subList[category].length === 0 ? (
+      {!subList ? (
+        <div className={styles.div__no_item}>
+          <h3>구독 목록을 불러오는 중...</h3>
+        </div>
+      ) : subList[category].length === 0 ? (
         <div className={styles.div__no_item}>
           <h3>구독 목록이 없습니다</h3>
         </div>

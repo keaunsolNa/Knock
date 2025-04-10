@@ -36,21 +36,6 @@ const nextConfig: NextConfig = {
         pathname: '/Movie/Thumbnail/Poster/**',
       },
       {
-        protocol: 'https',
-        hostname: 'www.lottecinema.co.kr',
-        pathname: '/NLCHS/Content/images/movie/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cf.lottecinema.co.kr',
-        pathname: '/NLCHS/Content/images/movie/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cf.lottecinema.co.kr',
-        pathname: '/Media/MovieFile/MovieImg/**',
-      },
-      {
         protocol: 'http',
         hostname: 'www.kopis.or.kr',
         pathname: '/upload/pfmPoster/**',
