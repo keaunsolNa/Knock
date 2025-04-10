@@ -19,13 +19,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const movieDetail: IMovie = await movieResponse.json();
   const recoMovies: IMovie[] = await recoResponse.json();
 
+  const posterImg = movieDetail.posterBase64 ?? (movieDetail.img ? `data:image/png;base64,${movieDetail.img}` : '/images/noImage.png');
+
   return (
     <div>
-      <div className={styles.img__cover_container} style={{ backgroundImage: `url('${movieDetail.posterBase64}')` }}>
+      <div className={styles.img__cover_container} style={{ backgroundImage: `url('${posterImg}')` }}>
         <Image
           className={styles.img__poster}
-          src={movieDetail.posterBase64 ?? '/images/noImage.png'}
-          alt={movieDetail.posterBase64 ? `${movieDetail.movieNm} 포스터` : `${movieDetail.movieNm} 포스터 대체 이미지`}
+          src={posterImg}
+          alt={movieDetail.posterBase64 || movieDetail.img ? `${movieDetail.movieNm} 포스터` : `${movieDetail.movieNm} 포스터 대체 이미지`}
           width={300}
           height={400}
           priority
@@ -92,7 +94,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div className={styles.div__movie_carousel}>
               {recoMovies.map((movie) => (
                 <Link href={`/movie/${movie.movieId}`} key={`recommend_${movie.movieId}`}>
-                  <img src={movie.posterBase64} />
+                  <img src={movie.posterBase64 ?? (movie.img ? `data:image/png;base64,${movie.img}` : '/images/noImage.png')} />
                 </Link>
               ))}
             </div>

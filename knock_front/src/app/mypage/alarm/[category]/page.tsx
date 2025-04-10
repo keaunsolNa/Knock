@@ -11,20 +11,16 @@ import { setModal } from '@/redux/modalSlice';
 
 export default function Page() {
   const dispatch = useAppDispatch();
-  const category = useParams().category as string;
+  const { category } = useParams() as { category: string };
   const alarmIdx = alarmCategoryList.findIndex((val) => val === category);
 
-  const [alarm, setAlarm] = useState<string[]>(null);
+  const [alarm, setAlarm] = useState<string[] | null>(null);
   const [isFirst, setIsFirst] = useState(true);
 
   const handleToggleClick = () => {
-    let chgVal = 'NONE';
-    if (alarm[alarmIdx] === 'NONE') {
-      chgVal = 'ZERO_DAY';
-    }
     setAlarm((prev) => {
       const newAlarm = [...prev];
-      newAlarm[alarmIdx] = chgVal;
+      newAlarm[alarmIdx] = newAlarm[alarmIdx] === 'NONE' ? 'ZERO_DAY' : 'NONE';
       return newAlarm;
     });
   };
@@ -44,8 +40,8 @@ export default function Page() {
     });
 
     if (response.status === 401) {
-      console.log('401에러 발생');
       dispatch(setModal({ isOpen: true }));
+      return;
     }
 
     if (!response.ok) {
@@ -63,7 +59,7 @@ export default function Page() {
     });
 
     if (!response.ok) {
-      return <div>에러</div>;
+      throw new Error('알림 변경 실패');
     }
   };
 
@@ -117,28 +113,21 @@ export default function Page() {
             <AnimatePresence>
               {alarm[alarmIdx] !== 'NONE' && (
                 <motion.div className={styles.div__radio_box} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  {alarmSettingList.map((setting, idx) => {
-                    if (category === 'movie') {
-                      if (![4, 5, 6].includes(idx)) {
-                        return;
-                      }
-                    }
-                    return (
-                      <div key={`div__${setting}`}>
-                        <input
-                          className={styles.input__radio}
-                          type="radio"
-                          id={`setting__${setting}`}
-                          value={setting}
-                          checked={alarm[alarmIdx] === setting}
-                          onChange={handleAlarmChange}
-                        />
-                        <label className={styles.label__radio} htmlFor={`setting__${setting}`}>
-                          {alarmToText[setting]}
-                        </label>
-                      </div>
-                    );
-                  })}
+                  {alarmSettingList.map((setting) => (
+                    <div key={`div__${setting}`}>
+                      <input
+                        className={styles.input__radio}
+                        type="radio"
+                        id={`setting__${setting}`}
+                        value={setting}
+                        checked={alarm[alarmIdx] === setting}
+                        onChange={handleAlarmChange}
+                      />
+                      <label className={styles.label__radio} htmlFor={`setting__${setting}`}>
+                        {alarmToText[setting]}
+                      </label>
+                    </div>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>

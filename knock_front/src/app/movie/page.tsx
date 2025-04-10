@@ -1,6 +1,5 @@
 import { IMovie } from '@/types';
 import SearchBar from '@/components/searchbar/SearchBar';
-
 import ContentList from '@/components/ContentList';
 import Fuse from 'fuse.js';
 

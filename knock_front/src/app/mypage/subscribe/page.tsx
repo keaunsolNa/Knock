@@ -22,7 +22,6 @@ export default function Page() {
     });
 
     if (response.status === 401) {
-      console.log('401에러 발생');
       dispatch(setModal({ isOpen: true }));
     }
 
@@ -39,37 +38,33 @@ export default function Page() {
   }, []);
 
   return (
-    subList && (
-      <div className={styles.container}>
-        <div className={styles.div__category_wrapper}>
-          {alarmCategoryList.map((item) => {
-            return (
-              <div key={'btn_' + item} className={category === item ? styles.div__select_category : null} onClick={() => setCategory(item)}>
-                {categoryToText[item]}
-              </div>
-            );
+    <div className={styles.container}>
+      <div className={styles.div__category_wrapper}>
+        {alarmCategoryList.map((item) => {
+          return (
+            <div key={'btn_' + item} className={category === item ? styles.div__select_category : null} onClick={() => setCategory(item)}>
+              {categoryToText[item]}
+            </div>
+          );
+        })}
+      </div>
+
+      {!subList || subList[category].length === 0 ? (
+        <div className={styles.div__no_item}>
+          <h3>구독 목록이 없습니다</h3>
+        </div>
+      ) : (
+        <div className={styles.div__item_wrapper}>
+          <h5>총 {subList[category].length}개</h5>
+          {subList[category].map((item) => {
+            if (category === 'MOVIE') {
+              return <MovieItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />;
+            } else {
+              return <PerformItem key={`${category}_${item.id}`} {...item} genre={genreToLink[item.categoryLevelTwo.nm]} viewBtn={false} />;
+            }
           })}
         </div>
-
-        {subList[category] === null || subList[category].length === 0 ? (
-          <div className={styles.div__no_item}>
-            <h3>구독 목록이 없습니다</h3>
-          </div>
-        ) : (
-          <div className={styles.div__item_wrapper}>
-            <h5>총 {subList[category].length}개</h5>
-            {subList[category].map((item) => {
-              if (category === 'MOVIE') {
-                return <MovieItem key={`${category}_${item.movieId}`} {...item} viewBtn={false} />;
-              } else {
-                return (
-                  <PerformItem key={`${category}_${item.id}`} {...item} genre={genreToLink[item.categoryLevelTwo.nm]} viewBtn={false} />
-                );
-              }
-            })}
-          </div>
-        )}
-      </div>
-    )
+      )}
+    </div>
   );
 }

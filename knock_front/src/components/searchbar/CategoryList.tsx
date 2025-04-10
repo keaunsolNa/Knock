@@ -5,15 +5,13 @@ import Link from 'next/link';
 
 export default async function CategoryList({ link, searchTitle, searchFilter }: ISearch) {
   let categoryList: ICategory[] = [];
+
   if (link === 'movie') {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`);
-
     if (!response.ok) {
       return null;
     }
-
     categoryList = await (await response.json()).data;
-
     categoryList.sort((a, b) => (a.movies.length >= b.movies.length ? -1 : 1));
   } else {
     categoryList = performingArtsArea.map((areaText, idx) => {

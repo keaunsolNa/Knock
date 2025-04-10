@@ -30,7 +30,7 @@ export default function Page() {
       if (!isLoading) {
         setTimeout(() => {
           router.push(accessToken ? redirectUrl : '/intro');
-        }, 2000);
+        }, 1000);
       }
     }
   }, [isLoading]);

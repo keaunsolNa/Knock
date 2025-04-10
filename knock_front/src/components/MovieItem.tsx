@@ -18,74 +18,42 @@ interface IMovieProps extends IMovie {
 
 export default function MovieItem(props: IMovieProps) {
   const dispatch = useAppDispatch();
-  const [alarm, setAlarm] = useState<undefined | boolean>(props.setAlarm);
+  const [alarm, setAlarm] = useState(props.setAlarm ?? undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setAlarm(props.setAlarm);
   }, [props]);
 
-  const handleAlarmClick = (e: React.MouseEvent) => {
+  const handleAlarmClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
 
     setIsLoading(true);
 
-    if (alarm) {
-      subScribeCancelFetch();
-    } else {
-      subScribeFetch();
-    }
-  };
+    const endpoint = alarm ? 'cancelSub' : 'sub';
 
-  /**
-   * Subscribe
-   */
-  const subScribeFetch = async () => {
-    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/sub`, dispatch, {
+    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/${endpoint}`, dispatch, {
       method: 'POST',
       body: JSON.stringify({ value: props.movieId }),
     });
 
     if (response.ok) {
       const data = await response.json();
-      // TODO : fetching 실패시 에러 alert
-      if (data !== -1) {
-        setAlarm(true);
-      }
-    }
-
-    setIsLoading(false);
-  };
-
-  /**
-   * Subscribe Cancel
-   */
-  const subScribeCancelFetch = async () => {
-    const response = await apiRequest(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/user/movie/cancelSub`, dispatch, {
-      method: 'POST',
-      body: JSON.stringify({ value: props.movieId }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      // TODO : fetching 실패시 에러 alert
-      if (data !== -1) {
-        setAlarm(false);
-      }
+      if (data !== -1) setAlarm((prev) => !prev);
     }
 
     setIsLoading(false);
   };
 
   return (
-    <Link rel="prefetch" href={`/movie/${props.movieId}`}>
+    <Link href={`/movie/${props.movieId}`}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
           <Image
-            src={props.posterBase64 ?? '/images/noImage.png'}
+            src={props.posterBase64 ?? (props.img ? `data:image/png;base64,${props.img}` : '/images/noImage.png')}
             fill
-            alt={props.posterBase64 ? `${props.movieNm} 포스터` : `${props.movieNm} 포스터 대체 이미지`}
+            alt={props.posterBase64 || props.img ? `${props.movieNm} 포스터` : `${props.movieNm} 포스터 대체 이미지`}
             sizes="100%"
           />
         </div>
@@ -108,7 +76,7 @@ export default function MovieItem(props: IMovieProps) {
                 <BeatLoader size={10} color={'#ffffff'} />
               </div>
             ) : (
-              <button onClick={handleAlarmClick} className={alarm ? styles.btn__alarm_on : styles.btn__alarm_off}>
+              <button onClick={handleAlarmClick} className={alarm ? styles.btn__alarm_on : styles.btn__alarm_off} disabled={isLoading}>
                 <motion.div initial={{ scale: 1 }} animate={{ scale: alarm ? [1, 1.2, 1] : [1, 0.8, 1] }} transition={{ duration: 0.3 }}>
                   {isLoading ? <BeatLoader size={10} color={'#ffffff'} /> : alarm ? <BsBellFill /> : <BsBell />}
                 </motion.div>
