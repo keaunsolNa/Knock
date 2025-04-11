@@ -4,12 +4,6 @@ export interface ICategory {
   movies?: IMovie[];
 }
 
-export interface ISearch {
-  link: string;
-  searchTitle?: string;
-  searchFilter?: string;
-}
-
 export interface ICategoryLevelTwo {
   id: string;
   nm: string;
@@ -72,5 +66,5 @@ export interface IUser {
 
 export interface ISubList {
   MOVIE: IMovie[];
-  PERFORMING_ARTS: any;
+  PERFORMING_ARTS: IPerformingArts[];
 }

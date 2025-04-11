@@ -1,54 +1,44 @@
 'use client';
 
 import { FormEvent } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { IoSearchSharp } from 'react-icons/io5';
-import { ISearch } from '@/types';
 import { GrPowerReset } from 'react-icons/gr';
 import styles from '@/styles/components/searchbar/title-search.module.scss';
 
-export default function TitleSearch({ link, searchTitle, searchFilter }: ISearch) {
-  const [title, setTitle] = useState<string>(searchTitle);
-  const router = useRouter();
-  const routerOption = { scroll: false };
-
-  const routeMove = () => {
-    if (link === 'movie') {
-      router.push(`/movie?title=${title}&filter=${searchFilter}`, routerOption);
-    } else {
-      router.push(`/${link}?title=${title}&filter=${searchFilter}`, routerOption);
-    }
-  };
+export default function TitleSearch({
+  searchTitle,
+  searchFilter,
+  setSearchTitle,
+  resetAll,
+}: {
+  searchTitle: string;
+  searchFilter: string;
+  setSearchTitle: Function;
+  resetAll: Function;
+}) {
+  const [curTitle, setCurTitle] = useState<string>(searchTitle || '');
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    routeMove();
+    setSearchTitle(curTitle);
   };
 
-  const resetBtnOnClick = () => {
-    setTitle('');
-
-    if (link === 'movie') {
-      router.push('/movie', routerOption);
-    } else {
-      router.push(`/${link}`, routerOption);
-    }
+  const resetOnClick = () => {
+    setCurTitle('');
+    resetAll();
   };
-
-  const resetBtnDefault = `${styles.btn__reset}`;
-  const resetBtnFiltered = `${styles.btn__reset} ${styles.btn__reset_filtered}`;
 
   return (
     <div className={styles.container}>
       <form onSubmit={submitHandler}>
-        <input value={title} onChange={(e) => setTitle(e.currentTarget.value)} placeholder="제목으로 검색해보세요" />
-        <div onClick={routeMove}>
+        <input value={curTitle} onChange={(e) => setCurTitle(e.currentTarget.value)} placeholder="제목으로 검색해보세요" />
+        <div onClick={() => setSearchTitle(curTitle)}>
           <IoSearchSharp />
         </div>
       </form>
 
-      <div className={searchTitle || searchFilter ? resetBtnFiltered : resetBtnDefault} onClick={resetBtnOnClick}>
+      <div className={`${styles.btn__reset} ${(searchTitle || searchFilter) && styles.btn__reset_filtered}`} onClick={resetOnClick}>
         <GrPowerReset />
       </div>
     </div>
