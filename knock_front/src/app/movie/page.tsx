@@ -1,50 +1,25 @@
-import { IMovie } from '@/types';
-import SearchBar from '@/components/searchbar/SearchBar';
-import ContentList from '@/components/ContentList';
-import Fuse from 'fuse.js';
+import { ICategory, IMovie } from '@/types';
+import MovieClient from '@/components/movie/MovieClient';
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ title: string; filter: string }> }) {
-  const { title, filter } = await searchParams;
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`);
-
-  if (!response.ok) {
-    throw new Error('movie SSR 페이지 API 요청 실패');
-  }
-
-  const allMovies: IMovie[] = await response.json();
-
-  const categoryFilter = (movieList: IMovie[]) => {
-    return movieList.filter((movie) => movie.categoryLevelTwo?.some(({ id }) => id === filter));
+export default async function Page() {
+  const today = new Date().toISOString().split('T')[0];
+  const cacheOption = {
+    next: { revalidate: 86400 }, // 24시간 (1일)
   };
 
-  const titleFilter = (movieList: IMovie[]) => {
-    const options = {
-      keys: ['movieNm'],
-      includeScore: true,
-      threshold: 0.3,
-    };
+  const [movieRes, categoryRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie?cacheKey=${today}`, cacheOption),
+    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory?cacheKey=${today}`, cacheOption),
+  ]);
 
-    const movieFuse = new Fuse(movieList, options);
-    const titleSearchResult = movieFuse.search(title);
-
-    return titleSearchResult.map(({ item }) => item);
-  };
-
-  let filteredList: IMovie[] = allMovies;
-
-  if (filter && filter !== '') {
-    filteredList = categoryFilter(filteredList);
+  if (!movieRes.ok || !categoryRes.ok) {
+    throw new Error('movie SSR 페이지 요청 실패');
   }
 
-  if (title && title !== '') {
-    filteredList = titleFilter(filteredList);
-  }
+  const allMovies: IMovie[] = await movieRes.json();
+  const categories: ICategory[] = (await categoryRes.json()).data;
 
-  return (
-    <>
-      <SearchBar link="movie" searchTitle={title} searchFilter={filter} />
-      <ContentList itemList={filteredList} category="movie" />
-    </>
-  );
+  categories.sort((a, b) => (a.movies.length >= b.movies.length ? -1 : 1));
+
+  return <MovieClient allMovies={allMovies} categories={categories} />;
 }
