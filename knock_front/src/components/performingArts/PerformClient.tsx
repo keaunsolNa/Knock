@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ICategory, IPerformingArts } from '@/types';
 import { areaToCode } from '@/utils/typeToText';
 import CategoryList from '../searchbar/CategoryList';
@@ -26,32 +26,23 @@ export default function PerformClient({
     setSearchFilter('');
   };
 
-  const titleFilter = (performList: IPerformingArts[]) => {
-    const options = {
-      keys: ['name'],
-      includeScore: true,
-      threshold: 0.3,
-    };
+  const filteredPerform = useMemo(() => {
+    let result = [...allPerform];
 
-    const performFuse = new Fuse(performList, options);
-    const titleSearchResult = performFuse.search(searchTitle);
+    if (searchFilter) {
+      result = result.filter((perform) => areaToCode[perform.area] === searchFilter[5]);
+    }
 
-    return titleSearchResult.map(({ item }) => item);
-  };
-
-  const categoryFilter = (performList: IPerformingArts[]) => {
-    return performList.filter((perform) => areaToCode[perform.area] === searchFilter[5]);
-  };
-
-  let filteredList: IPerformingArts[] = allPerform;
-
-  if (searchFilter && searchFilter !== '') {
-    filteredList = categoryFilter(filteredList);
-  }
-
-  if (searchTitle && searchTitle !== '') {
-    filteredList = titleFilter(filteredList);
-  }
+    if (searchTitle) {
+      const fuse = new Fuse(result, {
+        keys: ['name'],
+        includeScore: true,
+        threshold: 0.3,
+      });
+      result = fuse.search(searchTitle).map(({ item }) => item);
+    }
+    return result;
+  }, [allPerform, searchTitle, searchFilter]);
 
   return (
     <>
@@ -59,7 +50,7 @@ export default function PerformClient({
         <TitleSearch searchTitle={searchTitle} searchFilter={searchFilter} setSearchTitle={setSearchTitle} resetAll={resetAll} />
         <CategoryList categories={filters} searchFilter={searchFilter} setSearchFilter={setSearchFilter} />
       </div>
-      <ContentList itemList={filteredList} category="performingArts" genre={genre} />
+      <ContentList itemList={filteredPerform} category="performingArts" genre={genre} />
     </>
   );
 }

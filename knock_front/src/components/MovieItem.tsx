@@ -47,7 +47,7 @@ export default function MovieItem(props: IMovieProps) {
   };
 
   return (
-    <Link href={`/movie/${props.movieId}`}>
+    <Link href={`/movie/${props.movieId}`} scroll={true}>
       <div className={styles.container}>
         <div className={styles.img__wrapper}>
           <Image
