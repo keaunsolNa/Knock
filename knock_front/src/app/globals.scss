@@ -20,6 +20,11 @@ html {
     font-size: 16px;
     font-weight: $font-default;
   }
+
+  @media all and (max-width: 380px) {
+    font-size: 12px;
+    font-weight: $font-default;
+  }
 }
 
 body {
