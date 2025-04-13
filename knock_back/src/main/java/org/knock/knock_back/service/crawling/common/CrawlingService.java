@@ -73,6 +73,11 @@ public class CrawlingService extends AbstractCrawlingService {
         if (existing.isPresent()) {
             dto = movieDtoToIndex.MovieIndexToDTO(existing.get());
             updatePartialMovieData(element, dto);
+
+            if (null == dto.getOpeningTime() || dto.getOpeningTime().isEmpty() || "개봉 예정".equals(dto.getOpeningTime()) || "미정".equals(dto.getOpeningTime())) {
+                dto.setOpeningTime(extractOpeningDate(element));
+            }
+
             dtos.add(dto);
             return;
         }
@@ -192,10 +197,7 @@ public class CrawlingService extends AbstractCrawlingService {
         if (srcPath.contains("//") && currentConfig.getName().equals("LOTTE")) {
             srcPath = srcPath.replace("//", "/");
         }
-//            InputStream in = URI.create(srcPath).toURL().openStream();
-//
-//            byte[] imageBytes = in.readAllBytes();
-//            String base64 = Base64.getEncoder().encodeToString(imageBytes);
+
         dto.setPosterBase64(srcPath);
 
     }
