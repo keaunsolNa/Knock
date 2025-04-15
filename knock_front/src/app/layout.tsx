@@ -22,6 +22,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   width: 'device-width',
   viewportFit: 'cover',
+  userScalable: false,
 };
 
 const notoSansKR = Noto_Sans_KR({

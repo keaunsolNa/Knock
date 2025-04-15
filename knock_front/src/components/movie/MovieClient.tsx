@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 import { ICategory, IMovie } from '@/types';
 import TitleSearch from '../searchbar/TitleSearch';
@@ -16,6 +16,11 @@ interface MovieClientProps {
 export default function MovieClient({ allMovies, categories }: MovieClientProps) {
   const [searchTitle, setSearchTitle] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
+
+  // 초기 뷰포트 문제 해결용 리사이즈 트리거
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, []);
 
   const resetAll = () => {
     setSearchTitle('');

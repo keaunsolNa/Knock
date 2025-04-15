@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ICategory, IPerformingArts } from '@/types';
 import { areaToCode } from '@/utils/typeToText';
 import CategoryList from '../searchbar/CategoryList';
@@ -20,6 +20,11 @@ export default function PerformClient({
 }) {
   const [searchTitle, setSearchTitle] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
+
+  // 초기 뷰포트 문제 해결용 리사이즈 트리거
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, []);
 
   const resetAll = () => {
     setSearchTitle('');
