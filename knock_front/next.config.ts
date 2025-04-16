@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
         pathname: '/upload/pfmPoster/**',
       },
     ],
+    unoptimized: true,
   },
 };
 
