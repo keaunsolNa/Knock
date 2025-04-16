@@ -90,22 +90,9 @@ public interface MovieInterface {
             return elasticsearchOperations.search(query, KOFIC_INDEX.class);
         }
 
-        public void updateMovie(MOVIE_INDEX movieINDEX) {
-
-            MOVIE_INDEX movieIndex = movieRepository.findById(movieINDEX.getMovieId()).orElseThrow();
-            movieIndex.setFavorites(movieINDEX.getFavorites());
-            movieIndex.setReservationLink(movieINDEX.getReservationLink());
-
-            movieRepository.save(movieIndex);
-
-        }
-
         public void deleteMovie() {
             movieRepository.deleteMOVIE_INDEXByOpeningTimeBefore(System.currentTimeMillis());
         }
 
-        public void deleteById(String id) {
-            movieRepository.deleteById(id);
-        }
     }
 }

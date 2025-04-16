@@ -142,13 +142,13 @@ public class Movie implements MovieInterface {
 
                     @SuppressWarnings("unchecked")
                     List<String> movies = (List<String>) innerMap.get("movies");
-                    movies.add(movie.getMovieId());
+                    movies.add(movie.get_id());
 
                 }
                 else
                 {
                     List<String> movies = new ArrayList<>();
-                    movies.add(movie.getMovieId());
+                    movies.add(movie.get_id());
 
                     Map<String, Object> innerMap = new HashMap<>();
                     innerMap.put("categoryId", category.getId());
