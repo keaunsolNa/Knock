@@ -35,7 +35,7 @@ export default function Page() {
       dispatch(setAuth({ accessToken: accessToken.value, redirectUrl: redirectUrl }));
       await registerDeviceToken();
 
-      router.push(redirectUrl);
+      router.replace(redirectUrl);
     } catch (error) {
       console.error(error);
       setIsError(true);
