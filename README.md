@@ -6,9 +6,9 @@
 ![image](https://github.com/user-attachments/assets/8ed878b7-0747-4ffd-acaf-f04b2cd6b64a)
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9c1c74c8-5488-4206-8988-6fdc50754d86" width="33%" />
-  <img src="https://github.com/user-attachments/assets/ad0710f9-5dc3-472e-9748-6d0d7e2043ec" width="33%" />
-  <img src="https://github.com/user-attachments/assets/fba915e7-b273-41f0-8809-4c8641ee78b4" width="33%" />
+  <img src="https://github.com/user-attachments/assets/9c1c74c8-5488-4206-8988-6fdc50754d86" width="31%" />
+  <img src="https://github.com/user-attachments/assets/ad0710f9-5dc3-472e-9748-6d0d7e2043ec" width="32%" />
+  <img src="https://github.com/user-attachments/assets/fba915e7-b273-41f0-8809-4c8641ee78b4" width="31%" />
 </p>
 
 ## 👥 팀원
