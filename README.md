@@ -50,7 +50,13 @@
 
 더 자세한 기술은 [개발 환경 페이지](https://www.notion.so/1c3eb6c84ddd80f597d8efe374f69bab?pvs=21)에서 확인해주세요!
 
-## 🛎️ 주요 기능
+---
+
+## 🔗 관련 서비스
+
+- 🛠️ [KNOCK 스프링 비즈니스 서버 레포지토리](https://github.com/keaunsolNa/knock-back-server)
+- 🤖 [KNOCK 파이썬 크롤링 서버 레포지토리](https://github.com/keaunsolNa/knock_crawling/tree/main)
+- 📄 [KNOCK 소개 페이지 (Notion)](https://www.notion.so/1d0eb6c84ddd80da9dece7e09ec68c77)
 
 ---
 
