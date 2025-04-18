@@ -54,8 +54,8 @@
 
 ## 🔗 관련 서비스
 
-- 🛠️ [KNOCK 스프링 비즈니스 서버 레포지토리](https://github.com/keaunsolNa/knock-back-server)
-- 🤖 [KNOCK 파이썬 크롤링 서버 레포지토리](https://github.com/keaunsolNa/knock_crawling/tree/main)
+- 🛠️ [KNOCK 백엔드 서버 레포지토리](https://github.com/keaunsolNa/knock-back-server)
+- 🤖 [KNOCK 크롤링 서버 레포지토리](https://github.com/keaunsolNa/knock_crawling/tree/main)
 - 📄 [KNOCK 소개 페이지 (Notion)](https://www.notion.so/1d0eb6c84ddd80da9dece7e09ec68c77)
 
 ---
