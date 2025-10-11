@@ -2,14 +2,10 @@ import { ICategory, IMovie } from '@/types';
 import MovieClient from '@/components/movie/MovieClient';
 
 export default async function Page() {
-  const today = new Date().toISOString().split('T')[0];
-  const cacheOption = {
-    next: { revalidate: 86400 }, // 24시간 (1일)
-  };
-
+  // vercel CDN 캐싱으로 캐싱 중복을 피하기위해 페이지 동적 생성
   const [movieRes, categoryRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie?cacheKey=${today}`, cacheOption),
-    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory?cacheKey=${today}`, cacheOption),
+    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie`, { cache: 'no-store' }),
+    fetch(`${process.env.NEXT_PUBLIC_API_BACKEND_URL}/api/movie/getCategory`, { cache: 'no-store' }),
   ]);
 
   if (!movieRes.ok || !categoryRes.ok) {
