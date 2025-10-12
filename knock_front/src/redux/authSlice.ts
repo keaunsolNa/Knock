@@ -22,16 +22,20 @@ export const refreshAccessToken = createAsyncThunk('auth/refreshAccessToken', as
       credentials: 'include',
     });
 
+    // 401은 정상 케이스로 처리 (로그인 안된 상태)
+    if (response.status === 401) {
+      return { accessToken: null, redirectUrl: null };
+    }
+
+    // 401 외의 에러만 실제 에러로 처리
     if (!response.ok) {
-      if (response.status === 401) {
-        return { accessToken: null, redirectUrl: null };
-      }
       throw new Error(`${response.status} : ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
+    // 네트워크 오류 등 실제 에러만 reject
     return rejectWithValue('네트워크 오류 발생');
   }
 });
